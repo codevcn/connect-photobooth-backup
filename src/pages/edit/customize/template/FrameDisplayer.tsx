@@ -1,8 +1,8 @@
-import { TframePerfectRectType, TPrintTemplate, TSizeInfo } from '@/utils/types/global'
+import { TPrintTemplate } from '@/utils/types/global'
 import { TemplateFrame } from './TemplateFrame'
 import type React from 'react'
 import { cn } from '@/configs/ui/tailwind-utils'
-import { styleToFramesDisplayerByTemplateType } from '@/utils/helpers'
+import { styleToFramesDisplayerByTemplateType } from '@/configs/print-template/templates-helpers'
 
 type TFramesDisplayerProps = {
   template: TPrintTemplate
@@ -19,11 +19,7 @@ type TFramesDisplayerProps = {
   displayerClassNames: {
     container: string
   }
-  onClickFrame: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    frameId: string,
-    frameSize: TSizeInfo
-  ) => void
+  onClickFrame: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, frameId: string) => void
 }>
 
 export const FramesDisplayer = ({

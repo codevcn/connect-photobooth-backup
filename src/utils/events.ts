@@ -1,4 +1,4 @@
-import { TElementType, TframePerfectRectType, TSizeInfo } from './types/global'
+import { TElementType, TSizeInfo } from './types/global'
 
 export enum EInternalEvents {
   CLICK_ON_PAGE = 'CLICK_ON_PAGE',
@@ -8,15 +8,16 @@ export enum EInternalEvents {
   // SUBMIT_PRODUCT_IMAGE_ELE_PROPS = 'SUBMIT_PRODUCT_IMAGE_ELE_PROPS',
   PICK_ELEMENT = 'PICK_ELEMENT',
   SYNC_ELEMENT_PROPS = 'SYNC_ELEMENT_PROPS',
-  OPEN_CROP_ELEMENT_MODAL = 'OPEN_CROP_ELEMENT_MODAL',
   REPLACE_ELEMENT_IMAGE_URL = 'REPLACE_ELEMENT_IMAGE_URL',
   HIDE_SHOW_PRINTED_IMAGES_MODAL = 'HIDE_SHOW_PRINTED_IMAGES_MODAL',
+  CROP_PRINTED_IMAGE_ON_FRAME = 'CROP_PRINTED_IMAGE_ON_FRAME',
 }
 
 interface IInternalEvents {
+  [EInternalEvents.CROP_PRINTED_IMAGE_ON_FRAME]: (frameId: string, croppedImageUrl: string) => void
   [EInternalEvents.CLICK_ON_PAGE]: (target: HTMLElement | null) => void
   [EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS]: (
-    elementId: string | null,
+    elementId: string,
     scale?: number,
     angle?: number,
     posX?: number,
@@ -24,7 +25,7 @@ interface IInternalEvents {
     zindex?: number
   ) => void
   [EInternalEvents.SUBMIT_STICKER_ELE_PROPS]: (
-    elementId: string | null,
+    elementId: string,
     scale?: number,
     angle?: number,
     posX?: number,
@@ -32,7 +33,7 @@ interface IInternalEvents {
     zindex?: number
   ) => void
   [EInternalEvents.SUBMIT_TEXT_ELE_PROPS]: (
-    elementId: string | null,
+    elementId: string,
     fontSize?: number,
     angle?: number,
     posX?: number,
@@ -42,14 +43,16 @@ interface IInternalEvents {
     content?: string,
     fontFamily?: string
   ) => void
-  [EInternalEvents.PICK_ELEMENT]: (element: HTMLElement | null, elementType: TElementType) => void
-  [EInternalEvents.SYNC_ELEMENT_PROPS]: (elementId: string | null, type: TElementType) => void
-  [EInternalEvents.OPEN_CROP_ELEMENT_MODAL]: (elementId: string) => void
+  [EInternalEvents.PICK_ELEMENT]: (
+    elementId: string,
+    element: HTMLElement,
+    elementType: TElementType
+  ) => void
+  [EInternalEvents.SYNC_ELEMENT_PROPS]: (elementId: string, type: TElementType) => void
   [EInternalEvents.REPLACE_ELEMENT_IMAGE_URL]: (elementId: string, newUrl: string) => void
   [EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL]: (
     show: boolean,
-    frameIdToAddPrintedImage: string,
-    frameSize: TSizeInfo
+    frameIdToAddPrintedImage?: string
   ) => void
 }
 
@@ -79,7 +82,7 @@ class EventEmitter<IEvents extends IInternalEvents> {
     ...args: IEvents[K] extends (...args: infer P) => any ? P : never
   ): void {
     for (const handler of this.listeners[name] ?? []) {
-      queueMicrotask(() => {
+      requestIdleCallback(() => {
         ;(handler as any)(...args)
       })
     }

@@ -20,7 +20,7 @@ export const Customization = ({ printedImages }: TCustomizeProps) => {
           classNames={{ templatesList: 'grid grid-cols-2 gap-2', templateItem: 'aspect-square' }}
         />
       </div>
-      <div className="mt-4">
+      <div className="mt-6">
         <h3 className="mb-1 font-bold text-gray-800">Chọn ảnh chụp photobooth</h3>
         <PrintedImagesPreview printedImages={printedImages} />
       </div>

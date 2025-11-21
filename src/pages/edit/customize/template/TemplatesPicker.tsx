@@ -1,15 +1,8 @@
-import {
-  TframePerfectRectType,
-  TPrintTemplate,
-  TSizeInfo,
-  TTemplateFrame,
-} from '@/utils/types/global'
+import { TPrintTemplate } from '@/utils/types/global'
 import { FramesDisplayer } from './FrameDisplayer'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { cn } from '@/configs/ui/tailwind-utils'
 import { useTemplateStore } from '@/stores/ui/template.store'
-import { hardCodedPrintTemplates } from '@/configs/data/print-template'
-import { EInternalEvents, eventEmitter } from '@/utils/events'
 
 type TTemplatePickerProps = {
   printedImagesCount: number
@@ -21,28 +14,11 @@ type TTemplatePickerProps = {
 }>
 
 export const TemplatesPicker = ({ printedImagesCount, classNames }: TTemplatePickerProps) => {
-  const templates = useTemplateStore((s) => s.allTemplates)
-  const initializeTemplates = useTemplateStore((s) => s.initializeTemplates)
-
+  const allTemplates = useTemplateStore((s) => s.allTemplates)
   const availableTemplates = useMemo<TPrintTemplate[]>(() => {
-    return templates.filter((template) => template.framesCount <= printedImagesCount)
-  }, [printedImagesCount, templates])
+    return allTemplates.filter((template) => template.framesCount <= printedImagesCount)
+  }, [printedImagesCount, allTemplates])
   const pickTemplate = useTemplateStore((s) => s.pickTemplate)
-
-  const handlePickFrame = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    frameId: TTemplateFrame['id'],
-    frameSize: TSizeInfo
-  ) => {
-    const frameEle = e.currentTarget.querySelector<HTMLElement>('.NAME-frame-placed-image')
-    if (frameEle) {
-      eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, frameId, frameSize)
-    }
-  }
-
-  useEffect(() => {
-    initializeTemplates(hardCodedPrintTemplates())
-  }, [])
 
   return (
     <div className={classNames?.templatesList}>
@@ -76,7 +52,6 @@ export const TemplatesPicker = ({ printedImagesCount, classNames }: TTemplatePic
             frameStyles={{
               container: { backgroundColor: 'white' },
             }}
-            onClickFrame={handlePickFrame}
           />
         </div>
       ))}

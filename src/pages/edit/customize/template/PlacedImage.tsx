@@ -1,4 +1,4 @@
-import { stylePlacedImageByTemplateType } from '@/utils/helpers'
+import { stylePlacedImageByTemplateType } from '@/configs/print-template/templates-helpers'
 import { TPlacedImage, TTemplateFrame, TTemplateType } from '@/utils/types/global'
 
 type TPlacedImageProps = {

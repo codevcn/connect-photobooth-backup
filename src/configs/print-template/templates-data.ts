@@ -262,7 +262,7 @@ export function hardCodedPrintTemplates(
   }
 
   const template4Vertical: TPrintTemplate = {
-    id: 'template-11',
+    id: 'template-12',
     type: '4-vertical',
     frames: [
       {

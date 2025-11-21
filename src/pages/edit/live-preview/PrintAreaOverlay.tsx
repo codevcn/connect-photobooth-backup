@@ -1,7 +1,8 @@
-import { TPrintTemplate, TSizeInfo } from '@/utils/types/global'
+import { TPrintTemplate, TTemplateFrame } from '@/utils/types/global'
 import { FramesDisplayer } from '../customize/template/FrameDisplayer'
 import { cn } from '@/configs/ui/tailwind-utils'
 import { useTemplateStore } from '@/stores/ui/template.store'
+import { EInternalEvents, eventEmitter } from '@/utils/events'
 
 type TPrintAreaOverlayPreviewProps = {
   printAreaRef: React.RefObject<HTMLDivElement | null>
@@ -51,11 +52,7 @@ type TPrintAreaOverlayProps = {
       plusIconWrapper: string
     }
   }
-  onClickFrame: (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    frameId: string,
-    frameSize: TSizeInfo
-  ) => void
+  onClickFrame: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, frameId: string) => void
   frameDisplayerOptions: {
     classNames: {
       container: string
@@ -68,9 +65,20 @@ export const PrintAreaOverlay = ({
   isOutOfBounds,
   printAreaOptions,
   displayWarningOverlay,
-  onClickFrame,
 }: TPrintAreaOverlayProps) => {
-  const pickedTemplate = useTemplateStore((s) => s.currentTemplate)
+  const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
+
+  const handleClickFrame = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    frameId: TTemplateFrame['id']
+  ) => {
+    const image = e.currentTarget.querySelector<HTMLImageElement>('.NAME-frame-placed-image')
+    if (image) {
+      eventEmitter.emit(EInternalEvents.PICK_ELEMENT, frameId, e.currentTarget, 'template-frame')
+    } else {
+      eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, frameId)
+    }
+  }
 
   return (
     <div
@@ -92,7 +100,15 @@ export const PrintAreaOverlay = ({
           : 'transparent',
       }}
     >
-      {pickedTemplate && <FramesDisplayer template={pickedTemplate} onClickFrame={onClickFrame} />}
+      {pickedTemplate && (
+        <FramesDisplayer
+          template={pickedTemplate}
+          onClickFrame={handleClickFrame}
+          frameClassNames={{
+            container: 'mobile-touch cursor-pointer',
+          }}
+        />
+      )}
     </div>
   )
 }

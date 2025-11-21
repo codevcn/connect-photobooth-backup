@@ -1,37 +1,25 @@
-import { TPrintedImage, TSizeInfo } from '@/utils/types/global'
-import { useMemo, useState } from 'react'
+import { TPrintedImage } from '@/utils/types/global'
+import { useMemo } from 'react'
 import { PrintedImagesModal } from './PrintedImagesModal'
-import { useTemplateStore } from '@/stores/ui/template.store'
-import { matchPrintedImageToShapeSize } from '@/utils/helpers'
-import { toast } from 'react-toastify'
 import { createPortal } from 'react-dom'
+import { EInternalEvents, eventEmitter } from '@/utils/events'
 
 type TPrintedImagesProps = {
   printedImages: TPrintedImage[]
 }
 
 export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => {
-  const [showPrintedImagesModal, setShowPrintedImagesModal] = useState(false)
-  const addImageToFrame = useTemplateStore((s) => s.addImageToFrame)
-
   const displayedImage = useMemo<TPrintedImage | null>(() => {
     return printedImages.length > 0 ? printedImages[0] : null
   }, [printedImages])
 
-  const handleAddImageToFrame = (printedImg: TPrintedImage, imgSize: TSizeInfo) => {
-    if (matchPrintedImageToShapeSize(printedImg, imgSize)) {
-      addImageToFrame(printedImg)
-    } else {
-      toast.error('Ảnh chọn không phù hợp với khung hình. Vui lòng chọn ảnh khác.')
-    }
+  const showPrintedImagesModal = () => {
+    eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true)
   }
 
   return (
     <div className="flex justify-center min-w-[50px] rounded text-pink-cl w-fit active:scale-90 transition relative">
-      <div
-        className="border-border rounded-md cursor-pointer"
-        onClick={() => setShowPrintedImagesModal(true)}
-      >
+      <div onClick={showPrintedImagesModal} className="border-border rounded-md cursor-pointer">
         {displayedImage && (
           <div
             key={displayedImage.id}
@@ -45,15 +33,7 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
           </div>
         )}
       </div>
-      {showPrintedImagesModal &&
-        createPortal(
-          <PrintedImagesModal
-            onAddImage={handleAddImageToFrame}
-            onClose={() => setShowPrintedImagesModal(false)}
-            printedImages={printedImages}
-          />,
-          document.body
-        )}
+      {createPortal(<PrintedImagesModal printedImages={printedImages} />, document.body)}
     </div>
   )
 }

@@ -33,7 +33,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
   }, [pickedProduct, pickedVariant])
 
   return (
-    <div className="w-full">
+    <div className="w-full pl-1">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">{pickedProduct.name}</h1>
       </div>
@@ -105,7 +105,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         </div>
       </div>
 
-      <div className="bg-white py-4 px-2 rounded-lg border-border mt-4">
+      <div className="bg-white py-4 px-4 rounded-lg border-border mt-4">
         <h3 className="text-slate-800 font-bold text-lg mb-3">Màu sắc</h3>
 
         <div className="flex flex-wrap gap-3">

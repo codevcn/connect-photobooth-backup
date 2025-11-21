@@ -1,6 +1,5 @@
-import { hardCodedPrintTemplates } from '@/configs/data/print-template'
+import { hardCodedPrintTemplates } from '@/configs/print-template/templates-data'
 import { getInitialContants } from '@/utils/contants'
-import { matchPrintedImageToShapeSize } from '@/utils/helpers'
 import {
   TPlacedImage,
   TPrintedImage,
@@ -8,6 +7,8 @@ import {
   TSizeInfo,
   TTemplateFrame,
 } from '@/utils/types/global'
+import { matchPrintedImageToShapeSize } from './customize/template/TemplateFrame'
+import { assignFrameSizeByTemplateType } from '@/configs/print-template/templates-helpers'
 
 const initFramePlacedImageByPrintedImage = (
   frameIndexProperty: TTemplateFrame['index'],
@@ -52,18 +53,27 @@ const assignTemplatesToPrintArea = (
 ): TPrintTemplate[] => {
   const template2Vertical = hardCodedPrintTemplates('2-vertical') // ưu tiên: ảnh vuông, ảnh dọc
   for (const frame of template2Vertical.frames) {
-    frame.width = printAreaWidth / 2
-    frame.height = printAreaHeight
+    assignFrameSizeByTemplateType(
+      { width: printAreaWidth, height: printAreaHeight },
+      '2-vertical',
+      frame
+    )
   }
   const template2Horizon = hardCodedPrintTemplates('2-horizon') // ưu tiên: ảnh vuông
   for (const frame of template2Horizon.frames) {
-    frame.width = printAreaWidth
-    frame.height = printAreaHeight / 2
+    assignFrameSizeByTemplateType(
+      { width: printAreaWidth, height: printAreaHeight },
+      '2-horizon',
+      frame
+    )
   }
   const template1Square = hardCodedPrintTemplates('1-square') // ưu tiên: ảnh dọc, ảnh vuông
   for (const frame of template1Square.frames) {
-    frame.width = printAreaWidth
-    frame.height = printAreaHeight
+    assignFrameSizeByTemplateType(
+      { width: printAreaWidth, height: printAreaHeight },
+      '1-square',
+      frame
+    )
   }
   return [template2Vertical, template2Horizon, template1Square]
 }

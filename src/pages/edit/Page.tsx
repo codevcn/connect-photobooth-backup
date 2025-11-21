@@ -2,7 +2,7 @@ import { TBaseProduct, TPrintedImage } from '@/utils/types/global'
 import { ProductGallery } from './ProductGallery'
 import { ProductDetails } from './product/ProductDetails'
 import { Customization } from './customize/Customization'
-import { LivePreview } from './live-preview/Live-Preview'
+import { LivePreview } from './live-preview/LivePreview'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type TEditPageProps = {
@@ -14,15 +14,10 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const pickedSurface = useProductUIDataStore((s) => s.pickedSurface)
   const pickedVariant = useProductUIDataStore((s) => s.pickedVariant)
-  const handlePickProduct = useProductUIDataStore((s) => s.handlePickProduct)
 
   return (
     <div className="font-sans grid grid-cols-[1fr_6fr] h-screen gap-4">
-      <ProductGallery
-        products={products}
-        printedImages={printedImages}
-        onPickProduct={handlePickProduct}
-      />
+      <ProductGallery products={products} printedImages={printedImages} />
       <div className="NAME-main-parent grid grid-cols-[3fr_2fr] gap-4 h-screen">
         {pickedProduct && pickedVariant && pickedSurface ? (
           <LivePreview

@@ -1,21 +1,24 @@
+import { assignFrameSizeByTemplateType } from '@/configs/print-template/templates-helpers'
+import { useTemplateStore } from '@/stores/ui/template.store'
+import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { getNaturalSizeOfImage } from '@/utils/helpers'
-import { TPrintedImage, TSizeInfo } from '@/utils/types/global'
-import { useEffect, useRef } from 'react'
+import { TPrintedImage, TPrintTemplate, TSizeInfo, TTemplateFrame } from '@/utils/types/global'
+import { useEffect, useRef, useState } from 'react'
+import { matchPrintedImageToShapeSize } from '../customize/template/TemplateFrame'
+import { toast } from 'react-toastify'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type ImageProps = {
   img: TPrintedImage
   imgsContainerRef: React.RefObject<HTMLDivElement | null>
-  onAddImage: (printedImg: TPrintedImage, imgSize: TSizeInfo) => void
+  onClickImage: (printedImg: TPrintedImage) => void
 }
 
-const Image = ({ img, imgsContainerRef, onAddImage }: ImageProps) => {
+const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
   const { url, id } = img
-  const imgDataRef = useRef<TSizeInfo>(null)
 
-  const handleAddImage = () => {
-    if (imgDataRef.current) {
-      onAddImage({ ...img, id, url }, imgDataRef.current)
-    }
+  const handleClickImage = () => {
+    onClickImage({ ...img, id, url })
   }
 
   useEffect(() => {
@@ -27,7 +30,6 @@ const Image = ({ img, imgsContainerRef, onAddImage }: ImageProps) => {
         )
         if (imgEle) {
           imgEle.style.cssText = `width: ${width}px; aspect-ratio: ${width} / ${height};`
-          imgDataRef.current = { width, height }
         }
       },
       (err) => {}
@@ -36,7 +38,7 @@ const Image = ({ img, imgsContainerRef, onAddImage }: ImageProps) => {
 
   return (
     <div
-      onClick={handleAddImage}
+      onClick={handleClickImage}
       className="NAME-printed-image-box cursor-pointer relative w-fit h-fit rounded-xl overflow-hidden border-2 border-border hover:border-primary transition-colors group"
       data-img-box-id={id}
     >
@@ -49,24 +51,69 @@ const Image = ({ img, imgsContainerRef, onAddImage }: ImageProps) => {
   )
 }
 
-type PrintedImagesProps = {
-  onAddImage: (printedImg: TPrintedImage, imgSize: TSizeInfo) => void
-  printedImages: TPrintedImage[]
-  onClose: () => void
+type TDataOnOpen = {
+  pickedFrameId?: TTemplateFrame['id']
 }
 
-export const PrintedImagesModal = ({ onAddImage, printedImages, onClose }: PrintedImagesProps) => {
+type PrintedImagesProps = {
+  printedImages: TPrintedImage[]
+}
+
+export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
   const imgsContainerRef = useRef<HTMLDivElement>(null)
+  const dataOnOpenRef = useRef<TDataOnOpen>({
+    pickedFrameId: undefined,
+  })
+  const [showPrintedImagesModal, setShowPrintedImagesModal] = useState(false)
+  const addImageToFrame = useTemplateStore((s) => s.addImageToFrame)
+
+  const handleAddPrintedImageToFrame = (printedImg: TPrintedImage) => {
+    requestIdleCallback(() => {
+      const pickedPrintSurface = useProductUIDataStore.getState().pickedSurface
+      if (!pickedPrintSurface) return
+      const printAreaSize = {
+        width: pickedPrintSurface.area.printW,
+        height: pickedPrintSurface.area.printH,
+      }
+      const { pickedFrameId } = dataOnOpenRef.current
+      if (!printAreaSize) return
+      addImageToFrame(printedImg, printAreaSize, pickedFrameId)
+      setShowPrintedImagesModal(false)
+    })
+  }
+
+  const listenHideShowPrintedImagesModal = (show: boolean, frameId?: TTemplateFrame['id']) => {
+    dataOnOpenRef.current = { pickedFrameId: frameId }
+    setShowPrintedImagesModal(show)
+  }
+
+  useEffect(() => {
+    eventEmitter.on(
+      EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL,
+      listenHideShowPrintedImagesModal
+    )
+    return () => {
+      eventEmitter.off(
+        EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL,
+        listenHideShowPrintedImagesModal
+      )
+    }
+  }, [])
+
+  if (!showPrintedImagesModal) return null
 
   return (
     <div className="fixed inset-0 z-999 flex items-center justify-center">
-      <div onClick={onClose} className="bg-black/70 absolute inset-0 z-10"></div>
+      <div
+        onClick={() => setShowPrintedImagesModal(false)}
+        className="bg-black/70 absolute inset-0 z-10"
+      ></div>
       <div className="relative z-20 bg-white w-full max-w-[90vw] rounded-lg max-h-[90vh] flex flex-col transition duration-300 ease-in-out">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-b-gray-200 shadow">
           <h2 className="text-lg font-bold">Chọn ảnh bạn đã chụp</h2>
           <button
-            onClick={onClose}
+            onClick={() => setShowPrintedImagesModal(false)}
             className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors cursor-pointer mobile-touch"
             aria-label="Close"
           >
@@ -96,7 +143,7 @@ export const PrintedImagesModal = ({ onAddImage, printedImages, onClose }: Print
                 key={img.id}
                 img={img}
                 imgsContainerRef={imgsContainerRef}
-                onAddImage={onAddImage}
+                onClickImage={handleAddPrintedImageToFrame}
               />
             ))}
           </div>
