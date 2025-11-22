@@ -1,44 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { domToCanvas } from 'modern-screenshot'
-
-/**
- * Clone và scale element với CSS transform (hiệu quả hơn việc tính toán thủ công)
- */
-function cloneAndScaleElement(
-  sourceElement: HTMLElement,
-  targetContainer: HTMLElement,
-  maxWidth: number,
-  maxHeight: number
-): HTMLElement {
-  // Xóa nội dung cũ
-  targetContainer.innerHTML = ''
-
-  // Clone element
-  const clonedElement = sourceElement.cloneNode(true) as HTMLElement
-
-  // Lấy kích thước gốc
-  const sourceRect = sourceElement.getBoundingClientRect()
-  const sourceWidth = sourceRect.width
-  const sourceHeight = sourceRect.height
-
-  // Tính tỷ lệ scale để fit vào container (giữ nguyên aspect ratio)
-  const scaleX = maxWidth / sourceWidth
-  const scaleY = maxHeight / sourceHeight
-  const scale = Math.min(scaleX, scaleY, 1) // Không scale lớn hơn 1
-
-  // Apply CSS transform thay vì tính toán từng element
-  clonedElement.style.cssText = `
-    width: ${sourceWidth}px;
-    height: ${sourceHeight}px;
-    transform: scale(${scale});
-    transform-origin: top left;
-    position: relative;
-  `
-
-  targetContainer.appendChild(clonedElement)
-
-  return clonedElement
-}
+import { useHtmlToCanvas } from '@/hooks/use-html-to-canvas'
+import { cleanPrintAreaOnExtractMockupImage } from './helpers'
 
 type TMockupPreviewProps = {
   onClose: () => void
@@ -46,55 +8,60 @@ type TMockupPreviewProps = {
 
 export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const urlToRevokeRef = useRef<string | null>(null)
+  const { saveHtmlAsImage } = useHtmlToCanvas()
+  const previewImageRef = useRef<HTMLImageElement>(null)
+  const previewImageContainerRef = useRef<HTMLDivElement>(null)
 
   /**
    * Tạo preview bằng cách capture screenshot của print area
    * Sử dụng modern-screenshot để có chất lượng cao
    */
-  const generatePreview = useCallback(async () => {
+  const generatePreview = () => {
     setIsLoading(true)
     setError(null)
+    const previewImage = previewImageRef.current
+    if (!previewImage) return
+    previewImage.src = ''
+    const previewImageContainer = previewImageContainerRef.current
+    if (!previewImageContainer) return
+    previewImageContainer.style.setProperty('display', 'none')
 
     if (urlToRevokeRef.current) {
       URL.revokeObjectURL(urlToRevokeRef.current)
       urlToRevokeRef.current = null
     }
 
-    try {
-      const printAreaContainer = document.body.querySelector<HTMLElement>(
-        '.NAME-print-area-container'
-      )
-
-      if (!printAreaContainer) {
-        throw new Error('Không tìm thấy khu vực chỉnh sửa')
-      }
-
-      // Sử dụng modern-screenshot để capture với quality cao
-      const canvas = await domToCanvas(printAreaContainer, {
-        quality: 1,
-        scale: 4, // Render ở độ phân giải cao hơn
-      })
-
-      // Convert canvas to data URL
-      canvas.toBlob((blob) => {
-        if (blob) {
-          urlToRevokeRef.current = URL.createObjectURL(blob)
-          setPreviewImage(urlToRevokeRef.current)
-        }
-      })
-    } catch (err) {
-      console.error('>>> Error generating preview:', err)
-      setError('Không thể tạo bản xem trước. Vui lòng thử lại.')
-    } finally {
-      setIsLoading(false)
+    const container = document.body.querySelector<HTMLDivElement>('.NAME-print-area-container')
+    if (!container) {
+      return setError('Không tìm thấy khu vực chỉnh sửa')
     }
-  }, [])
+    const { removeMockPrintArea, printAreaContainer } =
+      cleanPrintAreaOnExtractMockupImage(container)
+    if (!printAreaContainer) {
+      return setError('Không tìm thấy khu vực in trên sản phẩm')
+    }
+    saveHtmlAsImage(
+      printAreaContainer,
+      'image/png',
+      4,
+      (imageData) => {
+        setTimeout(() => {
+          removeMockPrintArea()
+          urlToRevokeRef.current = URL.createObjectURL(imageData)
+          previewImage.src = urlToRevokeRef.current
+          previewImageContainer.style.setProperty('display', 'flex')
+          setIsLoading(false)
+        }, 100)
+      },
+      (error) => {
+        setError('Không thể tạo bản xem trước. Vui lòng thử lại.')
+      }
+    )
+  }
 
   useEffect(() => {
-    // Delay nhỏ để đảm bảo DOM đã render xong
     requestAnimationFrame(() => {
       generatePreview()
     })
@@ -104,7 +71,7 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
         URL.revokeObjectURL(urlToRevokeRef.current)
       }
     }
-  }, [generatePreview])
+  }, [])
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-99 animate-pop-in p-4">
@@ -208,15 +175,17 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
             </div>
           )}
 
-          {!isLoading && !error && previewImage && (
-            <div className="max-w-full max-h-full flex items-center justify-center">
-              <img
-                src={previewImage}
-                alt="Mockup preview"
-                className="w-full h-[calc(98vh-60px)] object-contain rounded-lg shadow-lg"
-              />
-            </div>
-          )}
+          <div
+            ref={previewImageContainerRef}
+            className="max-w-full max-h-full items-center justify-center hidden"
+          >
+            <img
+              ref={previewImageRef}
+              src={undefined}
+              alt="Mockup preview"
+              className="w-full h-[calc(98vh-60px)] object-contain rounded-lg shadow-lg"
+            />
+          </div>
         </div>
       </div>
     </div>

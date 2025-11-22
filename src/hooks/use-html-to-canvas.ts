@@ -32,6 +32,7 @@ type TUseHtlmToCanvasReturn = {
   saveHtmlAsImage: (
     htmContainer: HTMLDivElement,
     desiredImgMimeType: string | null,
+    scale: number | undefined,
     onSaved: (imgData: Blob, canvas: HTMLCanvasElement) => void,
     onError: (error: Error) => void
   ) => void
@@ -58,13 +59,13 @@ export const useHtmlToCanvas = (): TUseHtlmToCanvasReturn => {
   const saveHtmlAsImage = async (
     htmContainer: HTMLDivElement,
     desiredImgMimeType: string | null,
+    upScale: number | undefined,
     onSaved: (imgData: Blob, canvas: HTMLCanvasElement) => void,
     onError: (error: Error) => void
   ) => {
     requestIdleCallback(async () => {
-      console.log('>>> editor:', htmContainer)
       try {
-        const scale: number = 8
+        const scale: number = upScale || 8
         const canvas = await domToCanvas(htmContainer, {
           scale: scale,
           quality: 1,

@@ -4,7 +4,7 @@ import { create } from 'zustand'
 type TUseElementStore = {
   selectedElement: {
     elementId: string
-    element: HTMLElement
+    rootElement: HTMLElement
     elementType: TElementType
     elementURL?: string
   } | null
@@ -14,7 +14,7 @@ type TUseElementStore = {
   // Actions
   selectElement: (
     elementId: string,
-    element: HTMLElement,
+    rootElement: HTMLElement,
     elementType: TElementType,
     elementURL?: string
   ) => void
@@ -52,8 +52,8 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
       selectedElement: null,
     })
   },
-  selectElement: (elementId, element, elementType, elementURL) => {
-    set({ selectedElement: { element, elementType, elementId, elementURL } })
+  selectElement: (elementId, rootElement, elementType, elementURL) => {
+    set({ selectedElement: { rootElement, elementType, elementId, elementURL } })
   },
   cancelSelectingElement: () => {
     set({ selectedElement: null })

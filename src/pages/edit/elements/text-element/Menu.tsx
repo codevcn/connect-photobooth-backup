@@ -1,285 +1,15 @@
 import { useGlobalContext } from '@/contexts/global-context'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import {
-  TElementType,
-  TFontName,
-  TFonts,
-  TLoadFontStatus,
-  TTextVisualState,
-} from '@/utils/types/global'
+import { TElementType, TFontName, TFonts, TTextVisualState } from '@/utils/types/global'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { HexColorPicker } from 'react-colorful'
-import { useDebouncedCallback } from '@/hooks/use-debounce'
-import { getInitialContants } from '@/utils/contants'
 import { useFontLoader } from '@/hooks/use-font'
+import { ColorPickerModal } from './ColorPicker'
+import { TextFontPicker } from './FontPicker'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TPropertyType = 'font-size' | 'angle' | 'posXY' | 'zindex-up' | 'zindex-down'
 
-interface ColorPickerModalProps {
-  show: boolean
-  onHideShow: (show: boolean) => void
-  onColorChange: (color: string) => void
-  inputText: string
-}
-
-const ColorPickerModal = ({
-  show,
-  onHideShow,
-  onColorChange,
-  inputText,
-}: ColorPickerModalProps) => {
-  const [currentColor, setCurrentColor] = useState<string>('#fe6e87')
-  const inputRef = useRef<HTMLInputElement | null>(null)
-
-  // Hàm convert tên màu CSS sang hex
-  const convertColorToHex = (color: string): string => {
-    // Tạo element tạm để browser convert màu
-    const tempElement = document.createElement('div')
-    tempElement.style.color = color
-    document.body.appendChild(tempElement)
-
-    const computedColor = window.getComputedStyle(tempElement).color
-    document.body.removeChild(tempElement)
-
-    // Convert rgb/rgba sang hex
-    const match = computedColor.match(/\d+/g)
-    if (match && match.length >= 3) {
-      const r = parseInt(match[0]).toString(16).padStart(2, '0')
-      const g = parseInt(match[1]).toString(16).padStart(2, '0')
-      const b = parseInt(match[2]).toString(16).padStart(2, '0')
-      return `#${r}${g}${b}`
-    }
-
-    return color
-  }
-
-  const handleColorPickerChange = (color: string) => {
-    setCurrentColor(color)
-    onColorChange(color)
-    if (inputRef.current) {
-      inputRef.current.value = color
-    }
-  }
-
-  const validateColorValue = (value: string): boolean => {
-    const isValidHex = /^#[0-9A-F]{6}$/i.test(value)
-    const isValidShortHex = /^#[0-9A-F]{3}$/i.test(value)
-    const isNamedColor = /^[a-z]+$/i.test(value)
-    return isValidHex || isValidShortHex || isNamedColor
-  }
-
-  const handleInputChange = useDebouncedCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.trim()
-    if (validateColorValue(value)) {
-      // Convert sang hex để HexColorPicker hiểu được
-      const hexColor = convertColorToHex(value)
-      setCurrentColor(hexColor)
-      onColorChange(value) // Gửi giá trị gốc (có thể là tên màu)
-    }
-  }, 300)
-
-  useEffect(() => {
-    const inputElement = inputRef.current
-    if (inputElement) {
-      inputElement.value = currentColor
-    }
-  }, [currentColor])
-
-  if (!show) return null
-
-  return (
-    <div className="NAME-color-picker-modal fixed inset-0 flex items-center justify-center z-50 animate-pop-in">
-      <div onClick={() => onHideShow(false)} className="bg-black/50 absolute inset-0 z-10"></div>
-      <div className="bg-white rounded-lg p-4 w-full mx-4 shadow-2xl max-h-[95vh] overflow-y-auto relative z-20">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-800">Chọn màu chữ</h3>
-          <button
-            onClick={() => onHideShow(false)}
-            className="text-gray-800 active:scale-90 w-8 h-8 flex items-center justify-center rounded-full transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-x-icon lucide-x"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Color Picker */}
-        <div className="flex justify-center mb-4">
-          <HexColorPicker
-            style={{ width: '100%' }}
-            color={currentColor}
-            onChange={handleColorPickerChange}
-          />
-        </div>
-
-        {/* Current Color Display */}
-        <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Xem trước màu chữ:
-          </label>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 bg-gray-50 rounded-lg border-2 border-gray-300 p-2 text-center">
-              <p className="text-3xl font-bold" style={{ color: currentColor }}>
-                {inputText}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Input Color */}
-        <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Nhập mã màu:</label>
-          <input
-            type="text"
-            ref={inputRef}
-            onChange={handleInputChange}
-            placeholder="Nhập tên màu (red / pink / ...) hoặc mã màu hex (#fe6e87)"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all"
-          />
-        </div>
-
-        {/* Footer */}
-        <div className="text-center">
-          <button
-            onClick={() => onHideShow(false)}
-            className="bg-main-cl hover:opacity-90 active:scale-95 text-white font-semibold px-6 py-2 rounded-lg transition-all w-full"
-          >
-            Xong
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface TextFontPickerProps {
-  show: boolean
-  onHideShow: (show: boolean) => void
-  onSelectFont: (fontFamily: string) => void
-  localFontNames?: TFontName[]
-  loadedStatus: TLoadFontStatus
-}
-
-const TextFontPicker = ({
-  show,
-  onHideShow,
-  onSelectFont,
-  loadedStatus,
-  localFontNames,
-}: TextFontPickerProps) => {
-  const [searchKeyword, setSearchKeyword] = useState<string>('')
-
-  const onSearchFont = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(e.target.value)
-  }
-
-  const handleSelectFont = (fontFamily: string) => {
-    onSelectFont(fontFamily)
-    onHideShow(false)
-  }
-
-  const filteredFonts = useMemo(
-    () =>
-      localFontNames?.filter((font) => font.toLowerCase().includes(searchKeyword.toLowerCase())) ||
-      [],
-    [localFontNames, searchKeyword]
-  )
-
-  const isLoading = loadedStatus === 'loading'
-
-  if (!show) return null
-
-  return (
-    <div className="NAME-text-font-picker fixed inset-0 flex items-center justify-center z-50 animate-pop-in">
-      <div onClick={() => onHideShow(false)} className="bg-black/50 absolute inset-0 z-10"></div>
-      <div className="bg-pink-100 rounded-lg p-4 max-w-md w-full mx-4 max-h-[90vh] flex flex-col relative z-20">
-        {/* Header với input search và nút đóng */}
-        <div className="flex items-center gap-2 mb-4">
-          <input
-            type="text"
-            onChange={onSearchFont}
-            placeholder="Tìm font chữ..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-pink-500"
-            disabled={isLoading}
-          />
-          <button
-            onClick={() => onHideShow(false)}
-            className="text-gray-500 hover:text-gray-700 text-xl font-bold w-8 h-8 flex items-center justify-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-x-icon lucide-x"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="overflow-y-auto grow">
-          {/* Tiêu đề */}
-          <div className="text-center mb-2">
-            <h3 className="text-base font-bold text-gray-800 mb-2">Top 10 font chữ ưa thích</h3>
-            <hr className="border-gray-400" />
-          </div>
-
-          {/* Loading State */}
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center py-12 gap-3">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-pink-200 border-t-pink-500"></div>
-              <p className="text-gray-600 font-medium">Đang tải fonts...</p>
-            </div>
-          )}
-
-          {/* Danh sách font */}
-          {!isLoading && (
-            <div className="flex-1 space-y-3">
-              {filteredFonts.map((fontFamily) => (
-                <div
-                  key={fontFamily}
-                  onClick={() => handleSelectFont(fontFamily)}
-                  className="cursor-pointer hover:bg-pink-200 p-3 rounded-lg transition-colors"
-                >
-                  <div className="text-sm text-gray-600 mb-1">{fontFamily}</div>
-                  <div className="text-xl text-black" style={{ fontFamily }}>
-                    Xin chào đây là font <span>{fontFamily}</span>
-                  </div>
-                </div>
-              ))}
-
-              {filteredFonts.length === 0 && searchKeyword && (
-                <div className="text-center py-8 text-gray-500">Không tìm thấy font nào</div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface PrintedImageMenuProps {
+type PrintedImageMenuProps = {
   elementId: string
   onClose: () => void
 }
@@ -287,9 +17,11 @@ interface PrintedImageMenuProps {
 export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) => {
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false)
   const [showTextFontPicker, setShowTextFontPicker] = useState<boolean>(false)
-  const { pickedElementRoot } = useGlobalContext()
+  const pickedElementRoot = useEditedElementStore((s) => s.selectedElement?.rootElement)
+  console.log('>>> pickedElementRoot :', pickedElementRoot)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const [inputText, setInputText] = useState<string>()
+  console.log('>>> inputText :', inputText)
   const [localFontNames, fonts] = useMemo<[TFontName[], TFonts]>(() => {
     const fonts: TFonts = {
       'Be Vietnam Pro': { loadFontURL: '/fonts/Be_Vietnam_Pro/BeVietnamPro-Regular.ttf' },
@@ -424,11 +156,13 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
     }
   }
 
-  const initContentField = () => {
+  const initInputText = () => {
     const textElement = pickedElementRoot?.querySelector<HTMLElement>(
       '.NAME-displayed-text-content'
     )
+    console.log('>>> 111 vcn:')
     if (textElement) {
+      console.log('>>> 222 vcn:')
       setInputText(textElement.textContent)
     }
   }
@@ -456,26 +190,6 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
       undefined,
       fontFamily
     )
-  }
-
-  const onClickButton = (type: TPropertyType) => {
-    if (type === 'zindex-down') {
-      handleChangeProperties(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        -getInitialContants<number>('ELEMENT_ZINDEX_STEP')
-      )
-    } else if (type === 'zindex-up') {
-      handleChangeProperties(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        getInitialContants<number>('ELEMENT_ZINDEX_STEP')
-      )
-    }
   }
 
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
@@ -508,7 +222,7 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
     }
   }
 
-  useEffect(() => {
+  const updateContentInputOnInputTextChange = () => {
     const textElement = pickedElementRoot?.querySelector<HTMLElement>(
       '.NAME-displayed-text-content'
     )
@@ -520,53 +234,32 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
         contentInput.value = textElement.textContent
       }
     }
-  }, [inputText])
+  }
 
   useEffect(() => {
-    listenElementProps(elementId, 'text')
-  }, [elementId])
+    updateContentInputOnInputTextChange()
+  }, [inputText])
 
   useEffect(() => {
     eventEmitter.on(EInternalEvents.CLICK_ON_PAGE, listenClickOnPage)
     eventEmitter.on(EInternalEvents.SYNC_ELEMENT_PROPS, listenElementProps)
-    initContentField()
+    initInputText()
     loadAllAvailableFonts()
+    listenElementProps(elementId, 'text')
     return () => {
       eventEmitter.off(EInternalEvents.CLICK_ON_PAGE, listenClickOnPage)
       eventEmitter.off(EInternalEvents.SYNC_ELEMENT_PROPS, listenElementProps)
     }
-  }, [])
+  }, [elementId])
 
   return (
-    <>
-      <div className="absolute top-1/2 -translate-y-1/2 left-1 flex items-center z-30">
-        <button
-          onClick={onClose}
-          className="group flex flex-nowrap items-center justify-center shadow-md outline-2 outline-white  font-bold bg-main-cl gap-1 text-white active:scale-90 transition rounded p-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-x-icon lucide-x"
-          >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <div
-        ref={menuRef}
-        className="NAME-menu-section STYLE-hide-scrollbar relative px-10 overflow-x-auto max-w-full flex flex-nowrap items-stretch justify-start md:justify-center gap-y-1 gap-x-1 py-1 rounded-md border border-gray-400/30 border-solid"
-      >
-        <div className="NAME-form-group NAME-form-content col-span-2 flex items-center bg-main-cl rounded px-1 py-0.5 shadow">
+    <div
+      ref={menuRef}
+      className="NAME-menu-section NAME-menu-text-element STYLE-hide-scrollbar w-full mt-2"
+    >
+      <h3 className="mt-3 mb-1 text-sm font-bold">Tùy chỉnh</h3>
+      <div ref={menuRef} className="grid grid-cols-3 rounded-md gap-2 text-white">
+        <div className="NAME-form-group NAME-form-content col-span-3 flex items-center bg-main-cl rounded px-1 h-9 shadow">
           <div className="min-w-[22px]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -583,16 +276,16 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
               <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
             </svg>
           </div>
-          <div className="flex gap-1 ml-1">
+          <div className="flex gap-1 ml-1 grow">
             <input
+              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
               placeholder="Nhập nội dung..."
               onKeyDown={(e) => catchEnter(e, 'font-size')}
               onChange={onContentFieldChange}
-              className="border rounded px-1 py-0.5 text-base outline-none w-10"
             />
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-fontSize flex items-center bg-main-cl rounded px-1 py-0.5 shadow">
+        <div className="NAME-form-group NAME-form-fontSize flex items-center bg-main-cl rounded px-1 h-9 shadow">
           <div className="min-w-[22px]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -614,14 +307,14 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
           </div>
           <div className="flex gap-1 ml-1 grow">
             <input
+              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
               type="text"
               placeholder="Cỡ chữ, VD: 18"
               onKeyDown={(e) => catchEnter(e, 'font-size')}
-              className="border rounded px-1 py-0.5 text-base outline-none w-10"
             />
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-angle flex items-center bg-main-cl rounded px-1 py-0.5 shadow">
+        <div className="NAME-form-group NAME-form-angle flex items-center bg-main-cl rounded px-1 h-9 shadow">
           <div className="min-w-[22px]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -643,15 +336,15 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
           </div>
           <div className="flex gap-1 items-center ml-1 grow">
             <input
+              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
               type="text"
               placeholder="Độ xoay, VD: 22"
               onKeyDown={(e) => catchEnter(e, 'angle')}
-              className="border rounded px-1 py-0.5 text-base outline-none w-10"
             />
             <span className="text-white text-base font-bold">độ</span>
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-position flex items-center bg-main-cl rounded px-1 py-0.5 shadow">
+        <div className="NAME-form-group NAME-form-position flex items-center bg-main-cl rounded px-1 h-9 shadow">
           <div className="min-w-[22px]">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -675,45 +368,43 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
           </div>
           <div className="flex ml-1 gap-1">
             <input
+              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-full"
               type="text"
               placeholder="X, VD: 100"
               onKeyDown={(e) => catchEnter(e, 'posXY')}
-              className="border rounded px-1 py-0.5 text-base outline-none w-10"
             />
             <input
+              className="text-black bg-white rounded px-1 py-0.5 text-base outline-none w-10"
               type="text"
               placeholder="Y, VD: 100"
               onKeyDown={(e) => catchEnter(e, 'posXY')}
-              className="border rounded px-1 py-0.5 text-base outline-none w-10"
             />
           </div>
         </div>
         <div className="NAME-form-group NAME-form-color flex items-stretch justify-center gap-1 rounded">
           <div
             onClick={() => setShowColorPicker((pre) => !pre)}
-            className="flex items-center justify-center cursor-pointer gap-1 active:scale-90 transition bg-main-cl rounded shadow px-1 h-9"
+            className="flex items-center justify-center cursor-pointer w-full gap-1 mobile-touch bg-main-cl rounded shadow px-1 h-9"
           >
             <div className="flex gap-1 mx-1">
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-palette-icon lucide-palette text-white"
-                >
-                  <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
-                  <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-                  <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-                  <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-                  <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-                </svg>
-              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-palette-icon lucide-palette text-white"
+              >
+                <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
+                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+              </svg>
             </div>
           </div>
           <ColorPickerModal
@@ -726,7 +417,7 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
         <div className="NAME-form-group NAME-form-font flex items-stretch justify-center gap-1 relative rounded">
           <div
             onClick={() => setShowTextFontPicker((pre) => !pre)}
-            className="flex items-center justify-center cursor-pointer gap-1 active:scale-90 transition bg-main-cl rounded shadow px-1 h-9"
+            className="flex items-center justify-center cursor-pointer gap-1 w-full mobile-touch bg-main-cl rounded shadow px-1 h-9"
           >
             <div className="flex gap-1 mx-1">
               <div>
@@ -753,31 +444,31 @@ export const TextElementMenu = ({ elementId, onClose }: PrintedImageMenuProps) =
             onSelectFont={handleSelectFont}
             loadedStatus={status}
             localFontNames={localFontNames}
+            inputText={inputText || ''}
           />
         </div>
-      </div>
-
-      <div className="z-20 absolute top-1/2 -translate-y-1/2 right-1 flex items-center">
-        <button
-          onClick={handleClickCheck}
-          className="group flex flex-nowrap items-center justify-center shadow-md outline-2 outline-white  font-bold bg-main-cl gap-1 text-white active:scale-90 transition rounded p-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-check-icon lucide-check"
+        <div className="flex items-center">
+          <button
+            onClick={handleClickCheck}
+            className="group w-full h-8 flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded p-1"
           >
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-check-icon lucide-check"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   )
 }

@@ -1,14 +1,20 @@
 import { TPrintedImage } from '@/utils/types/global'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { PrintedImagesModal } from './PrintedImagesModal'
 import { createPortal } from 'react-dom'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
+import { TemplateFrameMenu } from '../customize/template/TemplateFrameMenu'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TPrintedImagesProps = {
   printedImages: TPrintedImage[]
 }
 
 export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => {
+  const cancelSelectingElement = useEditedElementStore((s) => s.cancelSelectingElement)
+  const selectedElement = useEditedElementStore((s) => s.selectedElement)
+  const { elementId, elementType, elementURL } = selectedElement || {}
+
   const displayedImage = useMemo<TPrintedImage | null>(() => {
     return printedImages.length > 0 ? printedImages[0] : null
   }, [printedImages])
@@ -16,6 +22,17 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
   const showPrintedImagesModal = () => {
     eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true)
   }
+
+  const scrollToSelectedElement = () => {
+    if (elementType !== 'template-frame') return
+    document.body
+      .querySelector('.NAME-menu-template-frame')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+
+  useEffect(() => {
+    scrollToSelectedElement()
+  }, [elementId, elementType, elementURL])
 
   return (
     <div className="mt-6 w-full">
@@ -37,6 +54,14 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
         </div>
         {createPortal(<PrintedImagesModal printedImages={printedImages} />, document.body)}
       </div>
+
+      {elementId && elementType === 'template-frame' && elementURL && (
+        <TemplateFrameMenu
+          frameId={elementId}
+          onClose={cancelSelectingElement}
+          printedImageURL={elementURL}
+        />
+      )}
     </div>
   )
 }

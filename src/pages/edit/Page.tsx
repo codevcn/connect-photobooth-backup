@@ -39,12 +39,17 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       const target = e.target as HTMLElement | null
       if (target) {
         if (
-          !target.closest('.NAME-root-element') &&
-          !target.closest('.NAME-menu-section') &&
-          !target.closest('.NAME-text-font-picker') &&
-          !target.closest('.NAME-color-picker-modal') &&
-          !target.closest('.NAME-template-frame') &&
-          !target.closest('.NAME-crop-element-modal')
+          !(
+            target.closest('.NAME-root-element') ||
+            target.closest('.NAME-menu-section') ||
+            target.closest('.NAME-text-font-picker') ||
+            target.closest('.NAME-color-picker-modal') ||
+            target.closest('.NAME-template-frame') ||
+            target.closest('.NAME-crop-element-modal') ||
+            target.closest('.NAME-printed-images-modal') ||
+            target.closest('.NAME-remove-printed-element-modal') ||
+            target.closest('.NAME-element-interaction-title')
+          )
         ) {
           cancelSelectingElement()
         }
@@ -57,7 +62,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   }, [])
 
   return (
-    <div className="font-sans grid grid-cols-[1fr_6fr] h-screen gap-4">
+    <div className="font-sans grid grid-cols-[1fr_6fr] h-screen gap-4 bg-white z-10 relative">
       <AddingToCartLoadingModal />
       <ProductGallery products={products} printedImages={printedImages} />
       <div className="NAME-main-parent grid grid-cols-[3fr_2fr] gap-4 h-screen">

@@ -103,7 +103,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
   if (!showPrintedImagesModal) return null
 
   return (
-    <div className="fixed inset-0 z-999 flex items-center justify-center">
+    <div className="NAME-printed-images-modal fixed inset-0 z-999 flex items-center justify-center">
       <div
         onClick={() => setShowPrintedImagesModal(false)}
         className="bg-black/70 absolute inset-0 z-10"

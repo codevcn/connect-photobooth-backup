@@ -7,7 +7,7 @@ import { typeToObject } from '@/utils/helpers'
 const MAX_TEXT_FONT_SIZE: number = 1000
 const MIN_TEXT_FONT_SIZE: number = 5
 
-interface TextElementProps {
+type TextElementProps = {
   element: TTextVisualState
   canvasAreaRef: React.RefObject<HTMLDivElement | null>
   mountType: 'new' | 'from-saved'

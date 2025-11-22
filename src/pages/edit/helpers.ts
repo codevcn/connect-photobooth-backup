@@ -195,3 +195,43 @@ export const initTheBestTemplateForPrintedImages = (
   // trả về template đầu tiên nếu không tìm thấy cái nào phù hợp
   return handleFallbackTemplate(assignFallbackTemplateToPrintArea(printAreaSize), printedImages[0])
 }
+
+type TCleanPrintAreaResult = {
+  printAreaContainer: HTMLDivElement | null
+  allowedPrintArea: HTMLDivElement | null
+  removeMockPrintArea: () => void
+}
+
+export const cleanPrintAreaOnExtractMockupImage = (
+  printAreaContainer: HTMLDivElement
+): TCleanPrintAreaResult => {
+  const clonedPrintAreaContainer = printAreaContainer.cloneNode(true) as HTMLDivElement
+  clonedPrintAreaContainer.style.position = 'fixed'
+  clonedPrintAreaContainer.style.zIndex = '-10'
+  clonedPrintAreaContainer.style.width = `${printAreaContainer.getBoundingClientRect().width}px`
+  clonedPrintAreaContainer.style.height = `${printAreaContainer.getBoundingClientRect().height}px`
+  document.body.prepend(clonedPrintAreaContainer)
+  clonedPrintAreaContainer
+    .querySelector<HTMLElement>('.NAME-out-of-bounds-overlay-warning')
+    ?.remove()
+  const allowedPrintArea = clonedPrintAreaContainer.querySelector<HTMLDivElement>(
+    '.NAME-print-area-allowed'
+  )
+  allowedPrintArea?.style.setProperty('border', 'none')
+  allowedPrintArea?.style.setProperty('background-color', 'transparent')
+  const framesDisplayer = allowedPrintArea?.querySelector<HTMLElement>('.NAME-frames-displayer')
+  framesDisplayer?.style.setProperty('background-color', 'transparent')
+  framesDisplayer?.style.setProperty('border', 'none')
+  for (const frame of allowedPrintArea?.querySelectorAll<HTMLElement>('.NAME-template-frame') ||
+    []) {
+    frame.style.setProperty('border', 'none')
+    frame.querySelector<HTMLElement>('.NAME-plus-icon-wrapper')?.remove()
+  }
+  return {
+    printAreaContainer: clonedPrintAreaContainer,
+    allowedPrintArea: allowedPrintArea,
+    removeMockPrintArea: () => {
+      clonedPrintAreaContainer?.remove()
+    },
+  }
+}

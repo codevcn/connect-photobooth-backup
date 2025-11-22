@@ -16,7 +16,6 @@ const CropImageModalWrapper = ({ frameId, imageUrl }: TCropElementModalWrapperPr
   const [showCropModal, setShowCropModal] = useState<boolean>(false)
 
   const handleCropComplete = (_: string, croppedImageUrl: string) => {
-    console.log('>>> cropped img r:', croppedImageUrl)
     useTemplateStore.getState().updateFrameImageURL(croppedImageUrl, frameId)
     setShowCropModal(false)
   }
@@ -25,7 +24,7 @@ const CropImageModalWrapper = ({ frameId, imageUrl }: TCropElementModalWrapperPr
     <>
       <button
         onClick={() => setShowCropModal(true)}
-        className="group flex flex-nowrap items-center justify-center font-bold gap-1 text-white hover:bg-white hover:text-main-cl rounded p-1 transition-colors"
+        className="group flex flex-nowrap items-center justify-center font-bold gap-1 text-inherit rounded p-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -66,10 +65,10 @@ type TRemovePrintedElementFromFrameProps = {
 
 const RemovePrintedElementFromFrame = ({ frameId }: TRemovePrintedElementFromFrameProps) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false)
-  const removeFrameImage = useTemplateStore((s) => s.removeFrameImage)
 
   const handleRemoveFrameImage = () => {
-    removeFrameImage(frameId)
+    useTemplateStore.getState().removeFrameImage(frameId)
+    useEditedElementStore.getState().cancelSelectingElement()
     setShowDeleteConfirm(false)
   }
 
@@ -77,7 +76,7 @@ const RemovePrintedElementFromFrame = ({ frameId }: TRemovePrintedElementFromFra
     <>
       <button
         onClick={() => setShowDeleteConfirm(true)}
-        className="group flex flex-nowrap items-center justify-center font-bold gap-1 text-white hover:bg-white hover:text-main-cl rounded p-1 transition-colors"
+        className="group flex flex-nowrap items-center justify-center font-bold gap-1 text-inherit rounded p-1"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +101,7 @@ const RemovePrintedElementFromFrame = ({ frameId }: TRemovePrintedElementFromFra
 
       {showDeleteConfirm &&
         createPortal(
-          <div className="NAME-del fixed inset-0 flex items-center justify-center z-99">
+          <div className="NAME-remove-printed-element-modal fixed inset-0 flex items-center justify-center z-99">
             <div
               className="bg-black/50 z-10 absolute inset-0"
               onClick={() => setShowDeleteConfirm(false)}
@@ -159,7 +158,7 @@ const ChangePrintedImage = ({ frameId }: TChangePrintedImageProps) => {
   return (
     <button
       onClick={handleShowPrintedImagesModal}
-      className="group flex flex-nowrap items-center justify-center font-bold gap-1 text-white hover:bg-white hover:text-main-cl rounded p-1 transition-colors"
+      className="group flex flex-nowrap items-center justify-center font-bold gap-1 text-inherit rounded p-1"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +192,7 @@ type PrintedImageMenuProps = {
 
 export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: PrintedImageMenuProps) => {
   const menuRef = useRef<HTMLDivElement | null>(null)
-  const selectedElement = useEditedElementStore((s) => s.selectedElement)
+  const rootElement = useEditedElementStore((s) => s.selectedElement?.rootElement)
 
   const validateInputsPositiveNumber = (
     inputs: HTMLInputElement[],
@@ -294,7 +293,7 @@ export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: Printed
 
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
     if (type !== 'printed-image' || frameId !== idOfElement) return
-    const dataset = JSON.parse(selectedElement?.element.getAttribute('data-visual-state') || '{}')
+    const dataset = JSON.parse(rootElement?.getAttribute('data-visual-state') || '{}')
     const { scale, angle, position } = dataset as TPrintedImageVisualState
     const { x: posX, y: posY } = position || {}
     const menuSection = menuRef.current
@@ -322,76 +321,50 @@ export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: Printed
 
   useEffect(() => {
     listenElementProps(frameId, 'printed-image')
-  }, [frameId])
-
-  useEffect(() => {
     eventEmitter.on(EInternalEvents.SYNC_ELEMENT_PROPS, listenElementProps)
     return () => {
       eventEmitter.off(EInternalEvents.SYNC_ELEMENT_PROPS, listenElementProps)
     }
-  }, [])
+  }, [frameId])
 
   return (
-    <>
-      <div className="absolute top-1/2 -translate-y-1/2 left-1 flex items-center z-30">
-        <button
-          onClick={onClose}
-          className="group flex flex-nowrap items-center justify-center shadow-md outline-2 outline-white font-bold bg-main-cl gap-1 text-white active:scale-90 transition rounded p-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-x-icon lucide-x"
-          >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <div
-        ref={menuRef}
-        className="NAME-menu-section STYLE-hide-scrollbar z-10 px-10 relative overflow-x-auto flex flex-nowrap items-stretch justify-start md:justify-center gap-y-1 gap-x-1 py-1 rounded-md border border-gray-400/30 border-solid"
-      >
-        <div className="NAME-form-group NAME-form-crop min-w-[100px] col-span-2 flex shrink-0 items-center justify-center bg-main-cl rounded px-1 py-0.5 shadow">
+    <div
+      ref={menuRef}
+      className="NAME-menu-section NAME-menu-template-frame STYLE-hide-scrollbar w-full mt-2"
+    >
+      <h3 className="mt-3 mb-1 text-sm font-bold">Tùy chỉnh</h3>
+      <div className="grid grid-cols-3 rounded-md gap-2">
+        <div className="NAME-form-group NAME-form-crop mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 h-9 w-full shadow">
           <CropImageModalWrapper frameId={frameId} imageUrl={printedImageURL} />
         </div>
-        <div className="NAME-form-group NAME-form-crop min-w-[100px] col-span-2 flex shrink-0 items-center justify-center bg-main-cl rounded px-1 py-0.5 shadow">
+        <div className="NAME-form-group NAME-form-crop mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 h-9 w-full shadow">
           <RemovePrintedElementFromFrame frameId={frameId} />
         </div>
-        <div className="NAME-form-group NAME-form-crop min-w-[100px] col-span-2 flex shrink-0 items-center justify-center bg-main-cl rounded px-1 py-0.5 shadow">
+        <div className="NAME-form-group NAME-form-crop mobile-touch cursor-pointer border-2 border-main-cl text-white hover:bg-white hover:text-main-cl flex items-center justify-center bg-main-cl rounded px-1 h-9 w-full shadow">
           <ChangePrintedImage frameId={frameId} />
         </div>
-      </div>
-
-      <div className="absolute top-1/2 -translate-y-1/2 right-1 flex items-center z-20">
-        <button
-          onClick={onClose}
-          className="group flex flex-nowrap items-center justify-center shadow-md outline-white outline font-bold bg-main-cl gap-1 text-white active:scale-90 transition rounded p-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-check-icon lucide-check"
+        <div className="flex items-center justify-center mobile-touch cursor-pointer border-2 border-main-cl z-30 text-white bg-main-cl rounded hover:bg-white hover:text-main-cl w-full">
+          <button
+            onClick={onClose}
+            className="group flex items-center justify-center h-7 w-full text-inherit rounded p-1"
           >
-            <path d="M20 6 9 17l-5-5" />
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-check-icon lucide-check"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   )
 }

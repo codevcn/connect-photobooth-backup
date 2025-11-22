@@ -29,7 +29,7 @@ export const TemplatesPicker = ({ printedImagesCount, classNames }: TTemplatePic
             key={template.id}
             onClick={() => pickTemplate(template)}
             className={cn(
-              'flex items-center justify-center border border-gray-300 rounded p-1 bg-white mobile-touch cursor-pointer transition',
+              'flex items-center justify-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition',
               classNames?.templateItem
             )}
           >

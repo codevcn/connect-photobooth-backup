@@ -1,6 +1,7 @@
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { getInitialContants } from '@/utils/contants'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { TextElementMenu } from './Menu'
 
 type EditorModalProps = {
   onClose: () => void
@@ -104,37 +105,69 @@ const EditorModal = ({ onClose }: EditorModalProps) => {
   )
 }
 
-export const TextEditor = () => {
+const EditorModalWrapper = () => {
   const [showEditorModal, setShowEditorModal] = useState(false)
 
   return (
     <>
-      <div className="mt-4 w-fit">
-        <h3 className="mb-1 font-bold text-gray-800">Thêm văn bản</h3>
-        <button
-          onClick={() => setShowEditorModal(true)}
-          className="flex flex-col items-center -rotate-6 gap-2 cursor-pointer mobile-touch p-3 bg-white rounded-md active:bg-light-orange-cl touch-target transition"
+      <button
+        onClick={() => setShowEditorModal(true)}
+        className="flex flex-col items-center -rotate-6 gap-2 cursor-pointer mobile-touch p-3 bg-white rounded-md active:bg-light-orange-cl touch-target transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-type-icon lucide-type text-main-cl"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-type-icon lucide-type text-main-cl"
-          >
-            <path d="M12 4v16" />
-            <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
-            <path d="M9 20h6" />
-          </svg>
-        </button>
-      </div>
+          <path d="M12 4v16" />
+          <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
+          <path d="M9 20h6" />
+        </svg>
+      </button>
 
       {showEditorModal && <EditorModal onClose={() => setShowEditorModal(false)} />}
     </>
+  )
+}
+
+const TextMenuWrapper = () => {
+  const selectedElement = useEditedElementStore((state) => state.selectedElement)
+  const { elementType, rootElement, elementId } = selectedElement || {}
+  const cancelSelectingElement = useEditedElementStore((state) => state.cancelSelectingElement)
+
+  const scrollToSelectedElement = () => {
+    if (elementType !== 'text') return
+    document.body
+      .querySelector('.NAME-menu-text-element')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+
+  useEffect(() => {
+    scrollToSelectedElement()
+  }, [elementId, elementType, rootElement])
+
+  return (
+    <>
+      {elementType === 'text' && rootElement && elementId && (
+        <TextElementMenu elementId={elementId} onClose={cancelSelectingElement} />
+      )}
+    </>
+  )
+}
+
+export const TextEditor = () => {
+  return (
+    <div className="mt-6 w-fit">
+      <h3 className="mb-1 font-bold text-gray-800">Thêm văn bản</h3>
+      <EditorModalWrapper />
+      <TextMenuWrapper />
+    </div>
   )
 }

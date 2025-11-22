@@ -16,6 +16,7 @@ import {
 } from '@/utils/types/global'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
+import { cleanPrintAreaOnExtractMockupImage } from '../helpers'
 
 type TAddToCartHandlerProps = {
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
@@ -29,30 +30,6 @@ export const AddToCartHandler = ({
   const { sessionId } = useGlobalContext()
   const { collectMockupVisualStates } = useVisualStatesCollector()
   const { saveHtmlAsImage, saveHtmlAsImageWithDesiredSize } = useHtmlToCanvas()
-
-  const cleanPrintAreaBeforeAddToCart = () => {
-    const printArea = printAreaContainerRef.current
-      ?.querySelector<HTMLDivElement>('.NAME-print-area-allowed')
-      ?.cloneNode(true) as HTMLDivElement | null
-    if (printArea) {
-      printArea.style.zIndex = '-1'
-      document.body.prepend(printArea)
-    }
-    printArea?.style.setProperty('border', 'none')
-    const framesDisplayer = printArea?.querySelector<HTMLElement>('.NAME-frames-displayer')
-    framesDisplayer?.style.setProperty('background-color', 'transparent')
-    framesDisplayer?.style.setProperty('border', 'none')
-    for (const frame of printArea?.querySelectorAll<HTMLElement>('.NAME-template-frame') || []) {
-      frame.querySelector<HTMLElement>('.NAME-plus-icon-wrapper')?.remove()
-    }
-    return {
-      editor: printAreaContainerRef.current,
-      printArea,
-      removeMockPrintArea: () => {
-        printArea?.remove()
-      },
-    }
-  }
 
   const validateBeforeAddToCart = (): [
     string | null,
@@ -82,16 +59,18 @@ export const AddToCartHandler = ({
     if (message) {
       return onError(new Error(message))
     }
-    if (!pickedVariant || !pickedProduct || !pickedSurface) return
-    const { editor, printArea, removeMockPrintArea } = cleanPrintAreaBeforeAddToCart()
-    if (!editor || !printArea) {
+    if (!pickedVariant || !pickedProduct || !pickedSurface || !printAreaContainerRef.current) return
+    const { printAreaContainer, allowedPrintArea, removeMockPrintArea } =
+      cleanPrintAreaOnExtractMockupImage(printAreaContainerRef.current)
+    if (!printAreaContainer || !allowedPrintArea) {
       return onError(new Error('Không tìm thấy khu vực in trên sản phẩm'))
     }
     const setCartCount = useProductUIDataStore.getState().setCartCount
     const imgMimeType: TImgMimeType = 'image/png'
     saveHtmlAsImage(
-      editor,
+      printAreaContainer,
       imgMimeType,
+      8,
       (imageData) => {
         const mockupId = LocalStorageHelper.saveMockupImageAtLocal(
           elementsVisualState,
@@ -115,7 +94,7 @@ export const AddToCartHandler = ({
           }
         )
         saveHtmlAsImageWithDesiredSize(
-          printArea,
+          allowedPrintArea,
           pickedSurface.area.widthRealPx,
           pickedSurface.area.heightRealPx,
           imgMimeType,

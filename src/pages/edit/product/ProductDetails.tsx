@@ -22,7 +22,7 @@ const ProductImagePreview = ({ imageURL, onClose }: TProductImagePreviewProps) =
       }}
     >
       <div className="bg-white w-fit flex justify-center relative overflow-hidden">
-        <img src={imageURL} alt="Ảnh sản phẩm" className="h-[calc(90vh-48px)] object-contain" />
+        <img src={imageURL} alt="Ảnh sản phẩm" className="h-[calc(95vh-48px)] object-contain" />
       </div>
     </Modal>
   )
@@ -40,7 +40,7 @@ const SizeChartPreview = ({ setShowSizeChart }: TSizeChartPreviewProps) => {
       classNames={{
         contentContainer: 'p-0 overflow-y-auto',
         titleContainer: 'bg-secondary-cl text-white',
-        board: 'max-w-2xl',
+        board: 'max-w-2xl max-h-[90vh]',
       }}
     >
       <div className="bg-white w-full rounded-xl shadow-2xl border border-gray-200 relative">

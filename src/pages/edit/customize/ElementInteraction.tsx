@@ -13,7 +13,6 @@ export const ElementInteraction = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const { elementId, elementType, elementURL } = selectedElement || {}
   const elementInteractionContainerRef = useRef<HTMLDivElement | null>(null)
-  console.log('>>> selectedElement:', selectedElement)
 
   useEffect(() => {
     eventEmitter.on(
@@ -26,7 +25,6 @@ export const ElementInteraction = () => {
             elementURL = pickedFrame.placedImage?.imgURL
           }
         }
-        console.log('>>> elementURL:', elementURL)
         selectElement(elementId, element, elementType, elementURL)
         elementInteractionContainerRef.current?.scrollIntoView({
           behavior: 'smooth',
@@ -40,8 +38,8 @@ export const ElementInteraction = () => {
 
   return (
     <div ref={elementInteractionContainerRef} className="mt-6">
-      <h3 className="font-bold text-gray-800">Tùy chỉnh khác</h3>
-      <div className="bg-white rounded smd:h-[41.5px] mt-2 relative">
+      <h3 className="NAME-element-interaction-title font-bold text-gray-800">Tùy chỉnh khác</h3>
+      <div className="rounded mt-1 relative">
         {elementId &&
           (elementType === 'text' ? (
             //   <TextElementMenu elementId={elementId} onClose={cancelSelectingElement} />
