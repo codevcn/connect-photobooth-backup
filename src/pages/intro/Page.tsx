@@ -1,10 +1,19 @@
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { FullscreenModal } from '@/components/custom/FullscreenModal'
 
 const IntroPage = () => {
   const navigate = useNavigate()
+  const [showFullscreenModal, setShowFullscreenModal] = useState(true)
 
   return (
     <div className="h-screen w-screen bg-black">
+      {/* Fullscreen Modal */}
+      <FullscreenModal
+        show={showFullscreenModal}
+        onConfirm={() => setShowFullscreenModal(false)}
+      />
+
       <div className="relative h-full w-full">
         <div className="relative h-full w-full z-10">
           <video
