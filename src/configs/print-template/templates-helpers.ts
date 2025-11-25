@@ -138,64 +138,94 @@ export const stylePlacedImageByTemplateType = (
   if (templateType === '2-horizon') {
     if (frameIndex === 1) {
       return {
-        objectPosition: 'bottom',
+        bottom: '0',
+        top: 'auto',
+        left: '0',
+        right: 'auto',
       }
     } else {
       return {
-        objectPosition: 'top',
+        top: '0',
+        left: '0',
+        right: 'auto',
+        bottom: 'auto',
       }
     }
   } else if (templateType === '2-vertical') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right' }
+      return { right: '0', top: '0', bottom: 'auto', left: 'auto' }
     } else {
-      return { objectPosition: 'left' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto' }
     }
   } else if (templateType === '3-left') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right bottom' }
+      return { right: '0', bottom: '0', top: 'auto', left: 'auto' }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left center' }
+      return { left: '0', top: '50%', right: 'auto', bottom: 'auto', transform: 'translateY(-50%)' }
     } else {
-      return { objectPosition: 'right top' }
+      return { right: '0', top: '0', left: 'auto', bottom: 'auto' }
     }
   } else if (templateType === '3-right') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right center' }
+      return {
+        right: '0',
+        top: '50%',
+        left: 'auto',
+        bottom: 'auto',
+        transform: 'translateY(-50%)',
+      }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left bottom' }
+      return { left: '0', bottom: '0', top: 'auto', right: 'auto' }
     } else {
-      return { objectPosition: 'left top' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto' }
     }
   } else if (templateType === '3-top') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right bottom' }
+      return { right: '0', bottom: '0', top: 'auto', left: 'auto' }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left bottom' }
+      return { left: '0', bottom: '0', top: 'auto', right: 'auto' }
     } else {
-      return { objectPosition: 'top center' }
+      return { top: '0', left: '50%', right: 'auto', bottom: 'auto', transform: 'translateX(-50%)' }
     }
   } else if (templateType === '3-bottom') {
     if (frameIndex === 1) {
-      return { objectPosition: 'bottom center' }
+      return {
+        bottom: '0',
+        left: '50%',
+        right: 'auto',
+        top: 'auto',
+        transform: 'translateX(-50%)',
+      }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'right top' }
+      return { right: '0', top: '0', left: 'auto', bottom: 'auto' }
     } else {
-      return { objectPosition: 'left top' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto' }
     }
   } else if (templateType === '4-horizon') {
-    return { objectPosition: 'center' }
+    return {
+      top: '50% ',
+      left: 'auto',
+      right: 'auto',
+      bottom: 'auto',
+      transform: 'translateY(-50%)',
+    }
   } else if (templateType === '4-vertical') {
-    return { objectPosition: 'center' }
+    return {
+      left: '50% ',
+      right: 'auto',
+      top: 'auto',
+      bottom: 'auto',
+      transform: 'translateX(-50%)',
+    }
   } else if (templateType === '4-square') {
     if (frameIndex === 1) {
-      return { objectPosition: 'right bottom' }
+      return { right: '0', bottom: '0', top: 'auto', left: 'auto' }
     } else if (frameIndex === 2) {
-      return { objectPosition: 'left bottom' }
+      return { left: '0', bottom: '0', top: 'auto', right: 'auto' }
     } else if (frameIndex === 3) {
-      return { objectPosition: 'right top' }
+      return { right: '0', top: '0', left: 'auto', bottom: 'auto' }
     } else {
-      return { objectPosition: 'left top' }
+      return { left: '0', top: '0', right: 'auto', bottom: 'auto' }
     }
   }
   return defaultStyle

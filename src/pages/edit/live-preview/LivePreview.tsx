@@ -28,11 +28,11 @@ export const LivePreview = ({
     return pickedProduct.printAreaList.find((printArea) => printArea.id === editedPrintSurfaceId)!
   }, [pickedProduct, editedPrintSurfaceId])
 
-  // const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
-  //   usePrintArea(printAreaInfo, adjustPlacedImageStylesAfterPlacement)
-
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
-    usePrintArea(printAreaInfo)
+    usePrintArea(printAreaInfo, adjustPlacedImageStylesAfterPlacement)
+
+  // const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
+  //   usePrintArea(printAreaInfo)
 
   const displayedImage = useMemo<TDisplayedImage>(() => {
     const variantSurface = pickedProduct.variantSurfaces.find(

@@ -6,6 +6,7 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useEffect } from 'react'
 import { adjustPlacedImageStylesAfterPlacement } from '../helpers'
+import { createPortal } from 'react-dom'
 
 type TPrintAreaOverlayPreviewProps = {
   printAreaRef: React.RefObject<HTMLDivElement | null>
@@ -91,9 +92,9 @@ export const PrintAreaOverlay = ({
     }
   }
 
-  // useEffect(() => {
-  //   adjustPlacedImageStylesAfterPlacement()
-  // }, [pickedTemplate])
+  useEffect(() => {
+    adjustPlacedImageStylesAfterPlacement()
+  }, [pickedTemplate])
 
   return (
     <div
@@ -124,6 +125,11 @@ export const PrintAreaOverlay = ({
           }}
         />
       )}
+
+      {/* {createPortal(
+        <div className="bg-red-400 h-10 w-10 fixed top-0 left-0 z-999">oke</div>,
+        document.body
+      )} */}
     </div>
   )
 }

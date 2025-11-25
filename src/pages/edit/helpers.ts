@@ -305,19 +305,6 @@ export const adjustPlacedImageStylesAfterPlacement = () => {
           placedImage.style.width = '100%'
           placedImage.style.height = 'auto'
         }
-        const placedImageMetaData = placedImage.getAttribute('data-placed-image-meta-data')
-        if (!placedImageMetaData) continue
-        const metaData = JSON.parse(placedImageMetaData) as TPlacedImageMetaData
-        const { transform, top, left, right, bottom } = stylePlacedImageByTemplateType(
-          metaData.templateType,
-          metaData.frameIndex,
-          {}
-        )
-        placedImage.style.transform = transform ? `${transform}` : ''
-        placedImage.style.top = top ? `${top}` : ''
-        placedImage.style.left = left ? `${left}` : ''
-        placedImage.style.right = right ? `${right}` : ''
-        placedImage.style.bottom = bottom ? `${bottom}` : ''
       }
     }
   })

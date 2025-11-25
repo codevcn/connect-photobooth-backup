@@ -380,3 +380,8 @@ export type TProductAttatchedData = {
   productId: TBaseProduct['id']
   productNote?: string
 }
+
+export type TPosition = {
+  x: number
+  y: number
+}

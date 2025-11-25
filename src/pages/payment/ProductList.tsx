@@ -13,7 +13,6 @@ type ProductNoteProps = {
 }
 
 const ProductNote = ({ productNote }: ProductNoteProps) => {
-  console.log('>>> found productNote:', productNote)
   return (
     productNote && (
       <div className="mt-3 p-1 bg-gray-100 border-l-4 border-main-cl rounded-md">
@@ -49,8 +48,6 @@ export const ProductList: React.FC<ProductListProps> = ({
   onEditMockup,
 }) => {
   const getProductAttachedData = useProductUIDataStore((s) => s.getProductAttachedData)
-  const attacedData = useProductUIDataStore((s) => s.productsAttachedData)
-  console.log('>>> productsAttachedData:', attacedData)
 
   return (
     <section className="text-xs sm:text-sm flex flex-col gap-2 mb-2">
