@@ -178,7 +178,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
           <h3 className="block text-sm font-bold text-slate-900">Danh mục hình ảnh sản phẩm</h3>
           <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
             {pickedProduct.detailImages.length > 0 ? (
-              pickedProduct.detailImages.map((imgURL) => (
+              pickedProduct.detailImages.slice(1).map((imgURL) => (
                 <div
                   key={imgURL}
                   className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"

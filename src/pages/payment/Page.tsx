@@ -334,7 +334,10 @@ const PaymentPage = () => {
                   {/* Checkout Button - Desktop (in summary) */}
                   <div className="hidden md:block mt-3 md:mt-4">
                     <button
-                      onClick={() => setShowModal(true)}
+                      onClick={() => {
+                        toast.info('Đang tạm khóa')
+                        // setShowModal(true)
+                      }}
                       className="flex items-center justify-center gap-2 w-full mt-4 h-11 bg-main-cl hover:scale-95 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200"
                     >
                       <svg

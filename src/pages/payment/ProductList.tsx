@@ -7,6 +7,7 @@ import {
   TPaymentProductItem,
   TProductAttatchedData,
 } from '@/utils/types/global'
+import { toast } from 'react-toastify'
 
 type ProductNoteProps = {
   productNote: TProductAttatchedData['productNote']
@@ -83,7 +84,10 @@ export const ProductList: React.FC<ProductListProps> = ({
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <h3 className="text-[1em] font-semibold text-gray-900 leading-tight">{name}</h3>
                   <button
-                    onClick={() => onEditMockup(mockupData.id)}
+                    onClick={() => {
+                      toast.info('Đang tạm khóa')
+                      // onEditMockup(mockupData.id)
+                    }}
                     className="shrink-0 p-1.5 text-gray-600 bg-gray-200 transition-colors rounded-lg active:scale-95"
                     aria-label="Chỉnh sửa sản phẩm"
                   >
