@@ -282,6 +282,9 @@ export const StickerMenuWrapper = () => {
   const scrollToSelectedElement = () => {
     if (elementType !== 'sticker') return
     document.body
+      .querySelector('.NAME-print-area-container')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    document.body
       .querySelector('.NAME-menu-sticker-element')
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }

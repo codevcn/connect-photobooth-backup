@@ -146,6 +146,9 @@ export const TextMenuWrapper = () => {
     document.body
       .querySelector('.NAME-menu-text-element')
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    document.body
+      .querySelector('.NAME-print-area-container')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   useEffect(() => {

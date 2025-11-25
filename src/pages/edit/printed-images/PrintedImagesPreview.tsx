@@ -27,6 +27,9 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
   const scrollToSelectedElement = () => {
     if (elementType !== 'template-frame') return
     document.body
+      .querySelector('.NAME-print-area-container')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    document.body
       .querySelector('.NAME-menu-template-frame')
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
