@@ -1,10 +1,28 @@
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { formatNumberWithCommas } from '@/utils/helpers'
 import {
   TBaseProduct,
   TClientProductVariant,
   TMockupData,
   TPaymentProductItem,
+  TProductAttatchedData,
 } from '@/utils/types/global'
+
+type ProductNoteProps = {
+  productNote: TProductAttatchedData['productNote']
+}
+
+const ProductNote = ({ productNote }: ProductNoteProps) => {
+  console.log('>>> found productNote:', productNote)
+  return (
+    productNote && (
+      <div className="mt-3 p-1 bg-gray-100 border-l-4 border-main-cl rounded-md">
+        <span className="font-bold">Ghi chú đơn hàng:</span>
+        <span className="whitespace-pre-wrap ml-1">{productNote}</span>
+      </div>
+    )
+  )
+}
 
 interface ProductListProps {
   cartItems: TPaymentProductItem[]
@@ -30,7 +48,10 @@ export const ProductList: React.FC<ProductListProps> = ({
   onShowProductImage,
   onEditMockup,
 }) => {
-  console.log('>>> hhh:', cartItems)
+  const getProductAttachedData = useProductUIDataStore((s) => s.getProductAttachedData)
+  const attacedData = useProductUIDataStore((s) => s.productsAttachedData)
+  console.log('>>> productsAttachedData:', attacedData)
+
   return (
     <section className="text-xs sm:text-sm flex flex-col gap-2 mb-2">
       {cartItems.map(
@@ -198,6 +219,8 @@ export const ProductList: React.FC<ProductListProps> = ({
                 </div>
               </div>
             </div>
+
+            <ProductNote productNote={getProductAttachedData(productId)?.productNote} />
           </div>
         )
       )}

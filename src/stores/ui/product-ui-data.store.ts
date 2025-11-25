@@ -5,6 +5,7 @@ import {
   TProductWithTemplate,
   TProductColor,
   TPrintAreaInfo,
+  TProductAttatchedData,
 } from '@/utils/types/global'
 import { create } from 'zustand'
 import { useTemplateStore } from './template.store'
@@ -15,8 +16,16 @@ type TProductUIDataStore = {
   pickedSurface: TBaseProduct['printAreaList'][number] | null
   isAddingToCart: boolean
   cartCount: number
+  productsAttachedData: TProductAttatchedData[]
 
   // Actions
+  addProductAttachedData: (data: TProductAttatchedData) => void
+  updateProductAttachedData: (
+    productId: TBaseProduct['id'],
+    data: Partial<TProductAttatchedData>
+  ) => void
+  addProductNote: (productId: TBaseProduct['id'], note: string) => void
+  getProductAttachedData: (productId: TBaseProduct['id']) => TProductAttatchedData | undefined
   handlePickProduct: (prod: TBaseProduct, initialTemplate: TPrintTemplate) => void
   initFirstProduct: (prod: TBaseProduct, initialTemplate: TPrintTemplate) => void
   handlePickVariant: (variant: TClientProductVariant) => void
@@ -36,6 +45,35 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   pickedSurface: null,
   isAddingToCart: false,
   cartCount: 0,
+  productsAttachedData: [],
+
+  getProductAttachedData: (productId) => {
+    return (get().productsAttachedData || []).find((data) => data.productId === productId)
+  },
+
+  addProductAttachedData: (data) => {
+    set({ productsAttachedData: [...get().productsAttachedData, data] })
+  },
+
+  updateProductAttachedData: (productId, data) => {
+    const existingData = [...(get().productsAttachedData || [])]
+    if (existingData.length === 0) {
+      set({ productsAttachedData: [{ productId, ...data }] })
+    } else {
+      set({
+        productsAttachedData: existingData.map((prev) => {
+          if (prev.productId === productId) {
+            return { ...prev, ...data }
+          }
+          return prev
+        }),
+      })
+    }
+  },
+
+  addProductNote: (productId, note) => {
+    get().updateProductAttachedData(productId, { productNote: note })
+  },
 
   setIsAddingToCart: (isAdding: boolean) => {
     set({ isAddingToCart: isAdding })

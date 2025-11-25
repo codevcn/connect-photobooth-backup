@@ -2,7 +2,7 @@ import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useNavigate } from 'react-router-dom'
 import { MockupPreview } from './MockupPreview'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { LocalStorageHelper } from '@/utils/localstorage'
 
 export const Actions = () => {
@@ -10,6 +10,7 @@ export const Actions = () => {
   const navigate = useNavigate()
   const [showMockupPreview, setShowMockupPreview] = useState(false)
   const pickedSurface = useProductUIDataStore((s) => s.pickedSurface)
+  const productNoteRef = useRef<HTMLTextAreaElement>(null)
 
   const addToCart = () => {
     eventEmitter.emit(EInternalEvents.ADD_TO_CART)
@@ -19,21 +20,75 @@ export const Actions = () => {
     useProductUIDataStore.getState().setCartCount(LocalStorageHelper.countSavedMockupImages())
   }
 
+  const recordProductNote = () => {
+    const pickedProduct = useProductUIDataStore.getState().pickedProduct
+    if (pickedProduct) {
+      const productNote = productNoteRef.current?.value
+      if (productNote) {
+        useProductUIDataStore.getState().addProductNote(pickedProduct.id, productNote)
+      } else {
+        useProductUIDataStore
+          .getState()
+          .updateProductAttachedData(pickedProduct.id, { productNote: '' })
+      }
+    }
+  }
+
+  const beforeAddToCartHandler = () => {
+    recordProductNote()
+    addToCart()
+  }
+
+  const beforeNavigateToPaymentHandler = () => {
+    recordProductNote()
+    navigate('/payment')
+  }
+
+  const initProductAttachedData = () => {
+    const pickedProduct = useProductUIDataStore.getState().pickedProduct
+    if (pickedProduct) {
+      const productAttachedData = useProductUIDataStore
+        .getState()
+        .getProductAttachedData(pickedProduct.id)
+      if (productAttachedData) {
+        if (productAttachedData.productNote) {
+          if (productNoteRef.current) {
+            productNoteRef.current.value = productAttachedData.productNote
+          }
+        }
+      }
+    }
+  }
+
   useEffect(() => {
     updateCartCount()
+    initProductAttachedData()
   }, [])
 
   return (
     <div className="order-3 py-2">
+      <div className="w-full">
+        <label htmlFor="product-note" className="text-sm">
+          Ghi chú đơn hàng (tùy chọn)
+        </label>
+        <textarea
+          ref={productNoteRef}
+          name="product-note"
+          id="product-note-textfield"
+          placeholder="Bạn có yêu cầu gì với đơn hàng của mình không?"
+          className="md:text-base text-sm w-full mt-1 rounded-md border-border p-2 outline-main-cl outline-0 focus:outline-2 resize-y"
+        ></textarea>
+      </div>
+
       <button
         onClick={() => setShowMockupPreview(true)}
-        className="w-full cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold h-10 px-4 rounded shadow-lg touch-target flex items-center justify-center gap-2 text-lg"
+        className="mt-2 w-full cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold h-10 px-4 rounded shadow-lg touch-target flex items-center justify-center gap-2 text-lg"
       >
         Xem trước bản mockup
       </button>
       <div className="flex gap-2 items-stretch mt-3 flex-col lg:flex-row">
         <button
-          onClick={addToCart}
+          onClick={beforeAddToCartHandler}
           className="w-full cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-lg"
         >
           <span>Thêm vào giỏ hàng</span>
@@ -53,7 +108,7 @@ export const Actions = () => {
           </svg>
         </button>
         <button
-          onClick={() => navigate('/payment')}
+          onClick={beforeNavigateToPaymentHandler}
           className="flex items-center justify-center gap-2 lg:block relative cursor-pointer bg-white border-2 border-gray-200 px-2 h-10 rounded-md shadow mobile-touch"
         >
           <span className="inline-block lg:hidden">Xem giỏ hàng</span>

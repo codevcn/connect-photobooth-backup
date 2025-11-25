@@ -375,3 +375,8 @@ export type TPlacedImageMetaData = {
   templateType: TTemplateType
   frameIndex: TTemplateFrame['index']
 }
+
+export type TProductAttatchedData = {
+  productId: TBaseProduct['id']
+  productNote?: string
+}
