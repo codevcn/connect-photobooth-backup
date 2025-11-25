@@ -381,3 +381,59 @@ export function detectColorFormat(color: string): 'hex' | 'rgb' | 'unknown' {
 
   return 'unknown'
 }
+
+export function calContrastForReadableColor(color: string): string {
+  const c = color.toLowerCase().trim()
+
+  // Nhóm màu nóng (red/orange/yellow/pink...)
+  const warmColors = new Set([
+    'red',
+    'orange',
+    'yellow',
+    'gold',
+    'tomato',
+    'coral',
+    'salmon',
+    'pink',
+    'crimson',
+    'orangered',
+    'firebrick',
+  ])
+
+  if (warmColors.has(c)) {
+    return '#0066FF' // màu tương phản mạnh với đỏ/cam
+  }
+
+  // Các màu sáng → return đen
+  const lightColors = new Set([
+    'white',
+    'snow',
+    'ivory',
+    'lightyellow',
+    'beige',
+    'mintcream',
+    'aliceblue',
+    'ghostwhite',
+  ])
+
+  if (lightColors.has(c)) {
+    return 'orange' // màu sáng → trả về đen
+  }
+
+  // Các màu tối → return trắng
+  const darkColors = new Set([
+    'black',
+    'navy',
+    'midnightblue',
+    'darkslateblue',
+    'darkslategray',
+    'brown',
+  ])
+
+  if (darkColors.has(c)) {
+    return '#FFFFFF'
+  }
+
+  // Mặc định nếu không rõ → dùng trắng để đảm bảo dễ đọc
+  return 'orange'
+}

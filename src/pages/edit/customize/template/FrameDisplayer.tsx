@@ -23,6 +23,7 @@ type TFramesDisplayerProps = {
   }
   onClickFrame: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, frameId: string) => void
   displayScrollButton: boolean
+  allowDragging: boolean
 }>
 
 type TFrameBounds = {
@@ -38,6 +39,7 @@ export const FramesDisplayer = ({
   displayerClassNames,
   onClickFrame,
   displayScrollButton = false,
+  allowDragging = true,
 }: TFramesDisplayerProps) => {
   const { frames, type } = template
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
@@ -65,6 +67,7 @@ export const FramesDisplayer = ({
   }
 
   const onPointerDown = (e: React.PointerEvent, frameId: string) => {
+    if (!allowDragging) return
     if (useTemplateStore.getState().pickedTemplate?.frames.some((f) => !f.placedImage)) return
     setDragging(true)
     startYRef.current = e.clientY

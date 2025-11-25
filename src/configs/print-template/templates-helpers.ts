@@ -171,13 +171,33 @@ export const stylePlacedImageByTemplateType = (
     }
   } else if (templateType === '2-vertical') {
     if (frameIndex === 1) {
-      return { right: '0', top: '0', bottom: 'auto', left: 'auto', ...styleForSizeAdjustment }
+      return {
+        right: '0',
+        top: '50%',
+        bottom: 'auto',
+        left: 'auto',
+        transform: 'translateY(-50%)',
+        ...styleForSizeAdjustment,
+      }
     } else {
-      return { left: '0', top: '0', right: 'auto', bottom: 'auto', ...styleForSizeAdjustment }
+      return {
+        left: '0',
+        top: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        transform: 'translateY(-50%)',
+        ...styleForSizeAdjustment,
+      }
     }
   } else if (templateType === '3-left') {
     if (frameIndex === 1) {
-      return { right: '0', bottom: '0', top: 'auto', left: 'auto', ...styleForSizeAdjustment }
+      return {
+        right: '0',
+        bottom: '0',
+        top: 'auto',
+        left: 'auto',
+        ...styleForSizeAdjustment,
+      }
     } else if (frameIndex === 2) {
       return {
         left: '0',

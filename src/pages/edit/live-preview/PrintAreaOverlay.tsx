@@ -43,6 +43,7 @@ export const PrintAreaOverlayPreview = ({
           plusIconWrapper: 'hidden',
         }}
         displayerClassNames={{ container: 'bg-transparent' }}
+        allowDragging={false}
       />
     </div>
   )

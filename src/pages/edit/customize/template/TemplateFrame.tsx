@@ -5,6 +5,8 @@ import { cn } from '@/configs/ui/tailwind-utils'
 import { styleFrameByTemplateType } from '@/configs/print-template/templates-helpers'
 import { useRef, useState } from 'react'
 import { useEditedElementStore } from '@/stores/element/element.store'
+import { calContrastForReadableColor } from '@/utils/helpers'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type TAddImageIconProps = {} & Partial<{
   classNames: Partial<{
@@ -77,17 +79,26 @@ export const TemplateFrame = ({
   onPointerDown,
 }: TemplateFrameProps) => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
+  const frameSelected = selectedElement?.elementId === templateFrame.id
+
   return (
     <div
       onPointerDown={onPointerDown ? (e) => onPointerDown(e, templateFrame.id) : undefined}
       style={{
         ...styles?.container,
         ...styleFrameByTemplateType(templateType, templateFrame.index),
+        outline: `${
+          frameSelected
+            ? `4px solid ${calContrastForReadableColor(
+                useProductUIDataStore.getState().pickedVariant?.color.value || 'var(--vcn-main-cl)'
+              )}`
+            : 'none'
+        }`,
       }}
       className={cn(
         'NAME-template-frame touch-none relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',
         classNames?.container,
-        selectedElement?.elementId === templateFrame.id && 'outline-4 z-50 outline-orange-600',
+        frameSelected && 'z-50',
         templateFrame.placedImage && 'bg-transparent'
       )}
       onClick={onClickFrame ? (e) => onClickFrame(e, templateFrame.id) : undefined}
