@@ -1,8 +1,8 @@
 import { TElementType, TPrintedImage } from '@/utils/types/global'
 import { PrintedImagesPreview } from '../printed-images/PrintedImagesPreview'
 import { TemplatesPicker } from './template/TemplatesPicker'
-import { StickerPicker } from '../elements/sticker-element/StickerPicker'
-import { TextEditor } from '../elements/text-element/TextEditor'
+import { StickerMenuWrapper, StickerPicker } from '../elements/sticker-element/StickerPicker'
+import { TextEditor, TextMenuWrapper } from '../elements/text-element/TextEditor'
 import { useEffect } from 'react'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useTemplateStore } from '@/stores/ui/template.store'
@@ -75,11 +75,15 @@ export const Customization = ({ printedImages }: TCustomizeProps) => {
             templateItem: 'aspect-square',
           }}
         />
-        <div className="flex flex-row smd:flex-col flex-wrap gap-3">
+        <div className="grid grid-cols-1 smd:grid-cols-2 flex-wrap gap-3">
           <PrintedImagesPreview printedImages={printedImages} />
-          <StickerPicker />
-          <TextEditor />
+          <div className="flex col-span-2 gap-2">
+            <StickerPicker />
+            <TextEditor />
+          </div>
         </div>
+        <TextMenuWrapper />
+        <StickerMenuWrapper />
       </div>
     </div>
   )

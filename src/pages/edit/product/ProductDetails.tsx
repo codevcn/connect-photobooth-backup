@@ -31,9 +31,10 @@ const ProductImagePreview = ({ imageURL, onClose }: TProductImagePreviewProps) =
 
 type TSizeChartPreviewProps = {
   setShowSizeChart: (show: boolean) => void
+  sizeChartImageURL: string
 }
 
-const SizeChartPreview = ({ setShowSizeChart }: TSizeChartPreviewProps) => {
+const SizeChartPreview = ({ setShowSizeChart, sizeChartImageURL }: TSizeChartPreviewProps) => {
   return (
     <Modal
       onClose={() => setShowSizeChart(false)}
@@ -53,16 +54,12 @@ const SizeChartPreview = ({ setShowSizeChart }: TSizeChartPreviewProps) => {
 
             <div className="flex justify-center items-end gap-4 h-64 mb-8 relative">
               <div className="text-center opacity-50 w-full h-full flex items-center justify-center bg-yellow-50 rounded-lg border border-dashed border-orange-300 text-orange-400">
-                [Khu vực dành cho hình ảnh Silhouettes: Phụ nữ, Nam, Trẻ em, Em bé]
+                <img
+                  src={sizeChartImageURL}
+                  alt="Bảng size"
+                  className="h-full w-full object-contain"
+                />
               </div>
-            </div>
-
-            <div className="space-y-4 text-sm text-gray-800 font-medium text-center">
-              <p className="pb-4 border-b border-gray-200">
-                Vòng ngực - Đo ngang ngực cách nách 1 inch khi đặt áo nằm phẳng.
-              </p>
-              <p className="pb-4 border-b border-gray-200">Vòng ngực nữ - Đo cách nách 1 inch.</p>
-              <p>Chiều dài áo - Đo từ điểm cao nhất của vai phía sau.</p>
             </div>
           </div>
         </div>
@@ -96,8 +93,16 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
 
   // Lấy danh sách size có sẵn cho màu đã chọn
   const availableSizesForColor = useMemo(() => {
-    return pickedProduct.variants.filter((v) => v.color.value === pickedVariant.color.value)
+    return pickedProduct.variants
+      .filter((v) => v.color.value === pickedVariant.color.value)
+      .sort((a, b) => {
+        return b.size.localeCompare(a.size, undefined, { numeric: true })
+      })
   }, [pickedProduct, pickedVariant])
+
+  const firstProductImageURL = pickedProduct.detailImages[0] || null
+
+  const hintForSizeChart: string = 'none'
 
   return (
     <div className="smd:order-1 smd:mt-0 mt-4 order-2 w-full">
@@ -117,10 +122,6 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
       </div>
 
       <div className="p-3 smd:p-4 bg-orange-50 border border-orange-100 rounded-lg space-y-2 my-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Người bán</span>
-          <span className="font-semibold text-gray-900">Photoism</span>
-        </div>
         <div className="flex items-center justify-between gap-2 text-sm">
           <span className="text-gray-800 font-bold">Chăm sóc khách hàng</span>
           <span className="font-semibold text-orange-600 text-end whitespace-nowrap">
@@ -175,12 +176,12 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
       <div className="mt-4 bg-gray-100 border-border rounded-lg overflow-hidden p-3">
         <div>
           <h3 className="block text-sm font-bold text-slate-900">Danh mục hình ảnh sản phẩm</h3>
-          <div className="grid grid-cols-3 gap-2 w-full mt-2">
+          <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
             {pickedProduct.detailImages.length > 0 ? (
               pickedProduct.detailImages.map((imgURL) => (
                 <div
                   key={imgURL}
-                  className="bg-white mobile-touch cursor-pointer"
+                  className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
                   onClick={() => setSelectedImageToPreview(imgURL)}
                 >
                   <img src={imgURL} alt="Danh mục ảnh sản phẩm" />
@@ -189,7 +190,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
             ) : (
               <div
                 onClick={() => setSelectedImageToPreview(pickedProduct.url)}
-                className="bg-white mobile-touch cursor-pointer"
+                className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
               >
                 <img src={pickedProduct.url} alt="Ảnh đại diện sản phẩm" />
               </div>
@@ -250,12 +251,14 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         <div className="mt-4">
           <div className="flex justify-between w-full mb-2">
             <label className="block text-sm font-bold text-slate-900">Kích thước</label>
-            <button
-              onClick={() => setShowSizeChart(true)}
-              className="cursor-pointer mobile-touch text-main-cl underline text-sm font-medium hover:text-secondary-cl"
-            >
-              Bảng size
-            </button>
+            {firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
+              <button
+                onClick={() => setShowSizeChart(true)}
+                className="cursor-pointer mobile-touch text-main-cl underline text-sm font-medium hover:text-secondary-cl"
+              >
+                Bảng size
+              </button>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             {availableSizesForColor.length > 0 ? (
@@ -288,7 +291,12 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         <PrintSurface printSurfaces={pickedProduct.printAreaList} pickedVariant={pickedVariant} />
       </div>
 
-      {showSizeChart && <SizeChartPreview setShowSizeChart={setShowSizeChart} />}
+      {showSizeChart && firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
+        <SizeChartPreview
+          setShowSizeChart={setShowSizeChart}
+          sizeChartImageURL={firstProductImageURL}
+        />
+      )}
       {selectedImageToPreview && (
         <ProductImagePreview
           imageURL={selectedImageToPreview}

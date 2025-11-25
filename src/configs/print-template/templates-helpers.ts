@@ -139,9 +139,6 @@ export const stylePlacedImageByTemplateType = (
 ): React.CSSProperties => {
   const { width, height, index: frameIndex } = frame
   const styleForSizeAdjustment: React.CSSProperties = {}
-  if (isLog) {
-    console.log('>>> placed image:', { placedImage, frame })
-  }
   if (
     decideFitBy(placedImage.prrintedImageWidth, placedImage.printedImageHeight, width, height) ===
     'width'
@@ -157,14 +154,16 @@ export const stylePlacedImageByTemplateType = (
       return {
         bottom: '0',
         top: 'auto',
-        left: '0',
+        left: '50%',
+        transform: 'translateX(-50%)',
         right: 'auto',
         ...styleForSizeAdjustment,
       }
     } else {
       return {
         top: '0',
-        left: '0',
+        left: '50%',
+        transform: 'translateX(-50%)',
         right: 'auto',
         bottom: 'auto',
         ...styleForSizeAdjustment,
@@ -356,10 +355,10 @@ export function decideFitBy(
   boxW: number,
   boxH: number
 ): 'width' | 'height' {
-  const scaleW = boxW / itemW
-  const scaleH = boxH / itemH
+  const scaleBox = boxW / boxH
+  const scaleItem = itemW / itemH
   // scale nhỏ hơn → giới hạn trước → fit by theo chiều đó
-  return scaleW < scaleH ? 'width' : 'height'
+  return scaleBox < scaleItem ? 'width' : 'height'
 }
 
 // // Ví dụ

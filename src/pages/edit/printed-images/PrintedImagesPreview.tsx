@@ -63,7 +63,7 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesProps) => 
   }, [elementId, elementType, elementURL])
 
   return (
-    <div ref={containerRef} className="smd:mt-6 mt-2 flex-1">
+    <div ref={containerRef} className="smd:mt-6 col-span-2 mt-2 flex-1">
       <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">
         Chọn ảnh <span className="smd:inline hidden">chụp photobooth</span>
       </h3>

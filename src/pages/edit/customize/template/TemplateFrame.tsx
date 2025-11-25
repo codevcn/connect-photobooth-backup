@@ -3,6 +3,8 @@ import { PlacedImage } from './PlacedImage'
 import type React from 'react'
 import { cn } from '@/configs/ui/tailwind-utils'
 import { styleFrameByTemplateType } from '@/configs/print-template/templates-helpers'
+import { useRef, useState } from 'react'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TAddImageIconProps = {} & Partial<{
   classNames: Partial<{
@@ -57,6 +59,9 @@ type TemplateFrameProps = {
   }>
   onClickFrame: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, frameId: string) => void
   displayPlusIcon: boolean
+  registerChild?: (index: number, el: HTMLImageElement | null) => void
+  childIndex?: number
+  onMouseDown?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, frameId: string) => void
 }>
 
 export const TemplateFrame = ({
@@ -67,16 +72,24 @@ export const TemplateFrame = ({
   classNames,
   onClickFrame,
   displayPlusIcon = true,
+  registerChild,
+  childIndex,
+  onMouseDown,
 }: TemplateFrameProps) => {
+  const selectedElement = useEditedElementStore((s) => s.selectedElement)
   return (
     <div
+      onMouseDown={onMouseDown ? (e) => onMouseDown(e, templateFrame.id) : undefined}
+      onTouchStart={onMouseDown ? (e) => onMouseDown(e as any, templateFrame.id) : undefined}
       style={{
         ...styles?.container,
         ...styleFrameByTemplateType(templateType, templateFrame.index),
       }}
       className={cn(
-        'NAME-template-frame relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',
-        classNames?.container
+        'NAME-template-frame touch-none relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',
+        classNames?.container,
+        selectedElement?.elementId === templateFrame.id && 'outline-4 z-50 outline-orange-600',
+        templateFrame.placedImage && 'bg-transparent'
       )}
       onClick={onClickFrame ? (e) => onClickFrame(e, templateFrame.id) : undefined}
     >
@@ -86,6 +99,8 @@ export const TemplateFrame = ({
           templateType={templateType}
           frameIndex={templateFrame.index}
           frame={templateFrame}
+          registerChild={registerChild}
+          childIndex={childIndex}
         />
       ) : (
         displayPlusIcon &&

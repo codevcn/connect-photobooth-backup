@@ -7,6 +7,8 @@ import {
 import { useDragImageInFrame } from '@/hooks/element/use-drag-image-in-frame'
 import { typeToObject } from '@/utils/helpers'
 import { stylePlacedImageByTemplateType } from '@/configs/print-template/templates-helpers'
+import { use, useRef } from 'react'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TPlacedImageProps = {
   placedImage: TPlacedImage
@@ -14,6 +16,8 @@ type TPlacedImageProps = {
   frameIndex: TTemplateFrame['index']
   frame: TTemplateFrame
   isLog?: boolean
+  registerChild?: (index: number, el: HTMLImageElement | null) => void
+  childIndex?: number
 }
 
 export const PlacedImage = ({
@@ -22,6 +26,8 @@ export const PlacedImage = ({
   frameIndex,
   frame,
   isLog,
+  registerChild,
+  childIndex,
 }: TPlacedImageProps) => {
   const { placementState } = placedImage
 
@@ -32,10 +38,18 @@ export const PlacedImage = ({
   //   disabled: false,
   //   saveElementPosition: (frameId, position) => {},
   // })
+  const imgRef = useRef<HTMLImageElement | null>(null)
+  const handleRef = (el: HTMLImageElement | null) => {
+    imgRef.current = el
+    if (registerChild && childIndex !== undefined) {
+      registerChild(childIndex, el)
+    }
+  }
 
   return (
     <img
       // ref={imageRef as React.RefObject<HTMLImageElement>}
+      ref={handleRef}
       src={placedImage.imgURL}
       alt="Ảnh in của bạn"
       className="NAME-frame-placed-image h-full w-full absolute top-0 left-0"

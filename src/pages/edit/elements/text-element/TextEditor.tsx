@@ -106,7 +106,7 @@ const EditorModal = ({ onClose }: EditorModalProps) => {
   )
 }
 
-const EditorModalWrapper = () => {
+export const EditorModalWrapper = () => {
   const [showEditorModal, setShowEditorModal] = useState(false)
 
   return (
@@ -136,7 +136,7 @@ const EditorModalWrapper = () => {
   )
 }
 
-const TextMenuWrapper = () => {
+export const TextMenuWrapper = () => {
   const selectedElement = useEditedElementStore((state) => state.selectedElement)
   const { elementType, rootElement, elementId } = selectedElement || {}
   const cancelSelectingElement = useEditedElementStore((state) => state.cancelSelectingElement)
@@ -197,7 +197,7 @@ export const TextEditor = () => {
     <div ref={containerRef} className="smd:mt-4 mt-2 flex-1">
       <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Thêm văn bản</h3>
       <EditorModalWrapper />
-      <TextMenuWrapper />
+      {/* <TextMenuWrapper /> */}
     </div>
   )
 }

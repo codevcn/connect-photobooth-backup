@@ -274,7 +274,7 @@ const PickerModalWrapper = () => {
   )
 }
 
-const StickerMenuWrapper = () => {
+export const StickerMenuWrapper = () => {
   const selectedElement = useEditedElementStore((state) => state.selectedElement)
   const { elementType, rootElement, elementId } = selectedElement || {}
   const cancelSelectingElement = useEditedElementStore((state) => state.cancelSelectingElement)
@@ -335,7 +335,7 @@ export const StickerPicker = () => {
     <div ref={containerRef} className="smd:mt-4 mt-2 flex-1">
       <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Thêm nhãn dán</h3>
       <PickerModalWrapper />
-      <StickerMenuWrapper />
+      {/* <StickerMenuWrapper /> */}
     </div>
   )
 }

@@ -131,6 +131,7 @@ export const PrintAreaOverlay = ({
           frameClassNames={{
             container: 'cursor-pointer',
           }}
+          displayScrollButton
         />
       )}
     </div>
