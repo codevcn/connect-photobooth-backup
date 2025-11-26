@@ -37,7 +37,7 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
   <!-- 2 -->
   <h3 style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">2. Cam kết Bảo hành &amp; Đổi trả</h3>
   <p>
-    <b>ENCYCOM</b> cam kết <b>ĐỔI MỚI 100%</b> hoặc <b>HOÀN TIỀN</b> trong vòng
+    Chúng tôi cam kết <b>ĐỔI MỚI 100%</b> hoặc <b>HOÀN TIỀN</b> trong vòng
     <b>07 ngày</b> nếu sản phẩm gặp các vấn đề:
   </p>
 
@@ -140,8 +140,11 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
         )}
       </div>
 
-      <div className="group flex items-center justify-between p-4 cursor-pointer hover:bg-white border-border rounded-md transition-colors border-b border-transparent">
-        <div className="flex flex-col items-center" onClick={() => handlePickTab('shipping')}>
+      <div className="w-full">
+        <div
+          onClick={() => handlePickTab('shipping')}
+          className="group flex items-center justify-between p-4 cursor-pointer hover:bg-white border-border rounded-md transition-colors border-b border-transparent"
+        >
           <div className="flex gap-4 items-center">
             <div className="text-gray-800">
               <svg
@@ -161,26 +164,26 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
             </div>
             <span className="text-gray-700 font-semibold text-base">Vận chuyển & Trả hàng</span>
           </div>
-          <div>
-            {activeTab === 'shipping' && (
-              <div
-                dangerouslySetInnerHTML={{ __html: shippingInfo }}
-                className="px-2 py-2 text-sm text-black/80"
-              ></div>
-            )}
+          <div className="text-gray-600 group-hover:text-gray-800">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
           </div>
         </div>
-        <div className="text-gray-600 group-hover:text-gray-800">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-5 h-5"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
+        <div>
+          {activeTab === 'shipping' && (
+            <div
+              dangerouslySetInnerHTML={{ __html: shippingInfo }}
+              className="px-2 py-2 text-sm text-black/80"
+            ></div>
+          )}
         </div>
       </div>
     </div>

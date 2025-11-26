@@ -44,6 +44,7 @@ export type TBaseProduct = {
   inNewLine: boolean
   printAreaList: TPrintAreaInfo[] // surfaces
   variantSurfaces: TProductVariantSurface[]
+  slug: string
 }
 
 export type TProductCategory =

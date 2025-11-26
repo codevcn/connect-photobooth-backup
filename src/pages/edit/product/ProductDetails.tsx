@@ -1,13 +1,6 @@
 import { Modal } from '@/components/custom/common/Modal'
-import { VietnamFlag } from '@/components/custom/icons/VietnamFlag'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import {
-  contrastFromWhite,
-  formatNumberWithCommas,
-  friendlyCurrency,
-  getContrastColor,
-  sortSizes,
-} from '@/utils/helpers'
+import { formatNumberWithCommas, friendlyCurrency, getContrastColor } from '@/utils/helpers'
 import { TBaseProduct, TClientProductVariant, TProductColor } from '@/utils/types/global'
 import { useMemo, useState } from 'react'
 import { PrintSurface } from '../print-surface/PrintSurface'
@@ -194,18 +187,6 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
           </span>
         )}
       </div>
-
-      {/* <div className="space-y-3 text-sm mt-2 pl-1">
-        <div className="flex items-center">
-          <div className="mr-2 text-lg">
-            <VietnamFlag />
-          </div>
-          <div className="font-medium">
-            <span className="text-gray-600">Vận chuyển đến </span>
-            <span className="font-bold">Vietnam</span>
-          </div>
-        </div>
-      </div> */}
 
       <div className="mt-4 bg-gray-100 border-border rounded-lg overflow-hidden p-3">
         <div>

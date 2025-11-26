@@ -18,7 +18,9 @@ class ProductService {
     console.log('>>> api products:', apiProducts)
 
     // Sử dụng ProductAdapter để convert
-    return ProductAdapter.toClientProducts(apiProducts)
+    const clientProducts = ProductAdapter.toClientProducts(apiProducts)
+    clientProducts.sort((a, b) => a.slug.localeCompare(b.slug))
+    return clientProducts
   }
 
   /**

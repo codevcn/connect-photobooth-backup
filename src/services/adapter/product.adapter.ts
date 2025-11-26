@@ -32,6 +32,7 @@ export class ProductAdapter {
       inNewLine: false,
       printAreaList: this.toPrintAreaList(apiProduct),
       variantSurfaces: this.toVariantSurfaces(apiProduct.mockups),
+      slug: apiProduct.slug,
     }
   }
 

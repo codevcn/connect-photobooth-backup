@@ -298,14 +298,14 @@ export const matchPrintedImageToShapeSize = (
   frameSize: TSizeInfo,
   printedImageSize: TSizeInfo
 ): boolean => {
-  const imgRatio = printedImageSize.width / printedImageSize.height
+  const { width: imgWidth, height: imgHeight } = printedImageSize
   const { width, height } = frameSize
   if (width < height) {
-    return imgRatio < 1
+    return imgWidth < imgHeight
   } else if (width > height) {
-    return imgRatio > 1
+    return imgWidth > imgHeight
   }
-  return imgRatio === 1
+  return imgWidth === imgHeight
 }
 
 export const matchPrintedImgAndAllowSquareMatchToShapeSize = (
