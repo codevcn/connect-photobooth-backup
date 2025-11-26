@@ -60,11 +60,6 @@ export const useElementControl = (
     x: initialPosition?.x || getInitialContants<number>('ELEMENT_X'),
     y: initialPosition?.y || getInitialContants<number>('ELEMENT_Y'),
   })
-  useEffect(() => { 
-    console.log('>>> tick position changed:', { position, initialPosition })
-  }, [position])
-
-  const firstRenderRef = useRef<boolean>(true)
   const [scale, setScale] = useState<TElementVisualBaseState['scale']>(initialZoom)
   const [angle, setAngle] = useState<TElementVisualBaseState['angle']>(initialAngle)
   const [zindex, setZindex] = useState<TElementVisualBaseState['zindex']>(initialZindex)
@@ -109,18 +104,10 @@ export const useElementControl = (
     let parsedValue: number | string = value
     switch (type) {
       case 'posX':
-        // setPosition((prev) => ({ ...prev, x: value as number }))
-        setPosition((prev) => {
-          if (prev.x === value as number) return prev 
-          return { ...prev, x: value as number }
-        })
+        setPosition((prev) => ({ ...prev, x: value as number }))
         break
       case 'posY':
-        // setPosition((prev) => ({ ...prev, y: value as number }))
-        setPosition((prev) => {
-          if (prev.y === value as number) return prev 
-          return { ...prev, y: value as number }
-        })
+        setPosition((prev) => ({ ...prev, y: value as number }))
         break
       case 'scale':
         if (minZoom) {
@@ -173,22 +160,15 @@ export const useElementControl = (
   }
 
   const setupVisualData = () => {
-    if (mountType === 'from-saved') {
-      console.log('>>> setupVisualData called')
-      console.log('>>> initial params:', {
-        initialPosition,
-        initialAngle,
-        initialZoom,
-        initialZindex,
-      })
-      handleSetElementState(
-        initialPosition?.x,
-        initialPosition?.y,
-        initialZoom,
-        initialAngle,
-        initialZindex
-      )
-    }
+    if (mountType !== 'from-saved') return
+    const safeScale = typeof initialZoom === 'number' && initialZoom > 0 ? initialZoom : 1
+    handleSetElementState(
+      initialPosition?.x,
+      initialPosition?.y,
+      safeScale,
+      initialAngle,
+      initialZindex
+    )
   }
 
   useEffect(() => {
@@ -197,7 +177,14 @@ export const useElementControl = (
 
   useEffect(() => {
     setupVisualData()
-  }, [initialPosition, initialAngle, initialZoom, initialZindex])
+  }, [
+    mountType,
+    initialPosition?.x,
+    initialPosition?.y,
+    initialAngle,
+    initialZoom,
+    initialZindex,
+  ])
 
   // useEffect(() => {
   //   console.log('>>> initial pos changed:', initialPosition)
