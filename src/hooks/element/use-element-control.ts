@@ -161,11 +161,20 @@ export const useElementControl = (
 
   const setupVisualData = () => {
     if (mountType !== 'from-saved') return
-    const safeScale = typeof initialZoom === 'number' && initialZoom > 0 ? initialZoom : 1
+    // Normalise saved scale: some saved data may store percentage (e.g. 100)
+    let parsedScale = typeof initialZoom === 'number' ? initialZoom : 1
+    if (parsedScale <= 0) parsedScale = 1
+    // If value looks like percent (very large > 10), convert to ratio
+    if (parsedScale > 10) parsedScale = parsedScale / 100
+    // Clamp to min/max zoom if provided
+    if (minZoom && parsedScale < minZoom) parsedScale = minZoom
+    if (maxZoom && parsedScale > maxZoom) parsedScale = maxZoom
+    // debug
+    // console.log('>>> setupVisualData parsedScale:', { initialZoom, parsedScale, minZoom, maxZoom })
     handleSetElementState(
       initialPosition?.x,
       initialPosition?.y,
-      safeScale,
+      parsedScale,
       initialAngle,
       initialZindex
     )

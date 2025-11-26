@@ -100,8 +100,14 @@ export const StickerElement = ({
       path,
       (naturalWidth, naturalHeight) => {
         const elementContainerRect = elementContainer.getBoundingClientRect()
-        const maxWidth = Math.min(elementContainerRect.width, 100)
-        const maxHeight = Math.min(elementContainerRect.height, 100)
+        // Nếu moveToCenter === true (thêm mới), giới hạn kích thước hiển thị nhỏ để vừa khung preview.
+        // Nếu load từ saved (moveToCenter falsy), giữ kích thước hiển thị lớn hơn để thể hiện đúng scale đã lưu.
+        const maxWidth = moveToCenter
+          ? Math.min(elementContainerRect.width, 100)
+          : Math.max(60, elementContainerRect.width - 16)
+        const maxHeight = moveToCenter
+          ? Math.min(elementContainerRect.height, 100)
+          : Math.max(60, elementContainerRect.height - 16)
         let cssText = `aspect-ratio: ${naturalWidth} / ${naturalHeight};`
         if (naturalWidth > maxWidth) {
           cssText += ` width: ${maxWidth}px;`
