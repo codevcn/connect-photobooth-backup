@@ -77,7 +77,11 @@ export const TemplatesPicker = ({ printedImages, classNames }: TTemplatePickerPr
   const allTemplates = useTemplateStore((s) => s.allTemplates)
 
   const finalTemplates = useMemo(() => {
-    const templates = [...allTemplates]
+    // Clone templates and their frames deeply enough to avoid mutating store objects
+    const templates = allTemplates.map((t) => ({
+      ...t,
+      frames: t.frames.map((f) => ({ ...f })),
+    }))
     let imgPoint: number = Number.MAX_SAFE_INTEGER
     let foundImage: TPrintedImage | null = null
     for (const template of templates) {
