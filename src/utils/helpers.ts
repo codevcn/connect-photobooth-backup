@@ -434,3 +434,38 @@ export const sortSizes = (sizes: string[]): string[] => {
 
   return [...sizes].sort((a, b) => getRank(a) - getRank(b))
 }
+export function adjustNearF3F4F6(hex: string): string {
+  const normalizeHex = (h: string) => {
+    const c = h.replace('#', '').trim()
+    return c.length === 3
+      ? c
+          .split('')
+          .map((x) => x + x)
+          .join('')
+      : c
+  }
+
+  const toRGB = (h: string) => ({
+    r: parseInt(h.slice(0, 2), 16),
+    g: parseInt(h.slice(2, 4), 16),
+    b: parseInt(h.slice(4, 6), 16),
+  })
+
+  const distance = (
+    c1: { r: number; g: number; b: number },
+    c2: { r: number; g: number; b: number }
+  ) => Math.sqrt(Math.pow(c1.r - c2.r, 2) + Math.pow(c1.g - c2.g, 2) + Math.pow(c1.b - c2.b, 2))
+
+  const input = toRGB(normalizeHex(hex))
+
+  const base = toRGB('f3f4f6') // màu #f3f4f6
+
+  const d = distance(input, base)
+
+  // Ngưỡng đánh giá "gần" màu f3f4f6
+  if (d < 25) {
+    return '#FFFFFF' // gần → trả về trắng
+  }
+
+  return '#f3f4f6' // còn lại → trả về f3f4f6
+}

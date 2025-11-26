@@ -6,6 +6,8 @@ import { EditedElementsArea } from './EditedElementsArea'
 import { AddToCartHandler } from './AddToCartHandler'
 import { initPlacedImageStyle } from '../helpers'
 import { adjustSizeOfPlacedImageOnPlaced } from './test'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
+import { adjustNearF3F4F6 } from '@/utils/helpers'
 
 type TDisplayedImage = {
   surfaceId: TBaseProduct['printAreaList'][number]['id']
@@ -28,6 +30,7 @@ export const LivePreview = ({
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find((printArea) => printArea.id === editedPrintSurfaceId)!
   }, [pickedProduct, editedPrintSurfaceId])
+  const pickedVariant = useProductUIDataStore((s) => s.pickedVariant)
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
     usePrintArea(printAreaInfo, adjustSizeOfPlacedImageOnPlaced)
@@ -109,6 +112,9 @@ export const LivePreview = ({
       <div
         ref={printAreaContainerRef}
         className="NAME-print-area-container w-full h-full overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
+        style={{
+          backgroundColor: adjustNearF3F4F6(pickedVariant?.color.value || '#ffffff'),
+        }}
       >
         <div
           style={{ display: isOutOfBounds ? 'block' : 'none' }}
