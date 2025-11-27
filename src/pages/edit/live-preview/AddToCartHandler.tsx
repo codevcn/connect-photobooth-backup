@@ -62,8 +62,16 @@ export const AddToCartHandler = ({
     onDoneAdd: () => void,
     onError: (error: Error) => void
   ) => {
-    console.log('>>> elementsVisualState:', elementsVisualState)
     if (!sessionId) return
+    if (
+      printAreaContainerRef.current?.querySelector<HTMLElement>(
+        '.NAME-print-area-allowed[data-is-out-of-bounds="true"]'
+      )
+    ) {
+      return onError(
+        new Error('Vui lòng đảm bảo tất cả phần tử nằm trong vùng in trước khi thêm vào giỏ hàng')
+      )
+    }
     const [message, pickedVariant, pickedProduct, pickedSurface] = validateBeforeAddToCart()
     if (message) {
       return onError(new Error(message))

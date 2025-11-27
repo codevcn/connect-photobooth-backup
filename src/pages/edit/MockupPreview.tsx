@@ -19,7 +19,17 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
    * Sử dụng modern-screenshot để có chất lượng cao
    */
   const generatePreview = () => {
-    const start1 = performance.now()
+    const container = document.body.querySelector<HTMLDivElement>('.NAME-print-area-container')
+    if (!container) {
+      return setError('Không tìm thấy khu vực chỉnh sửa')
+    }
+    if (
+      container.querySelector<HTMLElement>('.NAME-print-area-allowed[data-is-out-of-bounds="true"]')
+    ) {
+      setIsLoading(false)
+      return setError('Chỉnh sửa vượt ra ngoài vùng in cho phép. Vui lòng điều chỉnh lại.')
+    }
+
     setIsLoading(true)
     setError(null)
     const previewImage = previewImageRef.current
@@ -34,10 +44,6 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
       urlToRevokeRef.current = null
     }
 
-    const container = document.body.querySelector<HTMLDivElement>('.NAME-print-area-container')
-    if (!container) {
-      return setError('Không tìm thấy khu vực chỉnh sửa')
-    }
     const { removeMockPrintArea, printAreaContainer } =
       cleanPrintAreaOnExtractMockupImage(container)
     if (!printAreaContainer) {
@@ -167,12 +173,12 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
                 <line x1="12" x2="12" y1="8" y2="12" />
                 <line x1="12" x2="12.01" y1="16" y2="16" />
               </svg>
-              <p className="text-red-600 font-medium">{error}</p>
+              <p className="text-red-600 font-medium px-4 py-2">{error}</p>
               <button
-                onClick={generatePreview}
-                className="px-4 py-2 bg-main-cl text-white rounded-lg hover:bg-main-hover-cl transition-colors font-medium"
+                onClick={onClose}
+                className="px-4 py-2 bg-main-cl text-white rounded-lg mobile-touch"
               >
-                Thử lại
+                Thoát
               </button>
             </div>
           )}

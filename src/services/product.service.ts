@@ -2,6 +2,15 @@ import { TBaseProduct } from '@/utils/types/global'
 import { getFetchProductsCatalog, postPreSendMockupImage } from './api/product.api'
 import { TPreSentMockupImageRes } from '@/utils/types/api'
 import { ProductAdapter } from './adapter/product.adapter'
+import { apiCache } from '@/dev/api-cache'
+
+// Cache keys
+const CACHE_KEYS = {
+  PRODUCTS: (page: number, limit: number) => `products_${page}_${limit}`,
+}
+
+// Cache TTL: 30 minutes for product data
+const PRODUCT_CACHE_TTL = 900000 * 60 * 1000
 
 class ProductService {
   /**
@@ -24,11 +33,14 @@ class ProductService {
   }
 
   /**
-   * Main method - fetch from API with fallback to mock on error
+   * Main method - fetch from API with cache support
    */
   async fetchProductsByPage(page: number, limit: number): Promise<TBaseProduct[]> {
-    return await this.fetchProducts(page, limit)
-    // return await this.fetchProductsMock(page, limit)
+    return apiCache.withCache(
+      CACHE_KEYS.PRODUCTS(page, limit),
+      () => this.fetchProducts(page, limit),
+      PRODUCT_CACHE_TTL
+    )
   }
 
   async preSendMockupImage(image: Blob, filename: string): Promise<TPreSentMockupImageRes> {

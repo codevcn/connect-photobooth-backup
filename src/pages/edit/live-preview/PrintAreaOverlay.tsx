@@ -179,6 +179,7 @@ export const PrintAreaOverlay = ({
             : 'rgba(96, 165, 250, 0.1)'
           : 'transparent',
       }}
+      data-is-out-of-bounds={isOutOfBounds}
     >
       {pickedTemplate && (
         <FramesDisplayer

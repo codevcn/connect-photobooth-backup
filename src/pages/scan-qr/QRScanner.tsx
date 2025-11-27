@@ -3,6 +3,7 @@ import QrScanner from 'qr-scanner'
 import { qrGetter } from '@/configs/brands/photoism/qr-getter'
 import { toast } from 'react-toastify'
 import { TUserInputImage } from '@/utils/types/global'
+import { useFastBoxes } from '@/hooks/use-fast-boxes'
 
 interface QRScannerProps {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -14,6 +15,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const [isScanning, setIsScanning] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
+  const { detectFromFile, isReady, detectFromUrl } = useFastBoxes()
 
   const initializeScanner = useCallback(() => {
     if (!videoRef.current) return
@@ -94,7 +96,9 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   }, [error])
 
   useEffect(() => {
+    if (!isReady) return
     setTimeout(() => {
+      qrGetter.setDetectFromFileHandler(detectFromFile as any)
       qrGetter
         .handleImageData('https://qr.seobuk.kr/s/8ijZsg_', (percentage, images, error) => {
           setProgress(percentage)
@@ -104,7 +108,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
             return
           }
           if (images) {
-            console.log('>>> images:', images)
+            console.log('>>> images extracted:', images)
             onScanSuccess(
               images.map((img) => ({
                 ...img,
@@ -118,7 +122,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
           setError('Không thể xử lý mã QR. Vui lòng thử lại.')
         })
     }, 500)
-  }, [])
+  }, [isReady])
 
   return (
     // <div className="w-full">

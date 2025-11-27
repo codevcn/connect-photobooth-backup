@@ -1,6 +1,7 @@
 import { TUserInputImage } from '@/utils/types/global'
 import { TGetCustomerMediaResponse } from './types'
 import { canvasToBlob } from '@/utils/helpers'
+import { TDetectionResult } from '@/hooks/use-fast-boxes'
 
 type TGetImageDataProgressCallback = (
   percentage: number,
@@ -10,7 +11,7 @@ type TGetImageDataProgressCallback = (
 
 let count = 0
 const getLinkByCount = () => {
-  return 'https://api.encycom.com/files/1764043107649-213696048.jpg'
+  return 'http://localhost:3000/images/image-to-test.jpg'
   // if (count === 1) {
   //   count++
   //   return 'https://photobooth-public.s3.ap-southeast-1.amazonaws.com/d63a64aa48c6c4989dd7.jpg'
@@ -26,25 +27,69 @@ const getLinkByCount = () => {
 }
 
 type TSendLinkToServerResponse = {
-  image_part: { x: number; y: number; w: number; h: number }[]
-  meta: { orig_w: number; orig_h: number; proc_w: number; proc_h: number; scale_ratio: number }
+  image_part: {
+    x: number
+    y: number
+    w: number
+    h: number
+  }[]
+  meta: {
+    orig_w: number
+    orig_h: number
+    proc_w: number
+    proc_h: number
+    scale_ratio: number
+  }
 }
 
+type TDetectFromUrlFunction = (imageUrl: string) => Promise<TDetectionResult>
+type TDetectFromFileFunction = (imageBlob: Blob) => Promise<TDetectionResult>
+
 class QRGetter {
-  private async sendLinkToServer(url: string): Promise<TSendLinkToServerResponse> {
-    // await delay(1000)
-    // const data = await fetch(
-    //   `https://financial-text-avenue-keeps.trycloudflare.com/img?u=${encodeURIComponent(url)}`
-    // )
-    // const json = await data.json()
-    // return json as TSendLinkToServerResponse
+  private detectFromUrl: TDetectFromUrlFunction | null = null
+  private detectFromFile: TDetectFromFileFunction | null = null
+
+  /**
+   * Set hàm detectFromUrl từ hook useFastBoxes
+   * Cần gọi hàm này trước khi sử dụng handleImageData
+   */
+  setDetectFromUrlHandler(detectFromUrl: TDetectFromUrlFunction) {
+    this.detectFromUrl = detectFromUrl
+  }
+
+  setDetectFromFileHandler(detectFromFile: TDetectFromFileFunction) {
+    this.detectFromFile = detectFromFile
+  }
+
+  private async extractImageToParts(imageBlob: Blob): Promise<TSendLinkToServerResponse> {
+    if (!this.detectFromFile) {
+      throw new Error('Hàm phát hiện ảnh từ URL WASM chưa được thiết lập.')
+    }
+
+    const result = await this.detectFromFile(imageBlob)
+
+    if (!result.success || !result.boxes) {
+      throw new Error(result.error || 'Face detection failed')
+    }
+
+    // Convert bounding boxes từ WASM format sang format cần thiết
+    const image_part = result.boxes.map((box) => ({
+      x: box.x,
+      y: box.y,
+      w: box.width,
+      h: box.height,
+    }))
+
+    // Tạo mock meta data (có thể cần điều chỉnh dựa trên ảnh thực tế)
     return {
-      image_part: [
-        { x: 1685, y: 301, w: 1549, h: 1236 },
-        { x: 3265, y: 301, w: 1543, h: 1236 },
-        { x: 110, y: 301, w: 1543, h: 1236 },
-      ],
-      meta: { orig_w: 4920, orig_h: 1652, proc_w: 800, proc_h: 268, scale_ratio: 6.15 },
+      image_part,
+      meta: {
+        orig_w: 0, // Sẽ cần lấy từ ảnh thực tế
+        orig_h: 0,
+        proc_w: 0,
+        proc_h: 0,
+        scale_ratio: 1,
+      },
     }
   }
 
@@ -255,6 +300,7 @@ class QRGetter {
     try {
       const fileId = await this.getFileId(url, onProgress)
       const data = await this.getFileInfo(fileId, onProgress)
+      console.log('>>> data:', data)
       await this.fetchImageData(data.content.fileInfo.picFile.path, onProgress)
     } catch (err) {
       console.error('>>> Lỗi lấy dữ liệu hình ảnh tại local:', err)
@@ -262,7 +308,7 @@ class QRGetter {
     }
   }
 
-  private async extractImageDataAtServer(
+  private async extractImageDataAtLocalWithWasm(
     totalImageToExtractAtServer: number,
     imageIndex: number,
     imageURL: string,
@@ -270,7 +316,7 @@ class QRGetter {
     onProgress: TGetImageDataProgressCallback
   ): Promise<void> {
     try {
-      const result = await this.sendLinkToServer(imageURL)
+      const result = await this.extractImageToParts(imageBlob)
       onProgress(90, null, null)
       const croppedImages = await this.cropImageFromBlob(imageBlob, result.image_part)
       onProgress(
@@ -288,12 +334,13 @@ class QRGetter {
   async handleImageData(url: string, onProgress: TGetImageDataProgressCallback): Promise<void> {
     const finalImageDataList: TUserInputImage[] = []
     await this.extractImageDataAtLocal(url, async (percentage, imgList, error) => {
+      console.log('>>> Progress extractImageDataAtLocal:', percentage)
       onProgress(percentage, null, error)
       if (imgList) {
         finalImageDataList.push(...imgList)
         await Promise.allSettled(
           imgList.map((img, index) =>
-            this.extractImageDataAtServer(
+            this.extractImageDataAtLocalWithWasm(
               imgList.length,
               index,
               img.url,
@@ -301,6 +348,7 @@ class QRGetter {
               (percentage, imgList, error) => {
                 onProgress(percentage, null, error)
                 if (imgList) {
+                  console.log('>>> imgList:', imgList)
                   finalImageDataList.push(...imgList)
                 }
               }

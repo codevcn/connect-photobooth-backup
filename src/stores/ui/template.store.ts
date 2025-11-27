@@ -26,8 +26,8 @@ type TTemplateStore = {
     frameId: string,
     templateId: TPrintTemplate['id']
   ) => TTemplateFrame | undefined
-  initializeAddingTemplates: (templates: TPrintTemplate[], isFinal: boolean) => void
-  pickTemplate: (template: TPrintTemplate, printAreaForTemplate: TPrintAreaInfo) => void
+  initializeAddingTemplates: (templates: TPrintTemplate[]) => void
+  pickTemplate: (templateId: TPrintTemplate['id'], printAreaForTemplate: TPrintAreaInfo) => void
   hideShowTemplatePicker: (show: boolean) => void
   pickFrame: (frame: TTemplateFrame | undefined) => void
   addImageToFrame: (printedImage: TPrintedImage, printAreaSize: TSizeInfo, frameId?: string) => void
@@ -63,32 +63,28 @@ export const useTemplateStore = create(
       return undefined
     },
 
-    initializeAddingTemplates: (templates, isFinal = false) => {
-      if (isFinal) {
-        const toCheckUnique = new Map<TPrintTemplate['id'], TPrintTemplate>()
-        for (const t of get().allTemplates) {
-          toCheckUnique.set(t.id, t)
-        }
-        for (const t of templates) {
-          toCheckUnique.set(t.id, t)
-        }
-        for (const t of hardCodedPrintTemplates()) {
-          if (!toCheckUnique.has(t.id)) {
-            toCheckUnique.set(t.id, t)
-          }
-        }
-        set({
-          allTemplates: [...toCheckUnique.values()],
-        })
-      } else {
-        set({
-          allTemplates: [...get().allTemplates, ...templates],
-        })
+    initializeAddingTemplates: (templates) => {
+      const toCheckUnique = new Map<TPrintTemplate['id'], TPrintTemplate>()
+      for (const t of get().allTemplates) {
+        toCheckUnique.set(t.id, t)
       }
+      for (const t of templates) {
+        toCheckUnique.set(t.id, t)
+      }
+      for (const t of hardCodedPrintTemplates()) {
+        if (!toCheckUnique.has(t.id)) {
+          toCheckUnique.set(t.id, t)
+        }
+      }
+      set({
+        allTemplates: [...toCheckUnique.values()],
+      })
     },
 
-    pickTemplate: (template, printAreaForTemplate) => {
-      const { pickedTemplate } = get()
+    pickTemplate: (templateId: TPrintTemplate['id'], printAreaForTemplate) => {
+      const { pickedTemplate, allTemplates } = get()
+      const template = allTemplates.find((t) => t.id === templateId)
+      if (!template) return
       if (pickedTemplate && pickedTemplate.id === template.id) return
       for (const frame of template.frames) {
         assignFrameSizeByTemplateType(

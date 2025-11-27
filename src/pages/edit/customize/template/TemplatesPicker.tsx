@@ -1,4 +1,4 @@
-import { TPrintedImage, TPrintTemplate, TTemplateFrame } from '@/utils/types/global'
+import { TPrintedImage, TPrintTemplate } from '@/utils/types/global'
 import { cn } from '@/configs/ui/tailwind-utils'
 import { useTemplateStore } from '@/stores/ui/template.store'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
@@ -6,11 +6,7 @@ import { TemplateFrame } from './TemplateFrame'
 import type React from 'react'
 import { styleToFramesDisplayerByTemplateType } from '@/configs/print-template/templates-helpers'
 import { useEffect, useMemo } from 'react'
-import {
-  initFramePlacedImageByPrintedImage,
-  matchBestPrintedImageToTemplate,
-  matchPrintedImageToShapeSize,
-} from '../../helpers'
+import { assignMockFrameSizeToTemplate, initFramePlacedImageByPrintedImage } from '../../helpers'
 
 type TFramesDisplayerProps = {
   template: TPrintTemplate
@@ -82,79 +78,49 @@ export const TemplatesPicker = ({ printedImages, classNames }: TTemplatePickerPr
       ...t,
       frames: t.frames.map((f) => ({ ...f })),
     }))
-    let imgPoint: number = Number.MAX_SAFE_INTEGER
-    let foundImage: TPrintedImage | null = null
+    console.log('>>> [sss] info:', { templates, printedImages })
     for (const template of templates) {
-      let foundFrame: TTemplateFrame | null = null
       for (const frame of template.frames) {
-        let point: number = 0
-        if (template.type === '1-square') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[2])
-        } else if (template.type === '2-horizon') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[0])
-        } else if (template.type === '2-vertical') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[1])
-        } else if (template.type === '3-left') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[1])
-        } else if (template.type === '3-right') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[1])
-        } else if (template.type === '3-top') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[1])
-        } else if (template.type === '3-bottom') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[1])
-        } else if (template.type === '4-square') {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[2])
-        } else {
-          frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[1])
+        assignMockFrameSizeToTemplate('square', template.type, frame)
+        console.log('>>> [sss] info:', { frame })
+        let imgPoint: number = Infinity
+        for (const image of printedImages) {
+          let point: number = 0
+          const frameW = frame.width
+          const frameH = frame.height
+          const imgW = image.width
+          const imgH = image.height
+          const imgRatio = imgW / imgH
+          const frameRatio = frameW / frameH
+          if (imgRatio > frameRatio) {
+            const imgWScaled = frameW
+            const imgHScaled = imgWScaled / imgRatio
+            point = Math.abs(frameH * frameW - imgHScaled * imgWScaled)
+          } else if (imgRatio < frameRatio) {
+            const imgHScaled = frameH
+            const imgWScaled = imgHScaled * imgRatio
+            point = Math.abs(frameH * frameW - imgHScaled * imgWScaled)
+          }
+          if (point < imgPoint) {
+            imgPoint = point
+            frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, image)
+          }
         }
-        // const match = matchPrintedImageToShapeSize(
-        //   {
-        //     width: frame.width,
-        //     height: frame.height,
-        //   },
-        //   {
-        //     height: image.height,
-        //     width: image.width,
-        //   }
-        // )
-        // if (match) {
-        //   point += Math.abs(frame.width / frame.height - image.width / image.height) || 1
-        // }
-        // if (point < imgPoint) {
-        //   imgPoint = point
-        //   frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, image)
-        //   foundFrame = frame
-        // }
       }
-      // if (!foundFrame) {
-      //   for (const frame of template.frames) {
-      //     frame.placedImage = initFramePlacedImageByPrintedImage(frame.index, printedImages[0])
-      //   }
-      // }
     }
-    console.log('>>> templates:', templates)
-    // for (const template of templates) {
-    //   useTemplateStore.get
-    // }
-    // useTemplateStore.getState().initializeAddingTemplates(templates, false)
     return templates
   }, [allTemplates, printedImages])
 
   useEffect(() => {
-    //lát nữa nếu mà có sửa thì nhớ sửa
-    let index = 0
     for (const template of finalTemplates) {
-      useTemplateStore
-        .getState()
-        .initializeAddingTemplates([template], index === finalTemplates.length - 1)
-      index++
+      useTemplateStore.getState().initializeAddingTemplates([template])
     }
   }, [])
 
   const handlePickTemplate = (template: TPrintTemplate) => {
     const pickedSurface = useProductUIDataStore.getState().pickedSurface
     if (!pickedSurface) return
-    useTemplateStore.getState().pickTemplate(template, pickedSurface)
+    useTemplateStore.getState().pickTemplate(template.id, pickedSurface)
   }
 
   return (

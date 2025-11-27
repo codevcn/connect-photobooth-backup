@@ -355,7 +355,9 @@ export type TSizeInfo = {
   width: number
 }
 
-export type TPrintAreaShapeType = 'square' | 'portrait' | 'landscape'
+export type TShapeOrientationType = 'portrait' | 'landscape' | 'square'
+
+export type TPrintAreaShapeType = TShapeOrientationType
 
 export type TPlacementDirection = {
   left: number

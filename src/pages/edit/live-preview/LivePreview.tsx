@@ -4,10 +4,10 @@ import { useEffect, useMemo, useRef } from 'react'
 import { PrintAreaOverlay } from './PrintAreaOverlay'
 import { EditedElementsArea } from './EditedElementsArea'
 import { AddToCartHandler } from './AddToCartHandler'
-import { initPlacedImageStyle } from '../helpers'
 import { adjustSizeOfPlacedImageOnPlaced } from './test'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { adjustNearF3F4F6 } from '@/utils/helpers'
+import { SectionLoading } from '@/components/custom/Loading'
 
 type TDisplayedImage = {
   surfaceId: TBaseProduct['printAreaList'][number]['id']
@@ -53,8 +53,8 @@ export const LivePreview = ({
 
   const imgURLRef = useRef<string>(displayedImage.imageURL)
 
-  const displayProductChangingModal = () => {
-    if (imgURLRef.current === displayedImage.imageURL) return
+  const displayProductChangingModal = (forceShow: boolean = false) => {
+    if (!forceShow && imgURLRef.current === displayedImage.imageURL) return
     const modal = document.body.querySelector<HTMLElement>('.NAME-product-changing-modal')
     const maxTimeWait = 6000
     if (modal) {
@@ -65,8 +65,8 @@ export const LivePreview = ({
     }
   }
 
-  const removeProductChangingModal = () => {
-    if (imgURLRef.current === displayedImage.imageURL) return
+  const removeProductChangingModal = (forceHide: boolean = false) => {
+    if (!forceHide && imgURLRef.current === displayedImage.imageURL) return
     imgURLRef.current = displayedImage.imageURL
     const modal = document.body.querySelector<HTMLElement>('.NAME-product-changing-modal')
     if (modal) {
@@ -76,7 +76,10 @@ export const LivePreview = ({
 
   useEffect(() => {
     displayProductChangingModal()
-  }, [displayedImage])
+    setTimeout(() => {
+      removeProductChangingModal()
+    }, 6000)
+  }, [displayedImage.imageURL])
 
   useEffect(() => {
     adjustSizeOfPlacedImageOnPlaced()
@@ -88,28 +91,11 @@ export const LivePreview = ({
         checkIfAnyElementOutOfBounds={checkIfAnyElementOutOfBounds}
         printAreaContainerRef={printAreaContainerRef}
       />
-      <div className="NAME-product-changing-modal hidden absolute inset-0 z-99 bg-black/30 justify-center items-center">
-        <div className="p-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-loader-icon lucide-loader w-16 h-16 text-white animate-spin"
-          >
-            <path d="M12 2v4" />
-            <path d="m16.2 7.8 2.9-2.9" />
-            <path d="M18 12h4" />
-            <path d="m16.2 16.2 2.9 2.9" />
-            <path d="M12 18v4" />
-            <path d="m4.9 19.1 2.9-2.9" />
-            <path d="M2 12h4" />
-            <path d="m4.9 4.9 2.9 2.9" />
-          </svg>
-        </div>
+      <div className="NAME-product-changing-modal flex absolute inset-0 z-99 bg-black/30 justify-center items-center">
+        <SectionLoading
+          message="Đang tải ảnh sản phẩm..."
+          classNames={{ shapesContainer: 'text-white', message: 'text-white' }}
+        />
       </div>
       <div
         ref={printAreaContainerRef}
@@ -131,7 +117,7 @@ export const LivePreview = ({
           alt={displayedImage.altText}
           crossOrigin="anonymous"
           className="NAME-product-image w-full h-full object-contain object-center relative z-4"
-          onLoad={removeProductChangingModal}
+          onLoad={() => removeProductChangingModal(true)}
         />
         <PrintAreaOverlay
           printAreaRef={printAreaRef}

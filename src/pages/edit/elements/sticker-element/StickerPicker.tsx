@@ -138,7 +138,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
 
         {/* Sticker Groups Tabs */}
         <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto gallery-scroll">
             {stickerGroups.map((group, index) => {
               const isSelected = selectedGroupIndex === index
               return (

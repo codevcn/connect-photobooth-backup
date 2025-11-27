@@ -21,6 +21,7 @@ type TInitialContentsType =
   | 'PLACED_IMG_SQUARE_ROTATION'
   | 'MAX_DIFF_RATIO_VALUE'
   | 'PLACED_IMG_DIRECTION'
+  | 'MOCK_TEMPLATE_HEIGHT_BY_TEMPLATE_TYPE'
 
 export const getInitialContants = <R>(type: TInitialContentsType): R => {
   switch (type) {
@@ -68,6 +69,8 @@ export const getInitialContants = <R>(type: TInitialContentsType): R => {
       return 0.1 as R
     case 'PLACED_IMG_DIRECTION':
       return 'center' as R
+    case 'MOCK_TEMPLATE_HEIGHT_BY_TEMPLATE_TYPE':
+      return 1000 as R
     default:
       return null as R
   }

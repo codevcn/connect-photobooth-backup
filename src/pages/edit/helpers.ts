@@ -5,8 +5,10 @@ import {
   TPlacedImageMetaData,
   TPrintedImage,
   TPrintTemplate,
+  TShapeOrientationType,
   TSizeInfo,
   TTemplateFrame,
+  TTemplateType,
 } from '@/utils/types/global'
 import {
   assignFrameSizeByTemplateType,
@@ -357,4 +359,68 @@ export const captureCurrentElementPosition = (
 
   element.dataset.leftPercent = `${leftPercent}`
   element.dataset.topPercent = `${topPercent}`
+}
+
+export const assignMockFrameSizeToTemplate = (
+  templateShapeType: TShapeOrientationType,
+  templateType: TTemplateType,
+  frame: TTemplateFrame
+) => {
+  const template = hardCodedPrintTemplates(templateType)
+  const templateH: number = getInitialContants<number>('MOCK_TEMPLATE_HEIGHT_BY_TEMPLATE_TYPE')
+  const templateW: number = templateH
+  let defaultFrameW = templateW
+  let defaultFrameH = templateH
+  switch (templateType) {
+    case '2-horizon':
+      defaultFrameH = templateH / 2
+      break
+    case '2-vertical':
+      defaultFrameW = templateW / 2
+      break
+    case '3-left':
+      if (frame.index === 2) {
+        defaultFrameW = templateW / 2
+      } else {
+        defaultFrameW = templateW / 2
+        defaultFrameH = templateH / 2
+      }
+      break
+    case '3-right':
+      if (frame.index === 1) {
+        defaultFrameW = templateW / 2
+      } else {
+        defaultFrameW = templateW / 2
+        defaultFrameH = templateH / 2
+      }
+      break
+    case '3-top':
+      if (frame.index === 3) {
+        defaultFrameH = templateH / 2
+      } else {
+        defaultFrameW = templateW / 2
+        defaultFrameH = templateH / 2
+      }
+      break
+    case '3-bottom':
+      if (frame.index === 1) {
+        defaultFrameH = templateH / 2
+      } else {
+        defaultFrameW = templateW / 2
+        defaultFrameH = templateH / 2
+      }
+      break
+    case '4-square':
+      defaultFrameW = templateW / 2
+      defaultFrameH = templateH / 2
+      break
+    case '4-horizon':
+      defaultFrameH = templateH / 4
+      break
+    case '4-vertical':
+      defaultFrameW = templateW / 4
+      break
+  }
+  frame.width = defaultFrameW
+  frame.height = defaultFrameH
 }

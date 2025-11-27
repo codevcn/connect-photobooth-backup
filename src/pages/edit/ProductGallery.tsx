@@ -2,7 +2,7 @@ import { TBaseProduct, TPrintedImage, TPrintTemplate } from '@/utils/types/globa
 import { PrintAreaOverlayPreview } from './live-preview/PrintAreaOverlay'
 import { usePrintArea } from '@/hooks/use-print-area'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
-import { initPlacedImageStyle, initTheBestTemplateForPrintedImages } from './helpers'
+import { initTheBestTemplateForPrintedImages } from './helpers'
 import { useEffect } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { useTemplateStore } from '@/stores/ui/template.store'
@@ -11,7 +11,7 @@ type TProductProps = {
   product: TBaseProduct
   initialTemplate: TPrintTemplate
   onPickProduct: (product: TBaseProduct, initialTemplate: TPrintTemplate) => void
-  onInitFirstProduct: (prod: TBaseProduct, initialTemplate: TPrintTemplate) => void
+  onInitFirstProduct: (initialTemplate: TPrintTemplate) => void
   isPicked: boolean
 }
 
@@ -25,7 +25,7 @@ const Product = ({
   const { printAreaRef, printAreaContainerRef } = usePrintArea(product.printAreaList[0])
 
   useEffect(() => {
-    onInitFirstProduct(product, initialTemplate)
+    onInitFirstProduct(initialTemplate)
   }, [])
 
   return (
@@ -60,6 +60,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const handlePickProduct = useProductUIDataStore((s) => s.handlePickProduct)
   const initializeAddingTemplates = useTemplateStore((s) => s.initializeAddingTemplates)
+  const allTemplates = useTemplateStore((s) => s.allTemplates)
 
   const scrollToPickedProduct = () => {
     if (pickedProduct) {
@@ -72,14 +73,14 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     }
   }
 
-  const handleInitFirstProduct = (
-    prod: TBaseProduct,
-    initialTemplate: TPrintTemplate,
-    isFinal: boolean
-  ) => {
-    initFirstProduct(prod, initialTemplate)
-    initializeAddingTemplates([initialTemplate], isFinal)
+  const handleInitFirstProduct = (initialTemplate: TPrintTemplate) => {
+    initializeAddingTemplates([initialTemplate])
   }
+
+  useEffect(() => {
+    if (allTemplates.length === 0) return
+    initFirstProduct(products[0], allTemplates[0])
+  }, [allTemplates.length])
 
   useEffect(() => {
     scrollToPickedProduct()
@@ -99,7 +100,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       <div className="NAME-products-gallery spmd:overflow-y-auto spmd:max-h-full spmd:flex-col smpd:px-1.5 px-3 py-2 overflow-x-auto gallery-scroll w-full h-fit flex items-center gap-3">
         {products &&
           products.length > 0 &&
-          products.map((product, index) => {
+          products.map((product) => {
             const printArea = product.printAreaList[0].area
             return (
               <Product
@@ -113,9 +114,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
                   printedImages
                 )}
                 onPickProduct={handlePickProduct}
-                onInitFirstProduct={(prod, initialTemplate) =>
-                  handleInitFirstProduct(prod, initialTemplate, index === products.length - 1)
-                }
+                onInitFirstProduct={(initialTemplate) => handleInitFirstProduct(initialTemplate)}
                 isPicked={product.id === pickedProduct?.id}
               />
             )
