@@ -42,7 +42,7 @@ export const StickerElement = ({
     forDrag: { ref: refForDrag },
     state: { position, angle, scale, zindex },
     handleSetElementState,
-  } = useElementControl(id, rootRef, printAreaContainerRef, elementContainerRef, {
+  } = useElementControl(id, {
     maxZoom: MAX_ZOOM,
     minZoom: MIN_ZOOM,
     angle: element.angle,

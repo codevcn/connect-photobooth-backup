@@ -10,7 +10,14 @@
       "description": "abc",
       "status": "active",
       "attributes_json": {},
-      "detail_img": [],
+      "detail_img": [
+        "https://api.encycom.com/files/1764141284848-80484747.jpg",
+        "https://api.encycom.com/files/1764149678671-477028587.png",
+        "https://api.encycom.com/files/1764149682691-256770195.png",
+        "https://api.encycom.com/files/1764149687071-142009101.png",
+        "https://api.encycom.com/files/1764149693564-654916627.png",
+        "https://api.encycom.com/files/1764149701344-400365473.png"
+      ],
       "created_at": "2025-11-28T09:47:07.810Z",
       "updated_at": "2025-11-28T09:47:07.810Z",
       "variants": [
@@ -350,10 +357,7 @@
       "description": "Compact photo album with customizable cover and inner sleeves.",
       "status": "active",
       "attributes_json": {
-        "pages": [
-          20,
-          40
-        ],
+        "pages": [20, 40],
         "category": "album"
       },
       "detail_img": [],

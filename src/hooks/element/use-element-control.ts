@@ -52,9 +52,8 @@ type TElementControlReturn = {
 
 export const useElementControl = (
   elementId: string,
-  elementRootRef: React.RefObject<HTMLElement | null>,
-  containerElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
-  printAreaAllowedRef: React.RefObject<HTMLDivElement | null>,
+  // elementRootRef: React.RefObject<HTMLElement | null>,
+  // conatinerElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
   initialParams?: TInitialParams
 ): TElementControlReturn => {
   const {
@@ -109,11 +108,11 @@ export const useElementControl = (
     currentPosition: position,
     setCurrentPosition: setPosition,
     postFunctionDrag: () => {
-      const element = elementRootRef.current
-      if (!element) return
-      const container = containerElementAbsoluteToRef.current
-      if (!container) return
-      captureCurrentElementPosition(element, container)
+      // const element = elementRootRef.current
+      // if (!element) return
+      // const container = conatinerElementAbsoluteToRef.current
+      // if (!container) return
+      // captureCurrentElementPosition(element, container)
     },
   })
 
@@ -201,70 +200,70 @@ export const useElementControl = (
   }
 
   const scaleAndScaleElementOnAllowedPrintAreaChange = () => {
-    const elementRootRect = elementRootRef.current?.getBoundingClientRect()
-    if (!elementRootRect) return
-    const allowedPrintAreaRect = printAreaAllowedRef.current?.getBoundingClientRect()
-    if (!allowedPrintAreaRect) return
-    const printAreaContainerRect = containerElementAbsoluteToRef.current?.getBoundingClientRect()
-    if (!printAreaContainerRect) return
+    // const elementRootRect = elementRootRef.current?.getBoundingClientRect()
+    // if (!elementRootRect) return
+    // const allowedPrintAreaRect = printAreaAllowedRef.current?.getBoundingClientRect()
+    // if (!allowedPrintAreaRect) return
+    // const printAreaContainerRect = containerElementAbsoluteToRef.current?.getBoundingClientRect()
+    // if (!printAreaContainerRect) return
 
-    const relativeData = elementRootRef.current?.getAttribute('data-element-relative-props')
-    if (!relativeData) return
-    const parsedData = JSON.parse(relativeData) as TElementRelativeProps
-    console.log('>>> [ppp] parsed data:', parsedData)
+    // const relativeData = elementRootRef.current?.getAttribute('data-element-relative-props')
+    // if (!relativeData) return
+    // const parsedData = JSON.parse(relativeData) as TElementRelativeProps
+    // console.log('>>> [ppp] parsed data:', parsedData)
 
-    const { element } = parsedData
+    // const { element } = parsedData
 
-    const newX = element.left + allowedPrintAreaRect.left - printAreaContainerRect.left
-    const newY = element.top + allowedPrintAreaRect.top - printAreaContainerRect.top
+    // const newX = element.left + allowedPrintAreaRect.left - printAreaContainerRect.left
+    // const newY = element.top + allowedPrintAreaRect.top - printAreaContainerRect.top
 
-    //>>> còn thiếu phát hiện va chạm với biên của vùng in allowedPrintAreaRect
-    console.log('>>> [ppp] news:', { newX, newY })
-    setPosition({
-      x: newX,
-      y: newY,
-    })
+    // //>>> còn thiếu phát hiện va chạm với biên của vùng in allowedPrintAreaRect
+    // console.log('>>> [ppp] news:', { newX, newY })
+    // setPosition({
+    //   x: newX,
+    //   y: newY,
+    // })
   }
 
   const captureElementRelativeProperties = () => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const allowedPrintAreaRect = printAreaAllowedRef.current?.getBoundingClientRect()
-        if (!allowedPrintAreaRect) return
-        const root = elementRootRef.current
-        if (!root) return
-        const rootRect = root.getBoundingClientRect()
-        root.setAttribute(
-          'data-element-relative-props',
-          JSON.stringify(
-            typeToObject<TElementRelativeProps>({
-              element: {
-                left: rootRect.left - allowedPrintAreaRect.left,
-                top: rootRect.top - allowedPrintAreaRect.top,
-              },
-            })
-          )
-        )
-      })
-    })
+    // requestAnimationFrame(() => {
+    //   requestAnimationFrame(() => {
+    //     const allowedPrintAreaRect = printAreaAllowedRef.current?.getBoundingClientRect()
+    //     if (!allowedPrintAreaRect) return
+    //     const root = elementRootRef.current
+    //     if (!root) return
+    //     const rootRect = root.getBoundingClientRect()
+    //     root.setAttribute(
+    //       'data-element-relative-props',
+    //       JSON.stringify(
+    //         typeToObject<TElementRelativeProps>({
+    //           element: {
+    //             left: rootRect.left - allowedPrintAreaRect.left,
+    //             top: rootRect.top - allowedPrintAreaRect.top,
+    //           },
+    //         })
+    //       )
+    //     )
+    //   })
+    // })
   }
 
   const dragElementAlongWithPrintContainer = () => {
-    const elementRoot = elementRootRef.current
-    if (!elementRoot) return
-    const container = containerElementAbsoluteToRef.current
-    if (!container) return
-    const leftPercent = parseFloat(elementRoot.dataset.leftPercent || '')
-    const topPercent = parseFloat(elementRoot.dataset.topPercent || '')
-    if (!isNaN(leftPercent) && !isNaN(topPercent)) {
-      const containerRect = container.getBoundingClientRect()
-      const newX = (leftPercent / 100) * containerRect.width
-      const newY = (topPercent / 100) * containerRect.height
-      setPosition({
-        x: newX,
-        y: newY,
-      })
-    }
+    // const elementRoot = elementRootRef.current
+    // if (!elementRoot) return
+    // const container = containerElementAbsoluteToRef.current
+    // if (!container) return
+    // const leftPercent = parseFloat(elementRoot.dataset.leftPercent || '')
+    // const topPercent = parseFloat(elementRoot.dataset.topPercent || '')
+    // if (!isNaN(leftPercent) && !isNaN(topPercent)) {
+    //   const containerRect = container.getBoundingClientRect()
+    //   const newX = (leftPercent / 100) * containerRect.width
+    //   const newY = (topPercent / 100) * containerRect.height
+    //   setPosition({
+    //     x: newX,
+    //     y: newY,
+    //   })
+    // }
   }
 
   useEffect(() => {
@@ -286,16 +285,16 @@ export const useElementControl = (
 
   useEffect(() => {
     // Setup ResizeObserver to watch for print container size changes
-    const container = containerElementAbsoluteToRef.current
-    if (!container) return
-    const containerObserver = new ResizeObserver((entries) => {
-      dragElementAlongWithPrintContainer()
-    })
-    containerObserver.observe(container)
-    eventEmitter.on
-    return () => {
-      containerObserver.unobserve(container)
-    }
+    // const container = containerElementAbsoluteToRef.current
+    // if (!container) return
+    // const containerObserver = new ResizeObserver((entries) => {
+    //   dragElementAlongWithPrintContainer()
+    // })
+    // containerObserver.observe(container)
+    // eventEmitter.on
+    // return () => {
+    //   containerObserver.unobserve(container)
+    // }
   }, [elementId])
 
   useEffect(() => {

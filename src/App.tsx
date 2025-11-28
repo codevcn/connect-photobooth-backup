@@ -30,6 +30,7 @@ import IntroPage from './pages/intro/Page'
 import { isHomePage } from './utils/helpers'
 import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
+import MaintainPage from './pages/maintain/Page'
 
 // const IdleCountdown = () => {
 //   const navigate = useNavigate()
@@ -107,4 +108,8 @@ function App() {
   )
 }
 
-export default App
+function AppWrapper() {
+  return <MaintainPage />
+}
+
+export default AppWrapper

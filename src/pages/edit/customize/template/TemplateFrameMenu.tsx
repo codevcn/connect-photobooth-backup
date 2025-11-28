@@ -1,6 +1,6 @@
 import { getInitialContants } from '@/utils/contants'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { TElementType, TPrintedImageVisualState } from '@/utils/types/global'
+import { TElementType } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { CropElementModal } from './CropElementModal'
 import { createPortal } from 'react-dom'
@@ -289,7 +289,7 @@ export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: Printed
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
     if (type !== 'printed-image' || frameId !== idOfElement) return
     const dataset = JSON.parse(rootElement?.getAttribute('data-visual-state') || '{}')
-    const { scale, angle, position } = dataset as TPrintedImageVisualState
+    const { scale, angle, position } = dataset as any
     const { x: posX, y: posY } = position || {}
     const menuSection = menuRef.current
     if (scale) {
