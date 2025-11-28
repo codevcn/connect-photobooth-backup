@@ -45,8 +45,8 @@ type TElementControlReturn = {
 
 export const useElementControl = (
   elementId: string,
-  elementRootRef: React.RefObject<HTMLElement | null>,
-  conatinerElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
+  // elementRootRef: React.RefObject<HTMLElement | null>,
+  // conatinerElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
   initialParams?: TInitialParams
 ): TElementControlReturn => {
   const {
@@ -100,11 +100,11 @@ export const useElementControl = (
     currentPosition: position,
     setCurrentPosition: setPosition,
     postFunctionDrag: () => {
-      const element = elementRootRef.current
-      if (!element) return
-      const container = conatinerElementAbsoluteToRef.current
-      if (!container) return
-      captureCurrentElementPosition(element, container)
+      // const element = elementRootRef.current
+      // if (!element) return
+      // const container = conatinerElementAbsoluteToRef.current
+      // if (!container) return
+      // captureCurrentElementPosition(element, container)
     },
   })
 
