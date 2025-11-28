@@ -139,6 +139,7 @@ export const PrintAreaOverlay = ({
   frameDisplayerOptions,
 }: TPrintAreaOverlayProps) => {
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
+  console.log('>>> [ddd] view picked template:', pickedTemplate)
 
   const handleClickFrame = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,

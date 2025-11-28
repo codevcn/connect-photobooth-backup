@@ -110,13 +110,14 @@ export const useTemplateStore = create(
       if (!pickedTemplate) return
 
       const templates = [...allTemplates]
-
+      console.log('>>> [ddd] all templates:', templates)
       if (frameId) {
         // Thêm vào frame cụ thể
         for (const template of templates) {
           let frameIndex: number = getInitialContants<number>('PLACED_IMG_FRAME_INDEX')
           for (const frame of template.frames) {
             if (frame.id === frameId) {
+              console.log('>>> [ddd] frame:', frame)
               frame.placedImage = initFramePlacedImageByPrintedImage(frameIndex, printedImage)
               // assignFrameSizeByTemplateType(printAreaSize, template.type, frame)
               // if (matchPrintedImgAndAllowSquareMatchToShapeSize(frame, printedImage)) {
@@ -138,6 +139,8 @@ export const useTemplateStore = create(
         for (const template of templates) {
           if (template.id === currentTemplateId) {
             const foundFrameIndex = template.frames.findIndex((f) => !f.placedImage)
+            console.log('>>> found frame index:', foundFrameIndex)
+            console.log('>>> [ddd] template frames:', template.frames)
             if (foundFrameIndex >= 0) {
               const foundFrame = template.frames[foundFrameIndex]
               foundFrame.placedImage = initFramePlacedImageByPrintedImage(
@@ -158,7 +161,7 @@ export const useTemplateStore = create(
           }
         }
       }
-
+      console.log('>>> [ddd] templates before set:', templates)
       set({ allTemplates: templates })
     },
 
@@ -198,6 +201,7 @@ export const useTemplateStore = create(
     },
 
     updatePickedTemplate: (template) => {
+      console.log('>>> [ddd] update Picked Template:', template)
       set({ pickedTemplate: { ...template } })
     },
   }))

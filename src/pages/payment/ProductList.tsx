@@ -17,7 +17,7 @@ const ProductNote = ({ productNote }: ProductNoteProps) => {
   return (
     productNote && (
       <div className="mt-3 p-1 bg-gray-100 border-l-4 border-main-cl rounded-md">
-        <span className="font-bold">Ghi chú đơn hàng:</span>
+        <span className="font-bold pl-1">Ghi chú đơn hàng:</span>
         <span className="whitespace-pre-wrap ml-1">{productNote}</span>
       </div>
     )

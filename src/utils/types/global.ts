@@ -144,6 +144,11 @@ export type TElementVisualBaseState = {
   zindex: number
 }
 
+export type TPrintedImageVisualState = TElementVisualBaseState & {
+  id: string
+  url: string
+}
+
 export type TTextVisualState = Omit<TElementVisualBaseState, 'scale'> & {
   id: string
   fontSize: number

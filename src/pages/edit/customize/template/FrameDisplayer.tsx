@@ -14,6 +14,7 @@ import { useEditedElementStore } from '@/stores/element/element.store'
 import { initFramePlacedImageByPrintedImage } from '../../helpers'
 import { useSearchParams } from 'react-router-dom'
 import { typeToObject } from '@/utils/helpers'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type TFramesDisplayerProps = {
   template: TPrintTemplate
@@ -38,11 +39,6 @@ type TFramesDisplayerProps = {
   scrollable: boolean
 }>
 
-type TFrameBounds = {
-  min: number // offsetY nhỏ nhất (kéo lên)
-  max: number // offsetY lớn nhất (kéo xuống)
-}
-
 export const FramesDisplayer = ({
   template,
   plusIconReplacer,
@@ -58,9 +54,9 @@ export const FramesDisplayer = ({
 }: TFramesDisplayerProps) => {
   const { type } = template
   const mockupId = useSearchParams()[0].get('mockupId')
-  const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
   const storedTemplate = useEditedElementStore((s) => s.storedTemplate)
   const didSetStoredTemplate = useEditedElementStore((s) => s.didSetStoredTemplate)
+  const pickedProductId = useProductUIDataStore((s) => s.pickedProduct?.id)
   const [offsetY, setOffsetY] = useState(0) // margin-top động
   const [dragging, setDragging] = useState(false)
   const restoredOffsetYRef = useRef(0)
@@ -78,7 +74,13 @@ export const FramesDisplayer = ({
       restoredOffsetYRef.current = storedTemplate.offsetY
     }
     return frames
-  }, [didSetStoredTemplate, storedTemplate?.id, template.id])
+  }, [
+    didSetStoredTemplate,
+    storedTemplate?.id,
+    storedTemplate?.offsetY,
+    template.id,
+    template.frames,
+  ])
 
   const restoreOffsetY = () => {
     requestAnimationFrame(() => {
@@ -104,7 +106,7 @@ export const FramesDisplayer = ({
     startYRef.current = e.clientY
     startOffsetRef.current = offsetY
     if (firstCollectForDraggingRef.current) {
-      resetDataForDragging()
+      initDataForDragging()
       firstCollectForDraggingRef.current = false
     }
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
@@ -117,7 +119,7 @@ export const FramesDisplayer = ({
     listChildRef.current[index] = el
   }
 
-  const resetDataForDragging = () => {
+  const initDataForDragging = () => {
     const parent = displayerRef.current
     if (!parent) return
     const parentRect = parent.getBoundingClientRect()
@@ -144,7 +146,7 @@ export const FramesDisplayer = ({
   useEffect(() => {
     setOffsetY(0)
     firstCollectForDraggingRef.current = true
-  }, [pickedTemplate?.id])
+  }, [template.id, pickedProductId])
 
   const handleCanMove = (nextOffsetY: number, delta: number) => {
     if (-nextOffsetY > minTopRef.current) return -minTopRef.current

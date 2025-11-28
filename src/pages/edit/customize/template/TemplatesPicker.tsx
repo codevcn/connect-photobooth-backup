@@ -78,11 +78,9 @@ export const TemplatesPicker = ({ printedImages, classNames }: TTemplatePickerPr
       ...t,
       frames: t.frames.map((f) => ({ ...f })),
     }))
-    console.log('>>> [sss] info:', { templates, printedImages })
     for (const template of templates) {
       for (const frame of template.frames) {
         assignMockFrameSizeToTemplate('square', template.type, frame)
-        console.log('>>> [sss] info:', { frame })
         let imgPoint: number = Infinity
         for (const image of printedImages) {
           let point: number = 0
