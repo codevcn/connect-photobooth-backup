@@ -1,5 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 
+const ignoreZoomByPrintAreaAllowed = (e: Event) => {
+  return !!(e.target as HTMLElement).closest('.NAME-print-area-allowed')
+}
+
 // Hook để xử lý zoom và pan
 export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
   const [scale, setScale] = useState(1)
@@ -8,12 +12,34 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // State cho pinch zoom
+  const [isPinching, setIsPinching] = useState(false)
+  const [initialPinchDistance, setInitialPinchDistance] = useState(0)
+  const [initialPinchScale, setInitialPinchScale] = useState(1)
+  const [pinchCenter, setPinchCenter] = useState({ x: 0, y: 0 })
+
+  // Tính khoảng cách giữa 2 điểm touch
+  const getDistance = (touch1: Touch, touch2: Touch) => {
+    const dx = touch1.clientX - touch2.clientX
+    const dy = touch1.clientY - touch2.clientY
+    return Math.sqrt(dx * dx + dy * dy)
+  }
+
+  // Tính tâm giữa 2 điểm touch
+  const getCenter = (touch1: Touch, touch2: Touch) => {
+    return {
+      x: (touch1.clientX + touch2.clientX) / 2,
+      y: (touch1.clientY + touch2.clientY) / 2,
+    }
+  }
+
   // Xử lý zoom bằng scroll wheel
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
     const handleWheel = (e: WheelEvent) => {
+      if (ignoreZoomByPrintAreaAllowed(e)) return
       e.preventDefault()
 
       const rect = container.getBoundingClientRect()
@@ -37,7 +63,8 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
   }, [scale, position, minZoom, maxZoom])
 
   // Xử lý kéo (pan)
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleMouseDown = (e: MouseEvent) => {
+    if (ignoreZoomByPrintAreaAllowed(e)) return
     setIsDragging(true)
     setDragStart({
       x: e.clientX - position.x,
@@ -45,7 +72,8 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
     })
   }
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleMouseMove = (e: MouseEvent) => {
+    if (ignoreZoomByPrintAreaAllowed(e)) return
     if (!isDragging) return
 
     setPosition({
@@ -58,9 +86,32 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
     setIsDragging(false)
   }
 
-  // Xử lý touch cho mobile
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length === 1) {
+  // Xử lý touch cho mobile với pinch-to-zoom
+  const handleTouchStart = (e: TouchEvent) => {
+    if (ignoreZoomByPrintAreaAllowed(e)) return
+
+    if (e.touches.length === 2) {
+      // Bắt đầu pinch zoom
+      e.preventDefault()
+      setIsPinching(true)
+      setIsDragging(false)
+
+      const distance = getDistance(e.touches[0], e.touches[1])
+      setInitialPinchDistance(distance)
+      setInitialPinchScale(scale)
+
+      // Lưu vị trí tâm của pinch so với container
+      const container = containerRef.current
+      if (container) {
+        const rect = container.getBoundingClientRect()
+        const center = getCenter(e.touches[0], e.touches[1])
+        setPinchCenter({
+          x: center.x - rect.left,
+          y: center.y - rect.top,
+        })
+      }
+    } else if (e.touches.length === 1) {
+      // Pan bình thường
       setIsDragging(true)
       setDragStart({
         x: e.touches[0].clientX - position.x,
@@ -69,17 +120,40 @@ export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
     }
   }
 
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!isDragging || e.touches.length !== 1) return
+  const handleTouchMove = (e: TouchEvent) => {
+    if (ignoreZoomByPrintAreaAllowed(e)) return
 
-    setPosition({
-      x: e.touches[0].clientX - dragStart.x,
-      y: e.touches[0].clientY - dragStart.y,
-    })
+    if (isPinching && e.touches.length === 2) {
+      // Xử lý pinch zoom
+      e.preventDefault()
+
+      const currentDistance = getDistance(e.touches[0], e.touches[1])
+      const scaleChange = currentDistance / initialPinchDistance
+      const newScale = Math.min(Math.max(initialPinchScale * scaleChange, minZoom), maxZoom)
+
+      // Zoom về phía tâm pinch
+      const finalScaleChange = newScale / scale
+      const newX = pinchCenter.x - (pinchCenter.x - position.x) * finalScaleChange
+      const newY = pinchCenter.y - (pinchCenter.y - position.y) * finalScaleChange
+
+      setScale(newScale)
+      setPosition({ x: newX, y: newY })
+    } else if (isDragging && e.touches.length === 1) {
+      // Pan bình thường
+      setPosition({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y,
+      })
+    }
   }
 
-  const handleTouchEnd = () => {
-    setIsDragging(false)
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (e.touches.length < 2) {
+      setIsPinching(false)
+    }
+    if (e.touches.length === 0) {
+      setIsDragging(false)
+    }
   }
 
   // Reset về mặc định
