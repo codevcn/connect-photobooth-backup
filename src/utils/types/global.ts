@@ -137,7 +137,6 @@ export type TClientProductVariant = {
   priceAmountBothSide: number | null
   currency: string
   priceAfterDiscount?: number
-  stock: number
   category?: TProductCategory
 }
 
@@ -314,7 +313,6 @@ export type TPaymentProductItem = {
     type: TSurfaceType
   }
   preSentImageLink?: string
-  productStock: number
 }
 
 export type TShippingInfo = {

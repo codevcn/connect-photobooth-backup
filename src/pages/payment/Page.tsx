@@ -94,9 +94,6 @@ const PaymentPage = () => {
         if (item.quantity + amount < 1) {
           toast.error('Số lượng sản phẩm không thể nhỏ hơn 1')
           break
-        } else if (item.quantity + amount > item.productStock) {
-          toast.error('Số lượng sản phẩm vượt quá tồn kho')
-          break
         }
         LocalStorageHelper.updateMockupQuantity(
           sessionId,
@@ -113,7 +110,7 @@ const PaymentPage = () => {
         return item.mockupData.id === mockupId
           ? {
               ...item,
-              quantity: Math.min(item.productStock, Math.max(1, item.quantity + amount)),
+              quantity: Math.max(1, item.quantity + amount),
             }
           : item
       })
@@ -161,7 +158,6 @@ const PaymentPage = () => {
               },
               elementsVisualState: mockupData.elementsVisualState,
               surface: mockupData.surfaceInfo,
-              productStock: productVariant.stock,
             })
           }
         }

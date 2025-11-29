@@ -85,7 +85,6 @@ export class ProductAdapter {
         ? parseFloat(variant.price_amount_bothside)
         : null,
       currency: variant.currency,
-      stock: variant.stock_qty,
       category,
     }
   }

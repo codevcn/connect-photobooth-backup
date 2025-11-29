@@ -64,7 +64,6 @@ export const ProductList: React.FC<ProductListProps> = ({
           quantity,
           surface,
           productVariantId,
-          productStock,
         }) => (
           <div
             key={mockupData.id}
@@ -173,11 +172,6 @@ export const ProductList: React.FC<ProductListProps> = ({
                           onUpdateQuantity(productId, productVariantId, mockupData.id, 1)
                         }
                         className="flex items-center justify-center rounded-full bg-white shadow-sm active:scale-90 transition-transform"
-                        style={{
-                          pointerEvents: quantity >= productStock ? 'none' : 'auto',
-                          opacity: quantity >= productStock ? 0.5 : 1,
-                        }}
-                        disabled={quantity >= productStock}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

@@ -45,7 +45,11 @@ export const AddToCartHandler = ({
         null,
       ]
     }
-    return [null, null, null, null]
+    const { pickedVariant, pickedProduct, pickedSurface } = useProductUIDataStore.getState()
+    if (!pickedVariant) {
+      return ['Vui lòng chọn 1 sản phẩm trước khi thêm vào giỏ hàng', null, null, null]
+    }
+    return [null, pickedVariant, pickedProduct, pickedSurface]
   }
 
   const handleAddToCart = async (
@@ -53,6 +57,7 @@ export const AddToCartHandler = ({
     onDoneAdd: () => void,
     onError: (error: Error) => void
   ) => {
+    console.log('>>> [to] info:', { sessionId })
     if (!sessionId) return
     if (
       printAreaContainerRef.current?.querySelector<HTMLElement>(
@@ -64,15 +69,24 @@ export const AddToCartHandler = ({
       )
     }
     const [message, pickedVariant, pickedProduct, pickedSurface] = validateBeforeAddToCart()
+    console.log('>>> [to] validate Before Add To Cart:', {
+      message,
+      pickedVariant,
+      pickedProduct,
+      pickedSurface,
+    })
     if (message) {
       return onError(new Error(message))
     }
     if (!pickedVariant || !pickedProduct || !pickedSurface || !printAreaContainerRef.current) return
+    console.log('>>> [to] before cleaning print area:', { printCon: printAreaContainerRef.current })
     const { printAreaContainer, allowedPrintArea, removeMockPrintArea } =
       cleanPrintAreaOnExtractMockupImage(printAreaContainerRef.current)
+    console.log('>>> [to] after cleaning print area:', { printAreaContainer, allowedPrintArea })
     if (!printAreaContainer || !allowedPrintArea) {
       return onError(new Error('Không tìm thấy khu vực in trên sản phẩm'))
     }
+    console.log('>>> [to] run this 85')
     const imgMimeType: TImgMimeType = 'image/png'
     saveHtmlAsImage(
       printAreaContainer,
@@ -153,8 +167,7 @@ export const AddToCartHandler = ({
   }
 
   const listenAddToCart = () => {
-    const setIsAddingToCart = useProductUIDataStore.getState().setIsAddingToCart
-    setIsAddingToCart(true)
+    useProductUIDataStore.getState().setIsAddingToCart(true)
     useEditedElementStore.getState().cancelSelectingElement()
     // Thu thập visual states của tất cả elements
     handleAddToCart(
@@ -164,7 +177,7 @@ export const AddToCartHandler = ({
       },
       (error) => {
         toast.error(error.message || 'Đã có lỗi xảy ra khi thêm vào giỏ hàng')
-        setIsAddingToCart(false)
+        useProductUIDataStore.getState().setIsAddingToCart(false)
       }
     )
   }

@@ -369,37 +369,6 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-sm pl-1">
-        {pickedVariant.stock > 0 ? (
-          <>
-            <span className="flex items-center gap-1 font-medium text-orange-600">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Còn hàng
-            </span>
-            <span className="text-gray-500">
-              • <span>{pickedVariant.stock}</span> sản phẩm
-            </span>
-          </>
-        ) : (
-          <span className="flex items-center gap-1 font-medium text-red-600">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Hết hàng
-          </span>
-        )}
-      </div>
-
       <div className="mt-4 bg-gray-100 border-border rounded-lg overflow-hidden p-3">
         <div>
           <h3 className="block text-sm font-bold text-slate-900">Danh mục hình ảnh sản phẩm</h3>
@@ -426,7 +395,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         </div>
 
         {/* Material Section */}
-        {mergedAttributes.materials && (
+        {mergedAttributes.materials && mergedAttributes.materials.options.length > 0 && (
           <div className="rounded-lg mt-4">
             <h3 className="text-slate-800 font-bold text-sm mb-2">Chất liệu</h3>
             <div className="flex flex-wrap gap-2">
@@ -646,8 +615,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                   color: selectedAttributes.color,
                   size: size.value,
                 })
-                const isOutOfStock = !variantForSize || variantForSize.stock === 0
-                const isDisabled = isScopeDisabled || isOutOfStock
+                const isDisabled = isScopeDisabled
 
                 return (
                   <button
@@ -671,9 +639,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
                     disabled={isDisabled}
                     className={`px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
                       isDisabled
-                        ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed ${
-                            isOutOfStock ? 'line-through' : 'opacity-50'
-                          }`
+                        ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed`
                         : isSelected
                         ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
                         : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'

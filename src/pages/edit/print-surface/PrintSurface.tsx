@@ -8,7 +8,6 @@ type TPrintSurfaceProps = {
 }
 
 export const PrintSurface = ({ printSurfaces, pickedVariant }: TPrintSurfaceProps) => {
-  const isOutOfStock = pickedVariant.stock <= 0
   const pickedSurface = useProductUIDataStore((s) => s.pickedSurface)
 
   const handlePickSurface = (
@@ -27,12 +26,9 @@ export const PrintSurface = ({ printSurfaces, pickedVariant }: TPrintSurfaceProp
           {printSurfaces.map((surface) => (
             <button
               key={surface.id}
-              onClick={() => !isOutOfStock && handlePickSurface(surface.id, pickedVariant.id)}
-              disabled={isOutOfStock}
+              onClick={() => handlePickSurface(surface.id, pickedVariant.id)}
               className={`px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
-                isOutOfStock
-                  ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed line-through'
-                  : pickedSurface?.id === surface.id
+                pickedSurface?.id === surface.id
                   ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
                   : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
               }`}

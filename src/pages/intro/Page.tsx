@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { FullscreenModal } from '@/components/custom/FullscreenModal'
 
 const IntroPage = () => {
   const navigate = useNavigate()
   const [showFullscreenModal, setShowFullscreenModal] = useState(true)
+  console.log('>>> [re] run this')
 
   return (
     <div className="h-screen w-screen bg-black">
