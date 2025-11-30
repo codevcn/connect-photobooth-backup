@@ -1,3 +1,4 @@
+import { TPosition } from '@/utils/types/global'
 import { useRef, useEffect } from 'react'
 
 type PinchZoomOptions = {
@@ -11,7 +12,7 @@ type PinchZoomOptions = {
   currentRotation: number
   setCurrentRotation: React.Dispatch<React.SetStateAction<number>>
   currentPosition: Position
-  setCurrentPosition: React.Dispatch<React.SetStateAction<Position>>
+  setCurrentPosition: (position: TPosition) => void
 }
 
 type Position = {
@@ -141,10 +142,11 @@ export const usePinchElement = (options: PinchZoomOptions): UsePinchZoomReturn =
         const deltaX = touch.clientX - touchData.current.lastTouchPos.x
         const deltaY = touch.clientY - touchData.current.lastTouchPos.y
 
-        setCurrentPosition((prev) => ({
-          x: prev.x + deltaX,
-          y: prev.y + deltaY,
-        }))
+        //>>> change here (commit 8873c42049fc260cc1238b277ada13553d6f4460)
+        setCurrentPosition({
+          x: currentPosition.x + deltaX,
+          y: currentPosition.y + deltaY,
+        })
 
         touchData.current.lastTouchPos = {
           x: touch.clientX,

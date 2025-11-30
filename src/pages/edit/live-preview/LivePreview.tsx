@@ -11,6 +11,7 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { createCommonConstants } from '@/utils/contants'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
 import { adjustSizeOfPlacedImageOnPlaced } from '../helpers'
+import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 
 type TDisplayedImage = {
   surfaceId: TBaseProduct['printAreaList'][number]['id']
@@ -36,15 +37,19 @@ export const LivePreview = ({
     return pickedProduct.printAreaList.find((printArea) => printArea.id === pickedSurfaceId)!
   }, [pickedProduct.id, pickedProduct.printAreaList, pickedSurfaceId])
 
-  const { containerRef, scale, position, handlers } = useZoomEditBackground(0.3, 5)
+  const { containerRef, scale, position, handlers } = useZoomEditBackground(0.8, 5)
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
-    usePrintArea(printAreaInfo, () => {
-      setTimeout(() => {
-        eventEmitter.emit(EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED)
-      }, createCommonConstants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 100)
-      adjustSizeOfPlacedImageOnPlaced()
-    })
+    usePrintArea(
+      printAreaInfo,
+      () => {
+        setTimeout(() => {
+          eventEmitter.emit(EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED)
+        }, createCommonConstants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 100)
+        adjustSizeOfPlacedImageOnPlaced()
+      },
+      scale
+    )
 
   const displayedImage = useMemo<TDisplayedImage>(() => {
     const variantSurface = pickedProduct.printAreaList.find(
@@ -94,10 +99,14 @@ export const LivePreview = ({
     adjustSizeOfPlacedImageOnPlaced()
   }, [])
 
+  useEffect(() => {
+    useEditAreaStore.getState().setEditBackgroundScaleValue(scale)
+  }, [scale])
+
   return (
     <div
-      // ref={containerRef}
-      // {...handlers}
+      ref={containerRef}
+      {...handlers}
       onDragStart={(e) => e.preventDefault()}
       className="smd:w-full overflow-hidden w-full min-h-full h-full relative"
     >
@@ -121,7 +130,7 @@ export const LivePreview = ({
         ref={(node) => {
           printAreaContainerRef.current = node
         }}
-        className="NAME-print-area-container w-full h-full overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
+        className="NAME-print-area-container w-full h-full min-h-[150px] overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
         style={{
           backgroundColor: adjustNearF3F4F6(getFinalColorValue() || '#ffffff'),
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
@@ -150,7 +159,6 @@ export const LivePreview = ({
           frameDisplayerOptions={{
             classNames: { container: 'NAME-frames-displayer-print-area' },
           }}
-          containerScale={scale}
         />
         <EditedElementsArea
           allowedPrintAreaRef={printAreaRef}

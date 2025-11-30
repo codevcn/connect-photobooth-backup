@@ -1,3 +1,4 @@
+import { createInitialConstants } from '@/utils/contants'
 import React, { useState, useRef, useEffect } from 'react'
 
 const ignoreZoomByPrintAreaAllowed = (
@@ -11,17 +12,11 @@ const ignoreZoomByPrintAreaAllowed = (
 
 // Hook để xử lý zoom và pan
 export const useZoomEditBackground = (minZoom = 0.5, maxZoom = 3) => {
-  const [scale, setScale] = useState(1)
+  const [scale, setScale] = useState(createInitialConstants<number>('ELEMENT_ZOOM'))
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setScale(2)
-  //   }, 3000)
-  // }, [])
 
   // State cho pinch zoom
   const [isPinching, setIsPinching] = useState(false)

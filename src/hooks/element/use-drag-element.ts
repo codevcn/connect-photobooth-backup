@@ -4,9 +4,10 @@ type TPosition = { x: number; y: number }
 
 interface UseDraggableOptions {
   currentPosition: TPosition
-  setCurrentPosition: React.Dispatch<React.SetStateAction<TPosition>>
+  setCurrentPosition: (pos: TPosition) => void
   disabled?: boolean // Thêm option để disable dragging
   postFunctionDrag?: (element: HTMLDivElement, position: TPosition) => void // Callback sau khi drag xong
+  scaleFactor?: number // Hệ số tỉ lệ để điều chỉnh vị trí khi zoom
 }
 
 interface UseDraggableReturn {
@@ -14,30 +15,39 @@ interface UseDraggableReturn {
 }
 
 export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn => {
-  const { currentPosition, setCurrentPosition, disabled = false, postFunctionDrag } = options
+  const {
+    currentPosition,
+    setCurrentPosition,
+    disabled = false,
+    postFunctionDrag,
+    scaleFactor = 1,
+  } = options
 
   const [dragging, setDragging] = useState<boolean>(false)
   const [offset, setOffset] = useState<TPosition>({ x: 0, y: 0 })
   const ref = useRef<HTMLDivElement | null>(null)
 
+  const handleFinalPosition = (posX: TPosition['x'], posY: TPosition['y']) => {
+    setCurrentPosition({
+      x: posX / scaleFactor,
+      y: posY / scaleFactor,
+    })
+  }
+
   // --- CHUỘT ---
   const handleMouseDown = (e: MouseEvent) => {
     if (disabled) return // Chặn nếu disabled
-
     e.stopPropagation()
     setDragging(true)
     setOffset({
-      x: e.clientX - currentPosition.x,
-      y: e.clientY - currentPosition.y,
+      x: e.clientX - currentPosition.x * scaleFactor,
+      y: e.clientY - currentPosition.y * scaleFactor,
     })
   }
 
   const handleMouseMove = (e: MouseEvent) => {
     if (dragging && !disabled) {
-      setCurrentPosition({
-        x: e.clientX - offset.x,
-        y: e.clientY - offset.y,
-      })
+      handleFinalPosition(e.clientX - offset.x, e.clientY - offset.y)
     }
   }
 
@@ -58,18 +68,15 @@ export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn
     const touch = e.touches[0]
     setDragging(true)
     setOffset({
-      x: touch.clientX - currentPosition.x,
-      y: touch.clientY - currentPosition.y,
+      x: touch.clientX - currentPosition.x * scaleFactor,
+      y: touch.clientY - currentPosition.y * scaleFactor,
     })
   }
 
   const handleTouchMove = (e: TouchEvent) => {
     if (dragging && !disabled) {
       const touch = e.touches[0]
-      setCurrentPosition({
-        x: touch.clientX - offset.x,
-        y: touch.clientY - offset.y,
-      })
+      handleFinalPosition(touch.clientX - offset.x, touch.clientY - offset.y)
     }
   }
 
@@ -100,7 +107,7 @@ export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn
         window.removeEventListener('touchend', handleTouchEnd)
       }
     }
-  }, [dragging, offset, currentPosition, disabled])
+  }, [dragging, offset, currentPosition, disabled, scaleFactor])
 
   return { ref }
 }

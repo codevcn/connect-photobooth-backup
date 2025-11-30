@@ -8,11 +8,31 @@ import {
   TElementMountType,
   TElementRelativeProps,
   TElementVisualBaseState,
+  TPosition,
 } from '@/utils/types/global'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { captureCurrentElementPosition } from '@/pages/edit/helpers'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { typeToObject } from '@/utils/helpers'
+import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+
+const validateElementPositionValue = (
+  elementRootRef: React.RefObject<HTMLElement | null>,
+  containerForElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
+  posX: TPosition['x'],
+  posY: TPosition['y']
+): boolean => {
+  const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
+  const rootElement = elementRootRef.current
+  if (!containerForElementAbsoluteTo || !rootElement) return false
+  if (posX < 0) return false
+  if (posY < 0) return false
+  const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
+  const rootElementRect = rootElement.getBoundingClientRect()
+  if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width) return false
+  if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height) return false
+  return true
+}
 
 type TInitialParams = Partial<
   TElementVisualBaseState & {
@@ -73,6 +93,7 @@ export const useElementControl = (
   const [scale, setScale] = useState<TElementVisualBaseState['scale']>(initialZoom)
   const [angle, setAngle] = useState<TElementVisualBaseState['angle']>(initialAngle)
   const [zindex, setZindex] = useState<TElementVisualBaseState['zindex']>(initialZindex)
+  const scaleFactor = useEditAreaStore((s) => s.editBackgroundScaleValue)
   const { ref: refForPinch } = usePinchElement({
     maxScale: maxZoom,
     minScale: minZoom,
@@ -81,7 +102,13 @@ export const useElementControl = (
     currentRotation: angle,
     setCurrentRotation: setAngle,
     currentPosition: position,
-    setCurrentPosition: setPosition,
+    setCurrentPosition: (pos) => {
+      if (
+        validateElementPositionValue(elementRootRef, containerForElementAbsoluteToRef, pos.x, pos.y)
+      ) {
+        setPosition(pos)
+      }
+    },
   })
   const {
     rotateButtonRef,
@@ -101,10 +128,18 @@ export const useElementControl = (
     currentZoom: scale,
     setCurrentZoom: setScale,
   })
+  console.log('>>> [sc] scale factor 0:', scaleFactor)
   const { ref: refForDrag } = useDragElement({
     disabled: isRotating || isZooming,
     currentPosition: position,
-    setCurrentPosition: setPosition,
+    scaleFactor,
+    setCurrentPosition: (pos) => {
+      if (
+        validateElementPositionValue(elementRootRef, containerForElementAbsoluteToRef, pos.x, pos.y)
+      ) {
+        setPosition(pos)
+      }
+    },
     postFunctionDrag: () => {
       const element = elementRootRef.current
       if (!element) return
@@ -119,9 +154,7 @@ export const useElementControl = (
     type: 'posX' | 'posY' | 'scale' | 'angle' | 'zindex'
   ) => {
     let parsedValue: number | string = value
-    console.log('>>> [vvv] validateInputValueAndSet:', { value, type })
     if (typeof value === 'number') {
-      console.log('>>> [vvv] here:')
       if (value < 0) return
       const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
       const rootElement = elementRootRef.current
@@ -129,13 +162,6 @@ export const useElementControl = (
       const containerForElementAbsoluteToRect =
         containerForElementAbsoluteTo.getBoundingClientRect()
       const rootElementRect = rootElement.getBoundingClientRect()
-      console.log('>>> [vvv] values:', {
-        type,
-        containerForElementAbsoluteToRect,
-        rootElementRect,
-        rootElement,
-        containerForElementAbsoluteTo,
-      })
       if (
         type === 'posX' &&
         value > containerForElementAbsoluteToRect.width - rootElementRect.width
@@ -276,7 +302,6 @@ export const useElementControl = (
             })
           )
         )
-        // dragAndScaleElementOnAllowedPrintAreaChange()
       })
     })
   }

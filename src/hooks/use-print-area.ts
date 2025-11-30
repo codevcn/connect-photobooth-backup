@@ -136,7 +136,8 @@ type TUsePrintAreaReturn = {
 
 export const usePrintArea = (
   printAreaInfo: TPrintAreaInfo,
-  callbackOnEndCalculate?: () => void
+  callbackOnEndCalculate?: () => void,
+  containerScale: number = 1
 ): TUsePrintAreaReturn => {
   const warningOverlayRef = useRef<HTMLDivElement | null>(null)
   const [isOutOfBounds, setIsOutOfBounds] = useState(false)
@@ -147,6 +148,10 @@ export const usePrintArea = (
   const checkElementBounds = useCallback(
     (elementRect: DOMRect | TPlacementDirection): boolean => {
       if (!printAreaBounds) return true
+
+      // elementRect đã được điều chỉnh theo container scale từ caller
+      // (đã trừ containerRect và chia cho containerScale)
+      // Chỉ cần so sánh trực tiếp với printAreaBounds
 
       // Kiểm tra xem element có nằm hoàn toàn trong vùng in không
       const isInBounds =
@@ -184,11 +189,12 @@ export const usePrintArea = (
       const rect = element.getBoundingClientRect()
 
       // Chuyển đổi tọa độ element về tọa độ tương đối với container
+      // và điều chỉnh theo container scale
       const relativeRect = {
-        left: rect.left - containerRect.left,
-        top: rect.top - containerRect.top,
-        right: rect.right - containerRect.left,
-        bottom: rect.bottom - containerRect.top,
+        left: (rect.left - containerRect.left) / containerScale,
+        top: (rect.top - containerRect.top) / containerScale,
+        right: (rect.right - containerRect.left) / containerScale,
+        bottom: (rect.bottom - containerRect.top) / containerScale,
       }
 
       if (!checkElementBounds(relativeRect as DOMRect)) {
@@ -197,7 +203,7 @@ export const usePrintArea = (
     }
 
     return false // Tất cả elements đều nằm trong vùng in
-  }, [printAreaBounds, checkElementBounds])
+  }, [printAreaBounds, checkElementBounds, containerScale])
 
   // Đơn giản hóa observer - chỉ check khi cần thiết
   useEffect(() => {
@@ -219,17 +225,15 @@ export const usePrintArea = (
       if (editContainer) {
         for (const element of editableElements) {
           const rect = element.getBoundingClientRect()
-          // console.log('>>> [uuu] rect:', rect)
-
           const containerRect = editContainer.getBoundingClientRect()
-          // console.log('>>> [uuu] container rect:', containerRect)
 
           // Chuyển đổi tọa độ element về tọa độ tương đối với container
+          // và điều chỉnh theo container scale
           const relativeRect = {
-            left: rect.left - containerRect.left,
-            top: rect.top - containerRect.top,
-            right: rect.right - containerRect.left,
-            bottom: rect.bottom - containerRect.top,
+            left: (rect.left - containerRect.left) / containerScale,
+            top: (rect.top - containerRect.top) / containerScale,
+            right: (rect.right - containerRect.left) / containerScale,
+            bottom: (rect.bottom - containerRect.top) / containerScale,
           }
 
           if (!checkElementBounds(relativeRect as DOMRect)) {
@@ -243,7 +247,7 @@ export const usePrintArea = (
 
     const debouncedCheck = () => {
       clearTimeout(checkTimeout)
-      checkTimeout = setTimeout(checkBounds, 50) // Debounce để tránh check quá nhiều
+      checkTimeout = setTimeout(checkBounds, 100) // Debounce để tránh check quá nhiều
     }
 
     // Chỉ listen mouse/touch move, không dùng MutationObserver nữa
@@ -258,7 +262,7 @@ export const usePrintArea = (
       document.removeEventListener('mousemove', debouncedCheck)
       document.removeEventListener('touchmove', debouncedCheck)
     }
-  }, [printAreaBounds, checkElementBounds, updateOverlayVisibility])
+  }, [printAreaBounds, checkElementBounds, updateOverlayVisibility, containerScale])
 
   // Cập nhật vùng in khi sản phẩm thay đổi
   useEffect(() => {
