@@ -205,7 +205,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
           <div></div>
         )}
         <TemplateFrameMenuResponsive />
-        <div className="xl:px-3 xl:pt-4 px-2 pt-1 pb-4 flex flex-col gap-2 pl-2 h-full overflow-y-auto gallery-scroll border border-gray-400/30">
+        <div className="xl:px-3 xl:pt-4 smd:gap-2 px-2 pt-1 pb-4 flex flex-col pl-2 h-full overflow-y-auto gallery-scroll border border-gray-400/30">
           {pickedProduct && pickedVariant ? (
             <>
               <ProductDetails pickedProduct={pickedProduct} pickedVariant={pickedVariant} />

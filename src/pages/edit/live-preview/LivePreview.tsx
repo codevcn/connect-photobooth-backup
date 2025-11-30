@@ -36,7 +36,7 @@ export const LivePreview = ({
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find((printArea) => printArea.id === pickedSurfaceId)!
   }, [pickedProduct.id, pickedProduct.printAreaList, pickedSurfaceId])
-  console.log('>>> [disimg] printAreaInfo:', { printAreaInfo, lis: pickedProduct.printAreaList })
+
   const { containerRef, scale, position, handlers } = useZoomEditBackground(0.3, 5)
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
@@ -103,7 +103,7 @@ export const LivePreview = ({
       // ref={containerRef}
       // {...handlers}
       onDragStart={(e) => e.preventDefault()}
-      className="smd:w-full overflow-hidden w-full min-h-full h-full relative touch-none"
+      className="smd:w-full overflow-hidden w-full min-h-full h-full relative"
     >
       {createPortal(
         <div className="bg-blue-600 h-12 w-12 fixed top-0 left-0 z-1000">

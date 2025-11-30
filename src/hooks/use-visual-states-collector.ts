@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { TElementsVisualState, TStoredTemplate } from '@/utils/types/global'
+import { TElementsVisualState } from '@/utils/types/global'
 import { useTemplateStore } from '@/stores/ui/template.store'
 
 type TUseVisualStatesCollectorReturn = {
