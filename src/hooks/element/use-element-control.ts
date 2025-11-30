@@ -101,7 +101,6 @@ export const useElementControl = (
     currentZoom: scale,
     setCurrentZoom: setScale,
   })
-
   const { ref: refForDrag } = useDragElement({
     disabled: isRotating || isZooming,
     currentPosition: position,
@@ -120,12 +119,42 @@ export const useElementControl = (
     type: 'posX' | 'posY' | 'scale' | 'angle' | 'zindex'
   ) => {
     let parsedValue: number | string = value
+    console.log('>>> [vvv] validateInputValueAndSet:', { value, type })
+    if (typeof value === 'number') {
+      console.log('>>> [vvv] here:')
+      if (value < 0) return
+      const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
+      const rootElement = elementRootRef.current
+      if (!containerForElementAbsoluteTo || !rootElement) return
+      const containerForElementAbsoluteToRect =
+        containerForElementAbsoluteTo.getBoundingClientRect()
+      const rootElementRect = rootElement.getBoundingClientRect()
+      console.log('>>> [vvv] values:', {
+        type,
+        containerForElementAbsoluteToRect,
+        rootElementRect,
+        rootElement,
+        containerForElementAbsoluteTo,
+      })
+      if (
+        type === 'posX' &&
+        value > containerForElementAbsoluteToRect.width - rootElementRect.width
+      ) {
+        parsedValue = containerForElementAbsoluteToRect.width - rootElementRect.width - 5
+      }
+      if (
+        type === 'posY' &&
+        value > containerForElementAbsoluteToRect.height - rootElementRect.height
+      ) {
+        parsedValue = containerForElementAbsoluteToRect.height - rootElementRect.height - 5
+      }
+    }
     switch (type) {
       case 'posX':
-        setPosition((prev) => ({ ...prev, x: value as number }))
+        setPosition((prev) => ({ ...prev, x: parsedValue as number }))
         break
       case 'posY':
-        setPosition((prev) => ({ ...prev, y: value as number }))
+        setPosition((prev) => ({ ...prev, y: parsedValue as number }))
         break
       case 'scale':
         if (minZoom) {
@@ -166,7 +195,6 @@ export const useElementControl = (
       validateInputValueAndSet(angle, 'angle')
     }
     if (zindex) {
-      console.log('>>> zindex:', zindex)
       useElementLayerStore.getState().updateElementLayerIndex(elementId, zindex)
     }
   }
@@ -189,7 +217,7 @@ export const useElementControl = (
     if (minZoom && parsedScale < minZoom) parsedScale = minZoom
     if (maxZoom && parsedScale > maxZoom) parsedScale = maxZoom
     // debug
-    console.log('>>> [uuu] setupVisualData parsedScale:', { initialPosition })
+    console.log('>>> [uuu] setup Visual Data parsed Scale:', { initialPosition })
     handleSetElementState(
       initialPosition?.x,
       initialPosition?.y,
@@ -225,15 +253,7 @@ export const useElementControl = (
 
     //>>> còn thiếu phát hiện va chạm với biên của vùng in allowedPrintAreaRect
     console.log('>>> [uuu] drag & scale:', { newX, newY })
-    setPosition((pre) => {
-      if (pre.x !== newX || pre.y !== newY) {
-        return {
-          x: newX,
-          y: newY,
-        }
-      }
-      return pre
-    })
+    handleSetElementState(newX, newY)
   }
 
   const captureElementRelativeProperties = () => {
@@ -273,10 +293,7 @@ export const useElementControl = (
       const newX = (leftPercent / 100) * containerRect.width
       const newY = (topPercent / 100) * containerRect.height
       console.log('>>> [uuu] drag:', { newX, newY })
-      setPosition({
-        x: newX,
-        y: newY,
-      })
+      handleSetElementState(newX, newY)
     }
   }
 

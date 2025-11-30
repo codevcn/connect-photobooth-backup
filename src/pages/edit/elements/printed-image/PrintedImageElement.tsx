@@ -7,7 +7,7 @@ import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { captureCurrentElementPosition } from '../../helpers'
 
 const MAX_ZOOM: number = 4
-const MIN_ZOOM: number = 0.2
+const MIN_ZOOM: number = 0.5
 
 type TPrintedImageElementProps = {
   element: TPrintedImageVisualState

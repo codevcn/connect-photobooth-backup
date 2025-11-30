@@ -46,8 +46,8 @@ const SizeChartPreview = ({ setShowSizeChart, sizeChartImageURL }: TSizeChartPre
       }}
     >
       <div className="bg-white w-full rounded-xl shadow-2xl border border-gray-200 relative">
-        <div className="p-4">
-          <div className="border border-slate-300 rounded-2xl p-6">
+        <div className="p-3">
+          <div className="border border-slate-300 rounded-2xl p-2">
             <p className="text-center text-sm text-gray-800 font-medium mb-8">
               Có thể chênh lệch ±1.5 inch do đo thủ công và quy trình sản xuất
             </p>

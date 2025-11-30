@@ -144,7 +144,6 @@ export const PrintAreaOverlay = ({
 }: TPrintAreaOverlayProps) => {
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
   const editMode = useEditModeStore((s) => s.editMode)
-
   console.log('>>> [ddd] view picked template:', pickedTemplate)
 
   const handleClickFrame = (

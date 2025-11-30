@@ -10,7 +10,6 @@ import { createPortal } from 'react-dom'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { createCommonConstants } from '@/utils/contants'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
-import { tempObject } from '@/stores/temp/temp.store'
 import { adjustSizeOfPlacedImageOnPlaced } from '../helpers'
 
 type TDisplayedImage = {
@@ -41,12 +40,9 @@ export const LivePreview = ({
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =
     usePrintArea(printAreaInfo, () => {
-      if (!tempObject.firstBackFromCartEdit_allowedPrintAreaChange) {
-        setTimeout(() => {
-          eventEmitter.emit(EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED)
-        }, createCommonConstants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 100)
-      }
-      tempObject.firstBackFromCartEdit_allowedPrintAreaChange = false
+      setTimeout(() => {
+        eventEmitter.emit(EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED)
+      }, createCommonConstants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 100)
       adjustSizeOfPlacedImageOnPlaced()
     })
 
