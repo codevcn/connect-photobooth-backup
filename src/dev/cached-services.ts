@@ -121,34 +121,34 @@ export class CachedVoucherService {
   /**
    * Check voucher validity with cache
    */
-  static async checkVoucherValidity(
-    code: string,
-    orderSubtotal: number
-  ): Promise<VoucherValidationResult> {
-    return apiCache.withCache(
-      CACHE_KEYS.VOUCHER_VALIDITY(code, orderSubtotal),
-      () => voucherService.checkVoucherValidity(code, orderSubtotal),
-      CACHE_TTL.VOUCHER
-    )
-  }
+  // static async checkVoucherValidity(
+  //   code: string,
+  //   orderSubtotal: number
+  // ): Promise<VoucherValidationResult> {
+  //   return apiCache.withCache(
+  //     CACHE_KEYS.VOUCHER_VALIDITY(code, orderSubtotal),
+  //     () => voucherService.checkVoucherValidity(code, orderSubtotal),
+  //     CACHE_TTL.VOUCHER
+  //   )
+  // }
 
   /**
    * Get sample vouchers with cache
    */
-  static async getSomeVouchers(): Promise<TVoucher[]> {
-    return apiCache.withCache(
-      CACHE_KEYS.SAMPLE_VOUCHERS,
-      () => voucherService.getSomeVouchers(),
-      CACHE_TTL.VOUCHER
-    )
-  }
+  // static async getSomeVouchers(): Promise<TVoucher[]> {
+  //   return apiCache.withCache(
+  //     CACHE_KEYS.SAMPLE_VOUCHERS,
+  //     () => voucherService.getSomeVouchers(),
+  //     CACHE_TTL.VOUCHER
+  //   )
+  // }
 
   /**
    * Calculate discount (not cached - pure function)
    */
-  static calculateDiscount(subtotal: number, voucher: TVoucher | null): number {
-    return voucherService.calculateDiscount(subtotal, voucher)
-  }
+  // static calculateDiscount(subtotal: number, voucher: TVoucher | null): number {
+  //   return voucherService.calculateDiscount(subtotal, voucher)
+  // }
 
   /**
    * Clear voucher cache
