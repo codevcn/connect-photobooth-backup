@@ -55,7 +55,7 @@ const ScanQRPage = () => {
       </div>
 
       {/* Main Content */}
-      <section className="NAME-scan-qr-main-content relative z-10 max-w-2xl bg-white/20 backdrop-blur-sm rounded-2xl shadow-2xl p-6">
+      <section className="NAME-scan-qr-main-content relative z-10 bg-white/20 backdrop-blur-sm rounded-2xl shadow-2xl p-6">
         <div className="flex items-center justify-center gap-3 animate-fade-in-down">
           <div
             onClick={() => navigate('/edit')}
