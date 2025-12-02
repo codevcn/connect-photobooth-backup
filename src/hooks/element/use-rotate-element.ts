@@ -8,8 +8,8 @@ interface UseElementRotationOptions {
 }
 
 interface UseElementRotationReturn {
-  rotateButtonRef: React.MutableRefObject<HTMLButtonElement | null>
-  containerRef: React.MutableRefObject<HTMLElement | null>
+  rotateButtonRef: React.RefObject<HTMLButtonElement | null>
+  containerRef: React.RefObject<HTMLElement | null>
   resetRotation: () => void
   isRotating: boolean
 }

@@ -1,17 +1,19 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 type TPosition = { x: number; y: number }
 
 interface UseDraggableOptions {
   currentPosition: TPosition
   setCurrentPosition: (pos: TPosition) => void
-  disabled?: boolean // Thêm option để disable dragging
-  postFunctionDrag?: (element: HTMLDivElement, position: TPosition) => void // Callback sau khi drag xong
-  scaleFactor?: number // Hệ số tỉ lệ để điều chỉnh vị trí khi zoom
+  disabled?: boolean
+  postFunctionDrag?: (element: HTMLDivElement, position: TPosition) => void
+  scaleFactor?: number
 }
 
 interface UseDraggableReturn {
-  ref: React.RefObject<HTMLDivElement | null>
+  containerRef: React.RefObject<HTMLDivElement | null>
+  dragButtonRef: React.RefObject<HTMLDivElement | null>
+  isDragging: boolean
 }
 
 export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn => {
@@ -23,91 +25,131 @@ export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn
     scaleFactor = 1,
   } = options
 
-  const [dragging, setDragging] = useState<boolean>(false)
-  const [offset, setOffset] = useState<TPosition>({ x: 0, y: 0 })
-  const ref = useRef<HTMLDivElement | null>(null)
+  // Refs
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const dragButtonRef = useRef<HTMLDivElement | null>(null)
+  const isDraggingRef = useRef(false)
+  const offsetRef = useRef<TPosition>({ x: 0, y: 0 })
 
-  const handleFinalPosition = (posX: TPosition['x'], posY: TPosition['y']) => {
-    setCurrentPosition({
-      x: posX / scaleFactor,
-      y: posY / scaleFactor,
-    })
-  }
+  // State
+  const [isDragging, setIsDragging] = useState<boolean>(false)
 
-  // --- CHUỘT ---
-  const handleMouseDown = (e: MouseEvent) => {
-    if (disabled) return // Chặn nếu disabled
-    e.stopPropagation()
-    setDragging(true)
-    setOffset({
-      x: e.clientX - currentPosition.x * scaleFactor,
-      y: e.clientY - currentPosition.y * scaleFactor,
-    })
-  }
+  const handleFinalPosition = useCallback(
+    (posX: number, posY: number) => {
+      setCurrentPosition({
+        x: posX / scaleFactor,
+        y: posY / scaleFactor,
+      })
+    },
+    [scaleFactor, setCurrentPosition]
+  )
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (dragging && !disabled) {
-      handleFinalPosition(e.clientX - offset.x, e.clientY - offset.y)
-    }
-  }
+  // Xử lý khi bắt đầu nhấn vào nút drag
+  const handleStart = useCallback(
+    (e: MouseEvent | TouchEvent) => {
+      if (disabled) return
 
-  const handleMouseUp = () => {
-    if (!disabled) {
-      setDragging(false)
-    }
-    // Gọi callback sau khi drag xong
-    if (postFunctionDrag && ref.current) {
-      postFunctionDrag(ref.current, currentPosition)
-    }
-  }
+      e.preventDefault()
+      e.stopPropagation()
 
-  // --- CẢM ỨNG ---
-  const handleTouchStart = (e: TouchEvent) => {
-    if (disabled) return // Chặn nếu disabled
+      isDraggingRef.current = true
+      setIsDragging(true)
 
-    const touch = e.touches[0]
-    setDragging(true)
-    setOffset({
-      x: touch.clientX - currentPosition.x * scaleFactor,
-      y: touch.clientY - currentPosition.y * scaleFactor,
-    })
-  }
-
-  const handleTouchMove = (e: TouchEvent) => {
-    if (dragging && !disabled) {
-      const touch = e.touches[0]
-      handleFinalPosition(touch.clientX - offset.x, touch.clientY - offset.y)
-    }
-  }
-
-  const handleTouchEnd = () => {
-    if (!disabled) {
-      setDragging(false)
-    }
-  }
-
-  useEffect(() => {
-    const el = ref.current
-    if (el) {
-      el.addEventListener('mousedown', handleMouseDown)
-      window.addEventListener('mousemove', handleMouseMove)
-      window.addEventListener('mouseup', handleMouseUp)
-
-      el.addEventListener('touchstart', handleTouchStart)
-      window.addEventListener('touchmove', handleTouchMove)
-      window.addEventListener('touchend', handleTouchEnd)
-
-      return () => {
-        el.removeEventListener('mousedown', handleMouseDown)
-        window.removeEventListener('mousemove', handleMouseMove)
-        window.removeEventListener('mouseup', handleMouseUp)
-
-        el.removeEventListener('touchstart', handleTouchStart)
-        window.removeEventListener('touchmove', handleTouchMove)
-        window.removeEventListener('touchend', handleTouchEnd)
+      // Lấy vị trí ban đầu
+      let clientX: number, clientY: number
+      if (e instanceof MouseEvent) {
+        clientX = e.clientX
+        clientY = e.clientY
+      } else {
+        clientX = e.touches[0].clientX
+        clientY = e.touches[0].clientY
       }
-    }
-  }, [dragging, offset, currentPosition, disabled, scaleFactor])
 
-  return { ref }
+      offsetRef.current = {
+        x: clientX - currentPosition.x * scaleFactor,
+        y: clientY - currentPosition.y * scaleFactor,
+      }
+
+      document.body.style.cursor = 'move'
+      document.body.style.userSelect = 'none'
+    },
+    [disabled, currentPosition, scaleFactor]
+  )
+
+  // Xử lý khi di chuyển
+  const handleMove = useCallback(
+    (e: MouseEvent | TouchEvent) => {
+      if (!isDraggingRef.current || disabled) return
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      // Lấy vị trí hiện tại
+      let clientX: number, clientY: number
+      if (e instanceof MouseEvent) {
+        clientX = e.clientX
+        clientY = e.clientY
+      } else {
+        clientX = e.touches[0].clientX
+        clientY = e.touches[0].clientY
+      }
+
+      handleFinalPosition(clientX - offsetRef.current.x, clientY - offsetRef.current.y)
+    },
+    [disabled, handleFinalPosition]
+  )
+
+  // Xử lý khi thả chuột/tay
+  const handleEnd = useCallback(() => {
+    if (!isDraggingRef.current) return
+
+    isDraggingRef.current = false
+    setIsDragging(false)
+
+    document.body.style.cursor = 'default'
+    document.body.style.userSelect = 'auto'
+
+    // Gọi callback sau khi drag xong
+    if (postFunctionDrag && containerRef.current) {
+      postFunctionDrag(containerRef.current, currentPosition)
+    }
+  }, [postFunctionDrag, currentPosition])
+
+  // Effect để đăng ký/hủy sự kiện
+  useEffect(() => {
+    const button = dragButtonRef.current
+    if (!button) return
+
+    // Đăng ký sự kiện chỉ trên nút drag
+    button.addEventListener('mousedown', handleStart)
+    button.addEventListener('touchstart', handleStart, { passive: false })
+
+    // Sự kiện move và end trên document để xử lý khi kéo ra ngoài
+    document.body.addEventListener('mousemove', handleMove)
+    document.body.addEventListener('touchmove', handleMove, { passive: false })
+
+    document.body.addEventListener('mouseup', handleEnd)
+    document.body.addEventListener('touchend', handleEnd)
+
+    // Cleanup
+    return () => {
+      button.removeEventListener('mousedown', handleStart)
+      button.removeEventListener('touchstart', handleStart)
+
+      document.body.removeEventListener('mousemove', handleMove)
+      document.body.removeEventListener('touchmove', handleMove)
+
+      document.body.removeEventListener('mouseup', handleEnd)
+      document.body.removeEventListener('touchend', handleEnd)
+
+      document.body.style.cursor = 'default'
+      document.body.style.userSelect = 'auto'
+    }
+  }, [handleStart, handleMove, handleEnd])
+
+  return {
+    containerRef,
+    dragButtonRef,
+    isDragging,
+  }
 }

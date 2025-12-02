@@ -46,7 +46,13 @@ export const ColorPickerModal = ({
     requestAnimationFrame(() => {
       const selectedElement = useEditedElementStore.getState().selectedElement
       if (!selectedElement) return
-      const dataVisualState = selectedElement.rootElement.getAttribute('data-visual-state')
+      const dataVisualState = document.body
+        .querySelector<HTMLElement>(
+          '.NAME-print-area-container .NAME-root-element[data-root-element-id="' +
+            selectedElement.elementId +
+            '"]'
+        )
+        ?.getAttribute('data-visual-state')
       if (!dataVisualState) return
       let color = (JSON.parse(dataVisualState) as TTextVisualState).textColor
       if (color && detectColorFormat(color) === 'rgb') {

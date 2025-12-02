@@ -43,6 +43,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
   // Xử lý khi bắt đầu nhấn vào nút zoom
   const handleStart = useCallback(
     (e: MouseEvent | TouchEvent) => {
+      console.log('>>> [int] handleStart:', e.target)
       e.preventDefault()
       e.stopPropagation()
 
@@ -123,6 +124,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
   // Effect để đăng ký/hủy sự kiện
   useEffect(() => {
     const button = zoomButtonRef.current
+    console.log('>>> [int] button:', button)
     if (!button) return
 
     // Đăng ký sự kiện chỉ trên nút zoom

@@ -3,54 +3,81 @@ import React, { useState, useEffect, useRef } from 'react'
 const FIXED_OFFSET_LEFT = 19
 const FIXED_OFFSET_TOP = 23
 
+interface Position {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+interface Offset {
+  offsetLeft: number
+  offsetTop: number
+}
+
+interface InputState {
+  bX: number | string
+  bY: number | string
+  bWidth: number | string
+  bHeight: number | string
+}
+
+interface AnimationStep {
+  x: number
+  y: number
+  w: number
+  h: number
+  delay: number
+}
+
 const ElementPositioningDemo = () => {
-  const eleRef = useRef(null)
-  const [scale, setScale] = useState(1)
-  const [elementB, setElementB] = useState({
+  const eleRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState<number>(1)
+  const [elementB, setElementB] = useState<Position>({
     x: 100,
     y: 100,
     width: 150,
     height: 100,
   })
 
-  const [elementA, setElementA] = useState({
-    x: 119, // 100 + 19
-    y: 123, // 100 + 23
+  const [elementA, setElementA] = useState<Position>({
+    x: 119,
+    y: 123,
     width: 50,
     height: 50,
   })
 
-  const [offsetLeft, setOffsetLeft] = useState(FIXED_OFFSET_LEFT)
-  const [offsetTop, setOffsetTop] = useState(FIXED_OFFSET_TOP)
+  const [offsetLeft, setOffsetLeft] = useState<number>(FIXED_OFFSET_LEFT)
+  const [offsetTop, setOffsetTop] = useState<number>(FIXED_OFFSET_TOP)
 
-  // Input controls state
-  const [inputs, setInputs] = useState({
+  const [inputs, setInputs] = useState<InputState>({
     bX: 100,
     bY: 100,
     bWidth: 150,
     bHeight: 100,
   })
 
-  // Calculate fixed offset between A and B
-  const calculateFixedOffset = (stateA, stateB) => {
+  const calculateFixedOffset = (stateA: Position, stateB: Position): Offset => {
     return {
       offsetLeft: stateA.x - stateB.x,
       offsetTop: stateA.y - stateB.y,
     }
   }
 
-  // Calculate new position for A based on B's new state
-  const calculateNewAPosition = (newBState, offsetL, offsetT) => {
+  const calculateNewAPosition = (
+    newBState: Position,
+    offsetL: number,
+    offsetT: number
+  ): Omit<Position, 'width' | 'height'> => {
     return {
       x: newBState.x + offsetL,
       y: newBState.y + offsetT,
     }
   }
 
-  // Main function to move A with B
-  const moveElementAWithB = (currentA, currentB, newB) => {
-    const offset = calculateFixedOffset(currentA, currentB) // tính khoảng cách giữa A và B
-    const newPosition = calculateNewAPosition(newB, offset.offsetLeft, offset.offsetTop) // tính vị trí mới của A dựa trên: B và offset
+  const moveElementAWithB = (currentA: Position, currentB: Position, newB: Position): Position => {
+    const offset = calculateFixedOffset(currentA, currentB)
+    const newPosition = calculateNewAPosition(newB, offset.offsetLeft, offset.offsetTop)
 
     return {
       ...currentA,
@@ -59,13 +86,12 @@ const ElementPositioningDemo = () => {
     }
   }
 
-  // Apply changes when inputs change
-  const applyChanges = () => {
-    const newBState = {
-      x: parseFloat(inputs.bX),
-      y: parseFloat(inputs.bY),
-      width: parseFloat(inputs.bWidth),
-      height: parseFloat(inputs.bHeight),
+  const applyChanges = (): void => {
+    const newBState: Position = {
+      x: parseFloat(inputs.bX as string),
+      y: parseFloat(inputs.bY as string),
+      width: parseFloat(inputs.bWidth as string),
+      height: parseFloat(inputs.bHeight as string),
     }
 
     const newAState = moveElementAWithB(elementA, elementB, newBState)
@@ -73,7 +99,6 @@ const ElementPositioningDemo = () => {
     setElementB(newBState)
     setElementA(newAState)
 
-    // Update offsets
     const { offsetLeft: newOffsetL, offsetTop: newOffsetT } = calculateFixedOffset(
       newAState,
       newBState
@@ -82,7 +107,7 @@ const ElementPositioningDemo = () => {
     setOffsetTop(newOffsetT)
   }
 
-  const todo = () => {
+  const todo = (): void => {
     const start = performance.now()
     const style = getComputedStyle(eleRef.current!)
     const end = performance.now()
@@ -90,16 +115,15 @@ const ElementPositioningDemo = () => {
     console.log('>>> style:', style)
   }
 
-  // Reset to initial positions
-  const resetPositions = () => {
-    const initialB = {
+  const resetPositions = (): void => {
+    const initialB: Position = {
       x: 100,
       y: 100,
       width: 150,
       height: 100,
     }
 
-    const initialA = {
+    const initialA: Position = {
       x: 119,
       y: 123,
       width: 50,
@@ -119,9 +143,8 @@ const ElementPositioningDemo = () => {
     setOffsetTop(FIXED_OFFSET_TOP)
   }
 
-  // Demo resize animation
-  const demoResize = () => {
-    const steps = [
+  const demoResize = (): void => {
+    const steps: AnimationStep[] = [
       { x: 100, y: 100, w: 200, h: 150, delay: 500 },
       { x: 100, y: 100, w: 250, h: 100, delay: 1000 },
       { x: 100, y: 100, w: 100, h: 200, delay: 1500 },
@@ -137,7 +160,7 @@ const ElementPositioningDemo = () => {
           bHeight: step.h,
         })
 
-        const newBState = { x: step.x, y: step.y, width: step.w, height: step.h }
+        const newBState: Position = { x: step.x, y: step.y, width: step.w, height: step.h }
         const newAState = moveElementAWithB(elementA, elementB, newBState)
         setElementB(newBState)
         setElementA(newAState)
@@ -145,9 +168,8 @@ const ElementPositioningDemo = () => {
     })
   }
 
-  // Demo move animation
-  const demoMove = () => {
-    const steps = [
+  const demoMove = (): void => {
+    const steps: AnimationStep[] = [
       { x: 200, y: 150, w: 150, h: 100, delay: 500 },
       { x: 300, y: 200, w: 150, h: 100, delay: 1000 },
       { x: 150, y: 80, w: 150, h: 100, delay: 1500 },
@@ -163,7 +185,7 @@ const ElementPositioningDemo = () => {
           bHeight: step.h,
         })
 
-        const newBState = { x: step.x, y: step.y, width: step.w, height: step.h }
+        const newBState: Position = { x: step.x, y: step.y, width: step.w, height: step.h }
         const newAState = moveElementAWithB(elementA, elementB, newBState)
         setElementB(newBState)
         setElementA(newAState)
@@ -171,8 +193,7 @@ const ElementPositioningDemo = () => {
     })
   }
 
-  // Handle input changes
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: keyof InputState, value: string): void => {
     setInputs((prev) => ({
       ...prev,
       [field]: value,

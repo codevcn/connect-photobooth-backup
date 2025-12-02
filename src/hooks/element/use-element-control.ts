@@ -3,16 +3,10 @@ import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { useDragElement } from '@/hooks/element/use-drag-element'
 import { useEffect, useState, useRef } from 'react'
 import { createInitialConstants } from '@/utils/contants'
-import {
-  TElementMountType,
-  TElementRelativeProps,
-  TElementVisualBaseState,
-  TPosition,
-} from '@/utils/types/global'
+import { TElementMountType, TElementVisualBaseState, TPosition } from '@/utils/types/global'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { captureCurrentElementPosition } from '@/pages/edit/helpers'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { typeToObject } from '@/utils/helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 
 type TElementPreviousRelativeProps = {
@@ -44,6 +38,7 @@ type TElementControlReturn = {
   }
   forDrag: {
     ref: React.RefObject<HTMLElement | null>
+    dragButtonRef: React.RefObject<HTMLDivElement | null>
   }
   state: TElementVisualBaseState
   handleSetElementState: (
@@ -192,7 +187,7 @@ export const useElementControl = (
     currentZoom: scale,
     setCurrentZoom: setScale,
   })
-  const { ref: refForDrag } = useDragElement({
+  const { containerRef: refForDrag, dragButtonRef } = useDragElement({
     disabled: isRotating || isZooming,
     currentPosition: position,
     scaleFactor,
@@ -387,6 +382,7 @@ export const useElementControl = (
     },
     forDrag: {
       ref: refForDrag,
+      dragButtonRef,
     },
     handleSetElementState,
     state: {

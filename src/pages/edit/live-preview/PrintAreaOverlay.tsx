@@ -157,10 +157,7 @@ export const PrintAreaOverlay = ({
       if (pickedFrame) {
         elementURL = pickedFrame.placedImage?.imgURL
       }
-      useEditedElementStore
-        .getState()
-        .selectElement(frameId, e.currentTarget, 'template-frame', elementURL)
-      // eventEmitter.emit(EInternalEvents.PICK_ELEMENT, frameId, e.currentTarget, 'template-frame')
+      useEditedElementStore.getState().selectElement(frameId, 'template-frame', elementURL)
     } else {
       eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, frameId)
     }

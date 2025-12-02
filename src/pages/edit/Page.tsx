@@ -188,7 +188,8 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
             target.closest('.NAME-crop-element-modal') ||
             target.closest('.NAME-printed-images-modal') ||
             target.closest('.NAME-remove-printed-element-modal') ||
-            target.closest('.NAME-element-interaction-title')
+            target.closest('.NAME-element-interaction-title') ||
+            target.closest('.NAME-element-interactive-buttons')
           )
         ) {
           cancelSelectingElement()

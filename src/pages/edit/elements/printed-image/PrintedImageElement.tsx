@@ -1,26 +1,27 @@
 import { TElementMountType, TPrintedImageVisualState } from '@/utils/types/global'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useElementControl } from '@/hooks/element/use-element-control'
 import { getNaturalSizeOfImage, typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { captureCurrentElementPosition } from '../../helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+import { createPortal } from 'react-dom'
 
 const MAX_ZOOM: number = 4
 const MIN_ZOOM: number = 0.5
+
+type TInteractiveButtonsState = {
+  buttonsContainerStyle: { top: number; left: number; width: number; height: number }
+  isShown: boolean
+}
 
 type TPrintedImageElementProps = {
   element: TPrintedImageVisualState
   elementContainerRef: React.RefObject<HTMLDivElement | null>
   mountType: TElementMountType
   isSelected: boolean
-  selectElement: (
-    elementId: string,
-    element: HTMLElement,
-    elementType: 'printed-image',
-    path: string
-  ) => void
+  selectElement: (elementId: string, elementType: 'printed-image', path: string) => void
   removePrintedImageElement: (printedImageElementId: string) => void
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
 }
@@ -34,13 +35,14 @@ export const PrintedImageElement = ({
   printAreaContainerRef,
 }: TPrintedImageElementProps) => {
   const { path, id, mountType, height, width } = element
+  const defaultElementHeight: number = 100
   const rootRef = useRef<HTMLElement | null>(null)
   const scaleFactor = useEditAreaStore((state) => state.editAreaScaleValue)
   const {
     // forPinch: { ref: refForPinch },
     forRotate: { ref: refForRotate, rotateButtonRef },
     forZoom: { ref: refForZoom, zoomButtonRef },
-    forDrag: { ref: refForDrag },
+    forDrag: { ref: refForDrag, dragButtonRef },
     state: { position, angle, scale, zindex },
     handleSetElementState,
   } = useElementControl(id, rootRef, elementContainerRef, printAreaContainerRef, {
@@ -52,12 +54,39 @@ export const PrintedImageElement = ({
     zindex: element.zindex,
     mountType,
   })
+  const [interactiveBtns, setInteractiveBtns] = useState<TInteractiveButtonsState>({
+    buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
+    isShown: false,
+  })
+
+  const updateInteractiveButtonsVisual = () => {
+    if (!isSelected) return
+    const root = rootRef.current
+    if (!root) return
+    const rootRect = root.getBoundingClientRect()
+    const { left, top } = rootRect
+    const widthAfterScale = root.offsetWidth * scale
+    const heightAfterScale = root.offsetHeight * scale
+    setInteractiveBtns({
+      buttonsContainerStyle: {
+        top: top + rootRect.height / 2 - heightAfterScale / 2,
+        left: left + rootRect.width / 2 - widthAfterScale / 2,
+        width: widthAfterScale,
+        height: heightAfterScale,
+      },
+      isShown: true,
+    })
+  }
+
+  useEffect(() => {
+    updateInteractiveButtonsVisual()
+  }, [isSelected, position.x, position.y, scale, angle, zindex])
 
   const pickElement = () => {
     const root = rootRef.current
     if (!root) return
-    eventEmitter.emit(EInternalEvents.PICK_ELEMENT, id, root, 'printed-image')
-    selectElement(id, root, 'printed-image', path)
+    // eventEmitter.emit(EInternalEvents.PICK_ELEMENT, id, root, 'printed-image')
+    selectElement(id, 'printed-image', path)
   }
 
   const listenSubmitEleProps = (
@@ -105,7 +134,7 @@ export const PrintedImageElement = ({
       path,
       (naturalWidth, naturalHeight) => {
         let cssText = `
-          height: ${50}px;
+          height: ${defaultElementHeight}px;
           aspect-ratio: ${naturalWidth} / ${naturalHeight};
         `
         display.style.cssText = cssText
@@ -169,12 +198,12 @@ export const PrintedImageElement = ({
 
   return (
     <div
+      data-root-element-id={id}
       ref={(node) => {
         refForDrag.current = node
         rootRef.current = node
         refForRotate.current = node
         refForZoom.current = node
-        // refForPinch.current = node
       }}
       style={{
         left: position.x,
@@ -182,15 +211,13 @@ export const PrintedImageElement = ({
         transform: `scale(${scale}) rotate(${angle}deg)`,
         zIndex: zindex,
         ...(mountType === 'from-new'
-          ? { height: '50px' }
+          ? { height: `${defaultElementHeight}px` }
           : {
               height: `${height}px`,
               width: `${width}px`,
             }),
       }}
-      className={`${
-        isSelected ? 'shadow-[0_0_0_2px_#f54900]' : ''
-      } NAME-root-element NAME-element-type-printed-image absolute transition h-fit w-fit touch-none z-6`}
+      className={`NAME-root-element NAME-element-type-printed-image absolute transition h-fit w-fit touch-none z-6`}
       onClick={pickElement}
       data-visual-state={JSON.stringify(
         typeToObject<TPrintedImageVisualState>({
@@ -216,86 +243,93 @@ export const PrintedImageElement = ({
             className="NAME-element-display object-contain h-full w-full"
           />
         </div>
-        <div
-          className={`${
-            isSelected ? 'block' : 'hidden'
-          } NAME-rotate-box absolute -top-7 -left-7 z-999 md:-top-9 md:-left-9`}
-        >
-          <button
-            ref={rotateButtonRef}
-            className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-rotate-cw-icon lucide-rotate-cw h-[18px] w-[18px] md:w-[22px] md:h-[22px]"
-            >
-              <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-              <path d="M21 3v5h-5" />
-            </svg>
-          </button>
-        </div>
-        <div
-          className={`${
-            isSelected ? 'block' : 'hidden'
-          } NAME-remove-box absolute -bottom-7 -right-7 z-999 md:-bottom-9 md:-right-9`}
-        >
-          <button
-            ref={zoomButtonRef}
-            style={{ transform: `rotateY(180deg)` }}
-            className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-scaling-icon lucide-scaling h-[18px] w-[18px] md:w-[22px] md:h-[22px]"
-            >
-              <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M14 15H9v-5" />
-              <path d="M16 3h5v5" />
-              <path d="M21 3 9 15" />
-            </svg>
-          </button>
-        </div>
-        <div
-          className={`${
-            isSelected ? 'block' : 'hidden'
-          } NAME-remove-box absolute -top-7 -right-7 z-999 md:-top-9 md:-right-9`}
-        >
-          <button
-            onClick={removeElement}
-            className="bg-red-600 text-white rounded-full p-1 active:scale-90 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-x-icon lucide-x h-[18px] w-[18px] md:w-[22px] md:h-[22px]"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
       </div>
+
+      {createPortal(
+        <div
+          className="NAME-element-interactive-buttons fixed z-90 bg-transparent shadow-[0_0_0_2px_#f54900]"
+          style={{
+            display: isSelected && interactiveBtns.isShown ? 'block' : 'none',
+            top: interactiveBtns.buttonsContainerStyle.top,
+            left: interactiveBtns.buttonsContainerStyle.left,
+            width: interactiveBtns.buttonsContainerStyle.width,
+            height: interactiveBtns.buttonsContainerStyle.height,
+            transform: `rotate(${angle}deg)`,
+          }}
+          ref={dragButtonRef}
+        >
+          <div
+            className={`NAME-rotate-box origin-center absolute -top-7 -left-7 md:-top-8 md:-left-8`}
+          >
+            <button
+              ref={rotateButtonRef}
+              className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-rotate-cw-icon lucide-rotate-cw h-[18px] w-[18px] md:w-5 md:h-5"
+              >
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+              </svg>
+            </button>
+          </div>
+          <div className={`NAME-remove-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8`}>
+            <button
+              ref={zoomButtonRef}
+              style={{ transform: `rotateY(180deg)` }}
+              className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-scaling-icon lucide-scaling h-[18px] w-[18px] md:w-5 md:h-5"
+              >
+                <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M14 15H9v-5" />
+                <path d="M16 3h5v5" />
+                <path d="M21 3 9 15" />
+              </svg>
+            </button>
+          </div>
+          <div className={`NAME-remove-box absolute -top-7 -right-7 md:-top-8 md:-right-8`}>
+            <button
+              onClick={removeElement}
+              className="bg-red-600 text-white rounded-full p-1 active:scale-90 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-x-icon lucide-x h-[18px] w-[18px] md:w-5 md:h-5"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   )
 }

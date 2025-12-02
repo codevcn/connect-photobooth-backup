@@ -1,4 +1,3 @@
-import { useEditedElementStore } from '@/stores/element/element.store'
 import { createInitialConstants } from '@/utils/contants'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { TElementType, TStickerVisualState } from '@/utils/types/global'
@@ -13,8 +12,17 @@ type TStickerElementMenu = {
 
 export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) => {
   const menuRef = useRef<HTMLDivElement | null>(null)
-  const selectedElement = useEditedElementStore((s) => s.selectedElement)
-  const pickedElementRoot = selectedElement?.rootElement || null
+
+  const getPickedElementRoot = () => {
+    return document.body.querySelector<HTMLElement>(
+      '.NAME-print-area-container .NAME-root-element[data-root-element-id="' + elementId + '"]'
+    )
+  }
+  const pickedElementRootRef = useRef<HTMLElement>(getPickedElementRoot())
+
+  useEffect(() => {
+    pickedElementRootRef.current = getPickedElementRoot()
+  }, [elementId])
 
   const validateInputsPositiveNumber = (
     inputs: HTMLInputElement[],
@@ -97,6 +105,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
 
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
     if (type !== 'sticker' || elementId !== idOfElement) return
+    const pickedElementRoot = pickedElementRootRef.current
     const dataset = JSON.parse(pickedElementRoot?.getAttribute('data-visual-state') || '{}')
     const { scale, angle, position } = dataset as TStickerVisualState
     const { x: posX, y: posY } = position || {}

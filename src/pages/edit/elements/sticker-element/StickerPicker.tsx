@@ -1,6 +1,6 @@
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { createInitialConstants } from '@/utils/contants'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { StickerElementMenu } from './Menu'
 import { generateUniqueId } from '@/utils/helpers'
 
@@ -88,9 +88,10 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
 
   // Xử lý chọn sticker
   const handleSelectSticker = (path: string) => {
+    const elementId = generateUniqueId()
     useEditedElementStore.getState().addStickerElement([
       {
-        id: generateUniqueId(),
+        id: elementId,
         path,
         position: {
           x: createInitialConstants<number>('ELEMENT_X'),
@@ -102,6 +103,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
         mountType: 'from-new',
       },
     ])
+    // useEditedElementStore.getState().selectElement(elementId, 'sticker', path)
     onClose()
   }
 
@@ -279,7 +281,7 @@ const PickerModalWrapper = () => {
 
 export const StickerMenuWrapper = () => {
   const selectedElement = useEditedElementStore((state) => state.selectedElement)
-  const { elementType, rootElement, elementId } = selectedElement || {}
+  const { elementType, elementId } = selectedElement || {}
   const cancelSelectingElement = useEditedElementStore((state) => state.cancelSelectingElement)
 
   const scrollToSelectedElement = () => {
@@ -297,11 +299,10 @@ export const StickerMenuWrapper = () => {
 
   useEffect(() => {
     scrollToSelectedElement()
-  }, [elementId, elementType, rootElement])
+  }, [elementId, elementType])
 
   return (
     elementType === 'sticker' &&
-    rootElement &&
     elementId && (
       <div className="smd:block hidden w-full">
         <StickerElementMenu elementId={elementId} onClose={cancelSelectingElement} />

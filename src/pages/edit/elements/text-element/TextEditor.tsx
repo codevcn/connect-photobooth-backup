@@ -13,9 +13,10 @@ const EditorModal = ({ onClose }: TEditorModalProps) => {
 
   const handleAddText = () => {
     if (text.trim()) {
+      const elementId = generateUniqueId()
       useEditedElementStore.getState().addTextElement([
         {
-          id: generateUniqueId(),
+          id: elementId,
           content: text,
           angle: createInitialConstants<number>('ELEMENT_ROTATION'),
           position: {
@@ -30,6 +31,7 @@ const EditorModal = ({ onClose }: TEditorModalProps) => {
           mountType: 'from-new',
         },
       ])
+      // useEditedElementStore.getState().selectElement(elementId, 'text')
       setText('')
       onClose()
     }
@@ -141,7 +143,7 @@ export const EditorModalWrapper = () => {
 
 export const TextMenuWrapper = () => {
   const selectedElement = useEditedElementStore((state) => state.selectedElement)
-  const { elementType, rootElement, elementId } = selectedElement || {}
+  const { elementType, elementId } = selectedElement || {}
   const cancelSelectingElement = useEditedElementStore((state) => state.cancelSelectingElement)
 
   const scrollToSelectedElement = () => {
@@ -159,11 +161,10 @@ export const TextMenuWrapper = () => {
 
   useEffect(() => {
     scrollToSelectedElement()
-  }, [elementId, elementType, rootElement])
+  }, [elementId, elementType])
 
   return (
     elementType === 'text' &&
-    rootElement &&
     elementId && (
       <div className="smd:block hidden w-full">
         <TextElementMenu elementId={elementId} onClose={cancelSelectingElement} />

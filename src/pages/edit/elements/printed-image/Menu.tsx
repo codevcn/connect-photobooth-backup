@@ -1,4 +1,3 @@
-import { useEditedElementStore } from '@/stores/element/element.store'
 import { createInitialConstants } from '@/utils/contants'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { TElementType, TPrintedImageVisualState } from '@/utils/types/global'
@@ -13,8 +12,17 @@ type TPrintedImageElementMenu = {
 
 export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageElementMenu) => {
   const menuRef = useRef<HTMLDivElement | null>(null)
-  const selectedElement = useEditedElementStore((s) => s.selectedElement)
-  const pickedElementRoot = selectedElement?.rootElement || null
+
+  const getPickedElementRoot = () => {
+    return document.body.querySelector<HTMLElement>(
+      '.NAME-print-area-container .NAME-root-element[data-root-element-id="' + elementId + '"]'
+    )
+  }
+  const pickedElementRootRef = useRef<HTMLElement>(getPickedElementRoot())
+
+  useEffect(() => {
+    pickedElementRootRef.current = getPickedElementRoot()
+  }, [elementId])
 
   const validateInputsPositiveNumber = (
     inputs: HTMLInputElement[],
@@ -96,6 +104,7 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
 
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
     if (type !== 'printed-image' || elementId !== idOfElement) return
+    const pickedElementRoot = pickedElementRootRef.current
     const dataset = JSON.parse(pickedElementRoot?.getAttribute('data-visual-state') || '{}')
     const { scale, angle, position } = dataset as TPrintedImageVisualState
     const { x: posX, y: posY } = position || {}

@@ -59,9 +59,10 @@ const PrintedImagePreviewModal = ({ printedImage, onClose }: PrintedImageProps) 
   const imgsContainerRef = useRef<HTMLDivElement>(null)
 
   const handleAddImageToPrintArea = (printedImg: TPrintedImage) => {
+    const elementId = generateUniqueId()
     useEditedElementStore.getState().addPrintedImageElements([
       {
-        id: generateUniqueId(),
+        id: elementId,
         path: printedImg.url,
         position: {
           x: createInitialConstants<number>('ELEMENT_X'),
@@ -73,6 +74,7 @@ const PrintedImagePreviewModal = ({ printedImage, onClose }: PrintedImageProps) 
         mountType: 'from-new',
       },
     ])
+    // useEditedElementStore.getState().selectElement(elementId, 'printed-image', printedImg.url)
     onClose()
   }
 
@@ -107,7 +109,7 @@ const PrintedImagePreviewModal = ({ printedImage, onClose }: PrintedImageProps) 
         </div>
 
         {/* Image Grid */}
-        <div className="flex-1 overflow-y-auto p-3">
+        <div className="flex flex-col items-center flex-1 overflow-y-auto p-3">
           <p className="text-gray-700 text-sm text-center w-full mb-2 font-medium">
             Nhấn vào ảnh để thêm vào khu vực in
           </p>

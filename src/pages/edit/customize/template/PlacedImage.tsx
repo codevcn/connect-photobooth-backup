@@ -89,7 +89,7 @@ export const PlacedImage = ({
         createPortal(
           <div
             style={{ transform: `scale(${zoom})` }}
-            className="NAME-zoom-placed-image-btn-wrapper hidden fixed top-0 left-0 z-99 border-2 border-main-cl"
+            className="NAME-zoom-placed-image-btn-wrapper hidden fixed bg-transparent top-0 left-0 z-99 border-2 border-main-cl"
           >
             <button
               ref={zoomButtonRef}

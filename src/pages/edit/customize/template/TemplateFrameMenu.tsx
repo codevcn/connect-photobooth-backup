@@ -187,7 +187,6 @@ type PrintedImageMenuProps = {
 
 export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: PrintedImageMenuProps) => {
   const menuRef = useRef<HTMLDivElement | null>(null)
-  const rootElement = useEditedElementStore((s) => s.selectedElement?.rootElement)
 
   const validateInputsPositiveNumber = (
     inputs: HTMLInputElement[],
@@ -288,6 +287,9 @@ export const TemplateFrameMenu = ({ frameId, onClose, printedImageURL }: Printed
 
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
     if (type !== 'printed-image' || frameId !== idOfElement) return
+    const rootElement = document.body.querySelector<HTMLElement>(
+      '.NAME-print-area-container .NAME-root-element[data-root-element-id="' + frameId + '"]'
+    )
     const dataset = JSON.parse(rootElement?.getAttribute('data-visual-state') || '{}')
     const { scale, angle, position } = dataset as any
     const { x: posX, y: posY } = position || {}

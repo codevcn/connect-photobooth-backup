@@ -4,7 +4,7 @@ import { PrintedImageElementMenu } from './Menu'
 
 export const PrintedImageMenuWrapper = () => {
   const selectedElement = useEditedElementStore((state) => state.selectedElement)
-  const { elementType, rootElement, elementId } = selectedElement || {}
+  const { elementType, elementId } = selectedElement || {}
   const cancelSelectingElement = useEditedElementStore((state) => state.cancelSelectingElement)
 
   const scrollToSelectedElement = () => {
@@ -22,11 +22,10 @@ export const PrintedImageMenuWrapper = () => {
 
   useEffect(() => {
     scrollToSelectedElement()
-  }, [elementId, elementType, rootElement])
+  }, [elementId, elementType])
 
   return (
     elementType === 'printed-image' &&
-    rootElement &&
     elementId && (
       <div className="smd:block hidden w-full">
         <PrintedImageElementMenu elementId={elementId} onClose={cancelSelectingElement} />

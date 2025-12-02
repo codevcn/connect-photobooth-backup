@@ -8,7 +8,6 @@ import { create } from 'zustand'
 
 type TSelectedElement = {
   elementId: string
-  rootElement: HTMLElement
   elementType: TElementType
   elementURL?: string
 }
@@ -20,12 +19,7 @@ type TUseElementStore = {
   printedImages: TPrintedImageVisualState[]
 
   // Actions
-  selectElement: (
-    elementId: string,
-    rootElement: HTMLElement,
-    elementType: TElementType,
-    elementURL?: string
-  ) => void
+  selectElement: (elementId: string, elementType: TElementType, elementURL?: string) => void
   cancelSelectingElement: () => void
   updateSelectedElement: (updatedElement: Partial<TSelectedElement>) => void
   addStickerElement: (stickers: TStickerVisualState[]) => void
@@ -106,8 +100,9 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
       ...(shouldClearSelection ? { selectedElement: null } : {}),
     })
   },
-  selectElement: (elementId, rootElement, elementType, elementURL) => {
-    set({ selectedElement: { rootElement, elementType, elementId, elementURL } })
+  selectElement: (elementId, elementType, elementURL) => {
+    console.log('>>> [se] info:', { elementId, elementType, elementURL })
+    set({ selectedElement: { elementType, elementId, elementURL } })
   },
   cancelSelectingElement: () => {
     set({ selectedElement: null })

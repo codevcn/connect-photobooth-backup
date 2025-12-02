@@ -3,8 +3,8 @@ import { TElementType, TTextVisualState } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { ColorPickerModal } from './ColorPicker'
 import { TextFontPicker } from './FontPicker'
-import { useEditedElementStore } from '@/stores/element/element.store'
 import { createInitialConstants } from '@/utils/contants'
+import { createPortal } from 'react-dom'
 
 type TPropertyType = 'font-size' | 'angle' | 'posXY' | 'zindex-up' | 'zindex-down'
 
@@ -16,9 +16,18 @@ type TPrintedImageMenuProps = {
 export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) => {
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false)
   const [showTextFontPicker, setShowTextFontPicker] = useState<boolean>(false)
-  const pickedElementRoot = useEditedElementStore((s) => s.selectedElement?.rootElement)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const [inputText, setInputText] = useState<string>()
+  const getPickedElementRoot = () => {
+    return document.body.querySelector<HTMLElement>(
+      '.NAME-print-area-container .NAME-root-element[data-root-element-id="' + elementId + '"]'
+    )
+  }
+  const pickedElementRootRef = useRef<HTMLElement>(getPickedElementRoot())
+
+  useEffect(() => {
+    pickedElementRootRef.current = getPickedElementRoot()
+  }, [elementId])
 
   const validateInputsPositiveNumber = (
     inputs: (HTMLInputElement | HTMLTextAreaElement)[],
@@ -111,6 +120,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
   }
 
   const initInputText = () => {
+    const pickedElementRoot = pickedElementRootRef.current
     const textElement = pickedElementRoot?.querySelector<HTMLElement>(
       '.NAME-displayed-text-content'
     )
@@ -146,6 +156,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
 
   const listenElementProps = (idOfElement: string | null, type: TElementType) => {
     if (type !== 'text' || elementId !== idOfElement) return
+    const pickedElementRoot = pickedElementRootRef.current
     const dataset = JSON.parse(pickedElementRoot?.getAttribute('data-visual-state') || '{}')
     const { fontSize, angle, position } = dataset as TTextVisualState
     const { x: posX, y: posY } = position || {}
@@ -175,7 +186,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
   }
 
   const updateContentInputOnInputTextChange = () => {
-    const textElement = pickedElementRoot?.querySelector<HTMLElement>(
+    const textElement = pickedElementRootRef.current?.querySelector<HTMLElement>(
       '.NAME-displayed-text-content'
     )
     if (textElement) {
@@ -345,7 +356,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
             />
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-zindex h-8 smd:h-9 flex items-center justify-between bg-main-cl rounded px-1 shadow mobile-touch">
+        <div className="NAME-form-group NAME-form-zindex h-8 smd:h-9 flex items-center justify-between bg-main-cl rounded px-1 shadow">
           <div className="mr-0.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -382,7 +393,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
             </button>
             <button
               onClick={() => onClickButton('zindex-down')}
-              className="bg-white border-2 grow text-main-cl border-main-cl rounded px-1.5 py-0.5 flex gap-0.5 items-center justify-center"
+              className="bg-white border-2 grow text-main-cl border-main-cl rounded px-1.5 py-0.5 flex gap-0.5 items-center justify-center mobile-touch"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -426,13 +437,15 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
               </svg>
             </div>
           </div>
-          {showColorPicker && (
-            <ColorPickerModal
-              onHideShow={setShowColorPicker}
-              onColorChange={handleAdjustColorOnElement}
-              inputText={inputText || ''}
-            />
-          )}
+          {showColorPicker &&
+            createPortal(
+              <ColorPickerModal
+                onHideShow={setShowColorPicker}
+                onColorChange={handleAdjustColorOnElement}
+                inputText={inputText || ''}
+              />,
+              document.body
+            )}
         </div>
         <div className="NAME-form-group NAME-form-font flex items-stretch justify-center gap-1 relative rounded">
           <div
@@ -458,9 +471,11 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
               </div>
             </div>
           </div>
-          {showTextFontPicker && (
-            <TextFontPicker onHideShow={setShowTextFontPicker} onSelectFont={handleSelectFont} />
-          )}
+          {showTextFontPicker &&
+            createPortal(
+              <TextFontPicker onHideShow={setShowTextFontPicker} onSelectFont={handleSelectFont} />,
+              document.body
+            )}
         </div>
         <div className="2xl:col-span-3 sm:row-span-1 row-span-2 flex items-center">
           <button

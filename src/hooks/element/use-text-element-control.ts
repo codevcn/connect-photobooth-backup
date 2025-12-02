@@ -28,6 +28,7 @@ type TTextElementControlReturn = {
   }
   forDrag: {
     ref: React.RefObject<HTMLElement | null>
+    dragButtonRef: React.RefObject<HTMLDivElement | null>
   }
   state: Omit<TTextVisualState, 'id'>
   handleSetElementState: (
@@ -112,7 +113,7 @@ export const useTextElementControl = (
       adjustedFontSize = convertZoomValueToFontSize(scaleValue)
     } else if (fontSizeValue) {
       adjustedFontSize = fontSizeValue
-    } else return
+    } else return // nếu không tham số nào có giá trị => dừng lại
     if (minFontSize && minFontSize > adjustedFontSize) {
       adjustedFontSize = minFontSize
     }
