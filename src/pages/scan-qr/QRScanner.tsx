@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Scanner } from '@yudiel/react-qr-scanner'
+import { useEffect, useRef, useState } from 'react'
+import { Html5Qrcode } from 'html5-qrcode'
 import { qrGetter } from '@/configs/brands/photoism/qr-getter'
 import { toast } from 'react-toastify'
 import { TUserInputImage } from '@/utils/types/global'
@@ -14,50 +14,89 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
   const { detectFromFile, isReady } = useFastBoxes()
+  const html5QrCodeRef = useRef<Html5Qrcode | null>(null)
+  const scannerDivId = 'qr-reader'
 
   useEffect(() => {
     if (!isReady) return
     qrGetter.setDetectFromFileHandler(detectFromFile as any)
-  }, [isReady])
+  }, [isReady, detectFromFile])
 
-  const handleScan = (result: string) => {
-    if (!isScanning && isReady) {
-      setIsScanning(true)
-      console.log('>>> QR scanned:', result)
-      qrGetter
-        .handleImageData(result, (percentage, images, error) => {
-          setProgress(percentage)
-          if (error) {
-            console.error('>>> Lỗi lấy dữ liệu mã QR:', error)
-            setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
-            toast.error(error.message)
+  useEffect(() => {
+    if (!isReady) return
+
+    const html5QrCode = new Html5Qrcode(scannerDivId)
+    html5QrCodeRef.current = html5QrCode
+
+    const handleScanSuccess = (decodedText: string) => {
+      if (!isScanning && isReady) {
+        setIsScanning(true)
+        console.log('>>> QR scanned:', decodedText)
+        
+        // Stop scanner
+        html5QrCode.stop().catch((err) => {
+          console.error('Error stopping scanner:', err)
+        })
+
+        qrGetter
+          .handleImageData(decodedText, (percentage, images, error) => {
+            setProgress(percentage)
+            if (error) {
+              console.error('>>> Lỗi lấy dữ liệu mã QR:', error)
+              setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
+              toast.error(error.message)
+              setIsScanning(false)
+              return
+            }
+            if (images) {
+              console.log('>>> images extracted:', images)
+              onScanSuccess(
+                images.map((img) => ({
+                  ...img,
+                  url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
+                }))
+              )
+            }
+          })
+          .catch((err) => {
+            console.error('>>> Lỗi xử lý dữ liệu mã QR:', err)
+            setError('Không thể xử lý mã QR. Vui lòng thử lại.')
+            toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
             setIsScanning(false)
-            return
-          }
-          if (images) {
-            console.log('>>> images extracted:', images)
-            onScanSuccess(
-              images.map((img) => ({
-                ...img,
-                url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
-              }))
-            )
-          }
-        })
-        .catch((err) => {
-          console.error('>>> Lỗi xử lý dữ liệu mã QR:', err)
-          setError('Không thể xử lý mã QR. Vui lòng thử lại.')
-          toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
-          setIsScanning(false)
-        })
+          })
+      }
     }
-  }
 
-  const handleError = (error: unknown) => {
-    console.error('>>> QR Scanner error:', error)
-    setError('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
-    toast.error('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
-  }
+    const handleScanError = (errorMessage: string) => {
+      // Ignore scan errors (happens continuously when no QR code is detected)
+      // Only log for debugging if needed
+      // console.log('Scan error:', errorMessage)
+    }
+
+    html5QrCode
+      .start(
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+        },
+        handleScanSuccess,
+        handleScanError
+      )
+      .catch((err) => {
+        console.error('>>> Camera error:', err)
+        setError('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
+        toast.error('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
+      })
+
+    return () => {
+      if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
+        html5QrCodeRef.current.stop().catch((err) => {
+          console.error('Error stopping scanner on cleanup:', err)
+        })
+      }
+    }
+  }, [isReady, isScanning, onScanSuccess])
 
   // useEffect(() => {
   //   if (!isReady) return
@@ -93,31 +132,12 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   return (
     <div className="w-full">
       <div className="relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
-        {!error && !isScanning && (
-          <Scanner
-            onScan={(detectedCodes) => {
-              const result = detectedCodes[0]?.rawValue
-              if (result) {
-                handleScan(result)
-              }
-            }}
-            onError={handleError}
-            constraints={{
-              facingMode: 'environment',
-            }}
-            styles={{
-              container: {
-                width: '100%',
-                height: '100%',
-              },
-              video: {
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              },
-            }}
-            components={{
-              finder: false,
+        {!error && (
+          <div
+            id={scannerDivId}
+            className="w-full h-full"
+            style={{
+              border: 'none',
             }}
           />
         )}
@@ -143,11 +163,6 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
                     <span>%</span>
                   </p>
                 </div>
-              </div>
-            )}
-            {!isScanning && (
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 border-2 border-pink-400 rounded-lg opacity-30 animate-pulse"></div>
               </div>
             )}
           </>
