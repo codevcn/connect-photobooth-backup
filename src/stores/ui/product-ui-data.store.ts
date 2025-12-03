@@ -117,12 +117,6 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   },
 
   handlePickProductOnRestore: (product, initialTemplate, initialVariant, initialSurface) => {
-    console.log('>>> [ddd] handle Pick Product On Restore:', {
-      product,
-      initialTemplate,
-      initialVariant,
-      initialSurface,
-    })
     set({
       pickedProduct: product,
       pickedVariant: initialVariant,

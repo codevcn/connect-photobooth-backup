@@ -1,5 +1,5 @@
 import { TUserInputImage } from '@/utils/types/global'
-import { TGetCustomerMediaResponse } from './types'
+import { TGetCustomerMediaResponse, TGetCustomerMediaResponse_dev } from './types'
 import { canvasToBlob } from '@/utils/helpers'
 import { TDetectionResult } from '@/hooks/use-fast-boxes'
 
@@ -10,9 +10,9 @@ type TGetImageDataProgressCallback = (
 ) => void
 
 let count = 0
-const getLinkByCount = () => {
+const getLinkByCount = (): string => {
   // return 'https://api.encycom.com/files/1764043107649-213696048.jpg'
-  // return 'http://localhost:3000/images/img-to-test.jpg'
+  return 'http://localhost:3000/images/img-to-test.jpg'
   // if (count === 1) {
   //   count++
   //   return 'https://photobooth-public.s3.ap-southeast-1.amazonaws.com/d63a64aa48c6c4989dd7.jpg'
@@ -188,42 +188,42 @@ class QRGetter {
 
   private async getFileId(url: string, onProgress: TGetImageDataProgressCallback): Promise<string> {
     console.log('>>> [qr] getFileId called with url:', url)
-    const browserHeaders = {
-      accept:
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-      'accept-language': 'en-US,en;q=0.9,vi;q=0.8,fr-FR;q=0.7,fr;q=0.6,zh-TW;q=0.5,zh;q=0.4',
-      'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
-      'sec-ch-ua-mobile': '?0',
-      'sec-ch-ua-platform': '"Windows"',
-      'upgrade-insecure-requests': '1',
-      // pass CloudFront
-      'user-agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
-    }
-    // Để fetch tự động follow redirect
-    let res1
-    try {
-      res1 = await fetch(url, {
-        method: 'GET',
-        redirect: 'follow', // Thay đổi từ 'manual' thành 'follow'
-        headers: browserHeaders,
-      })
-    } catch (error) {
-      console.error('>>> [qr] fetch img error:', error)
-      throw error
-    }
-    onProgress(30, null, null)
+    // const browserHeaders = {
+    //   accept:
+    //     'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    //   'accept-language': 'en-US,en;q=0.9,vi;q=0.8,fr-FR;q=0.7,fr;q=0.6,zh-TW;q=0.5,zh;q=0.4',
+    //   'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+    //   'sec-ch-ua-mobile': '?0',
+    //   'sec-ch-ua-platform': '"Windows"',
+    //   'upgrade-insecure-requests': '1',
+    //   // pass CloudFront
+    //   'user-agent':
+    //     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+    // }
+    // // Để fetch tự động follow redirect
+    // let res1
+    // try {
+    //   res1 = await fetch(url, {
+    //     method: 'GET',
+    //     redirect: 'follow', // Thay đổi từ 'manual' thành 'follow'
+    //     headers: browserHeaders,
+    //   })
+    // } catch (error) {
+    //   console.error('>>> [qr] fetch img error:', error)
+    //   throw error
+    // }
+    // onProgress(30, null, null)
 
-    // Lấy final URL sau khi đã follow redirect
-    const finalUrl = res1.url
-    const urlObj = new URL(finalUrl)
-    const uParam = urlObj.searchParams.get('u')
-    if (!uParam) throw new Error('No u parameter found in redirect URL')
-    return uParam
-    // return 'test-uuid'
+    // // Lấy final URL sau khi đã follow redirect
+    // const finalUrl = res1.url
+    // const urlObj = new URL(finalUrl)
+    // const uParam = urlObj.searchParams.get('u')
+    // if (!uParam) throw new Error('No u parameter found in redirect URL')
+    // return uParam
+    return 'test-uuid'
   }
 
-  removeProtocol(url: string): string {
+  private removeProtocol(url: string): string {
     try {
       const u = new URL(url)
       return u.href.replace(u.protocol + '//', '')
@@ -255,12 +255,14 @@ class QRGetter {
     //   body: `{\"uid\":\"${uuid}\",\"appUserId\":null}`,
     //   method: 'POST',
     // })
+
     console.log('>>> [qr] result from QR scanning:', imgURL)
     const strippedURL = this.removeProtocol(imgURL)
     console.log('>>> [qr] stripped URL:', strippedURL)
     let a = await fetch(`https://api.encycom.com/api/getimg/?u=${strippedURL}`)
     onProgress(50, null, null)
     return (await a.json()) as TGetCustomerMediaResponse
+
     // onProgress(50, null, null)
     // return {
     //   content: {
@@ -270,7 +272,7 @@ class QRGetter {
     //       },
     //     },
     //   },
-    // } as TGetCustomerMediaResponse
+    // } as TGetCustomerMediaResponse_dev
   }
 
   private async fetchImageData(

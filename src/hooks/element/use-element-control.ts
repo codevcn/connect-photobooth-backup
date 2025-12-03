@@ -73,7 +73,6 @@ export const useElementControl = (
 
   const edgesMargin: number = 10 // px
   const handleSetElementPosition = (posX: TPosition['x'], posY: TPosition['y']) => {
-    console.log('>>> [vvv] valid posx posy:', posX, posY)
     const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
     const rootElement = elementRootRef.current
     if (!containerForElementAbsoluteTo || !rootElement) return
@@ -85,12 +84,6 @@ export const useElementControl = (
     if (posY < 0) return
     const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
     const rootElementRect = rootElement.getBoundingClientRect()
-    console.log('>>> [vvv] valid rects:', {
-      containerForElementAbsoluteTo,
-      containerForElementAbsoluteToRect,
-      rootElement,
-      rootElementRect,
-    })
     if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width - edgesMargin) return
     if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height - edgesMargin)
       return
@@ -115,24 +108,16 @@ export const useElementControl = (
   }
 
   const handleSetSinglePosition = (posX?: TPosition['x'], posY?: TPosition['y']) => {
-    console.log('>>> [vvv] single pos:', { posX, posY })
     const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
     const rootElement = elementRootRef.current
     if (!containerForElementAbsoluteTo || !rootElement) return
     const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
     const rootElementRect = rootElement.getBoundingClientRect()
-    console.log('>>> [vvv] rects:', {
-      containerForElementAbsoluteToRect,
-      rootElementRect,
-      containerForElementAbsoluteTo,
-      rootElement,
-    })
     if (posX && posX > 0) {
       let parsedValue = posX
       if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width) {
         parsedValue = containerForElementAbsoluteToRect.width - rootElementRect.width - 5
       }
-      console.log('>>> [vvv] parsed posX:', parsedValue)
       setPosition((prev) => ({
         ...prev,
         x: parsedValue,
@@ -142,7 +127,6 @@ export const useElementControl = (
       if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height) {
         parsedValue = containerForElementAbsoluteToRect.height - rootElementRect.height - 5
       }
-      console.log('>>> [vvv] parsed posY:', parsedValue)
       setPosition((prev) => ({
         ...prev,
         y: parsedValue,
@@ -283,7 +267,6 @@ export const useElementControl = (
     if (minZoom && parsedScale < minZoom) parsedScale = minZoom
     if (maxZoom && parsedScale > maxZoom) parsedScale = maxZoom
     // debug
-    console.log('>>> [uuu] setup Visual Data parsed Scale:', { initialPosition })
     handleSetElementState(
       initialPosition?.x,
       initialPosition?.y,
@@ -296,17 +279,22 @@ export const useElementControl = (
   const stayElementVisualOnAllowedPrintArea = () => {
     const elementPreOffset = elementPreviousRelativeProps.current
     if (!elementPreOffset) return
-    const allowedPrintAreaLeft = printAreaAllowedRef.current?.offsetLeft
-    const allowedPrintAreaTop = printAreaAllowedRef.current?.offsetTop
-    if (!allowedPrintAreaLeft || !allowedPrintAreaTop) return
-    console.log('>>> [all] stay visual:', {
-      allowedPrintAreaLeft,
-      allowedPrintAreaTop,
-      previousOffset: elementPreOffset,
-    })
+    const allowedPrintArea = printAreaAllowedRef.current
+    const element = elementRootRef.current
+    if (!allowedPrintArea || !element) return
+    const allowedPrintAreaLeft = allowedPrintArea.offsetLeft
+    const allowedPrintAreaTop = allowedPrintArea.offsetTop
+    const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
+    const elementRect = element.getBoundingClientRect()
     handleSetElementPosition(
-      allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft,
-      allowedPrintAreaTop + elementPreOffset.relativeOffsetTop
+      Math.min(
+        allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft,
+        allowedPrintAreaLeft + allowedPrintAreaRect.width - elementRect.width - 4
+      ),
+      Math.min(
+        allowedPrintAreaTop + elementPreOffset.relativeOffsetTop,
+        allowedPrintAreaTop + allowedPrintAreaRect.height - elementRect.height - 4
+      )
     )
   }
 

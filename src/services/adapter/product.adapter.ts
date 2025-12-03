@@ -220,15 +220,12 @@ function buildProductAttributes(variants: TProductVariant[], productId: number):
     uniqueSizeTitles.add(attrs.sizeTitle || 'Kích thước')
     uniqueScents.add(scent)
     uniqueScentTitles.add(attrs.scentTitle || 'Mùi hương')
-    console.log(`>>> [index]1 ${index}:`, { material, scent, color, hex, size, groups, productId })
     if (!groups[material]) {
       groups[material] = {}
     }
-    console.log('>>> [index]2', index, ':', groups)
     if (!groups[material][scent]) {
       groups[material][scent] = {}
     }
-    console.log('>>> [index]3', index, ':', groups)
     if (!groups[material][scent][colorKey]) {
       groups[material][scent][colorKey] = {
         color,
@@ -236,22 +233,11 @@ function buildProductAttributes(variants: TProductVariant[], productId: number):
         sizes: null,
       }
     }
-    console.log('>>> [index]4', index, ':', groups)
     groups[material][scent][colorKey].sizes = groups[material][scent][colorKey].sizes || []
     if (size !== 'null' && !groups[material][scent][colorKey].sizes!.includes(size)) {
       groups[material][scent][colorKey].sizes!.push(size)
     }
-    console.log('>>> [index]5', index, ':', groups)
   }
-  console.log('>>> [ser] groups:', {
-    groups,
-    productId,
-    uniqueMaterials,
-    uniqueScents,
-    uniqueColors,
-    uniqueSizes,
-  })
-
   return {
     uniqueMaterials: Array.from(uniqueMaterials),
     uniqueMaterialTitles: Array.from(uniqueMaterialTitles),

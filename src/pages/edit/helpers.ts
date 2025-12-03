@@ -143,7 +143,6 @@ export const matchBestPrintedImageToTemplate = (
           width: image.width,
         }
       )
-      console.log('>>> match:', { match, frame, image, template })
       if (match) {
         point += frame.width > frame.height ? frame.width : frame.height
       }
@@ -447,7 +446,6 @@ export const adjustSizeOfPlacedImageOnPlaced = () => {
   function fix(img: HTMLImageElement) {
     if (img['NAME_isSizeAdjusted']) return
     const { width, height } = img.getBoundingClientRect()
-    console.log('>>> 17:', { width, height })
     if (width === 0 || height === 0) return requestAnimationFrame(() => fix(img))
     img.style.width = width + 'px'
     img.style.height = height + 'px'

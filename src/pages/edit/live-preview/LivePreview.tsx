@@ -154,7 +154,6 @@ export const LivePreview = ({
       altText: pickedProduct.name,
     }
   }, [pickedProduct, editedVariantId, pickedSurfaceId])
-  console.log('>>> [disimg] displayedImage:', displayedImage)
 
   const imgURLRef = useRef<string>(displayedImage.imageURL)
 

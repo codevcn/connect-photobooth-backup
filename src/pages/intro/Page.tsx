@@ -4,7 +4,6 @@ import { useState } from 'react'
 const IntroPage = () => {
   const navigate = useNavigate()
   const [showFullscreenModal, setShowFullscreenModal] = useState(true)
-  console.log('>>> [re] run this')
 
   return (
     <div className="h-screen w-screen bg-black">

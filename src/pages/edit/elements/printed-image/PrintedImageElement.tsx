@@ -64,13 +64,13 @@ export const PrintedImageElement = ({
     const root = rootRef.current
     if (!root) return
     const rootRect = root.getBoundingClientRect()
-    const { left, top } = rootRect
+    const { left, top, height, width } = rootRect
     const widthAfterScale = root.offsetWidth * scale * scaleFactor
     const heightAfterScale = root.offsetHeight * scale * scaleFactor
     setInteractiveBtns({
       buttonsContainerStyle: {
-        top: top + rootRect.height / 2 - heightAfterScale / 2,
-        left: left + rootRect.width / 2 - widthAfterScale / 2,
+        top: top + height / 2 - heightAfterScale / 2,
+        left: left + width / 2 - widthAfterScale / 2,
         width: widthAfterScale,
         height: heightAfterScale,
       },

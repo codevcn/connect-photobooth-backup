@@ -1,8 +1,9 @@
 import { TPlacedImage, TTemplateFrame, TTemplateType } from '@/utils/types/global'
 import { stylePlacedImageByTemplateType } from '@/configs/print-template/templates-helpers'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { createPortal } from 'react-dom'
+import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 
 type TPlacedImageProps = {
   placedImage: TPlacedImage
@@ -34,6 +35,7 @@ export const PlacedImage = ({
     setCurrentZoom: setZoom,
   })
   const imgRef = useRef<HTMLImageElement | null>(null)
+  const scaleFactor = useEditAreaStore((state) => state.editAreaScaleValue)
 
   const handleRef = (el: HTMLImageElement | null) => {
     imgRef.current = el
@@ -49,18 +51,40 @@ export const PlacedImage = ({
     )) {
       el.classList.add('hidden')
     }
-    const imgRect = imgRef.current?.getBoundingClientRect()
+    const img = imgRef.current
+    if (!img) return
+    const imgRect = img.getBoundingClientRect()
     if (!imgRect) return
     const zoomButton = zoomButtonRef.current
     if (!zoomButton) return
-    const btnWrapper = zoomButton.parentElement
-    if (!btnWrapper) return
-    btnWrapper.classList.remove('hidden')
-    btnWrapper.style.top = `${imgRect.top - (imgRect.height / zoom - imgRect.height) / 2}px`
-    btnWrapper.style.left = `${imgRect.left - (imgRect.width / zoom - imgRect.width) / 2}px`
-    btnWrapper.style.height = `${imgRect.height / zoom}px`
-    btnWrapper.style.width = `${imgRect.width / zoom}px`
+    const zoomBtnWrapper = zoomButton.parentElement
+    if (!zoomBtnWrapper) return
+    zoomBtnWrapper.classList.remove('hidden')
+    updateZoomButtonWrapper(img, imgRect, zoomBtnWrapper)
   }
+
+  const updateZoomButtonWrapper = (
+    img: HTMLElement,
+    imgRect: DOMRect,
+    zoomBtnWrapper: HTMLElement
+  ) => {
+    const widthAfterScale = img.offsetWidth * zoom * scaleFactor
+    const heightAfterScale = img.offsetHeight * zoom * scaleFactor
+    zoomBtnWrapper.style.top = `${imgRect.top + imgRect.height / 2 - heightAfterScale / 2}px`
+    zoomBtnWrapper.style.left = `${imgRect.left + imgRect.width / 2 - widthAfterScale / 2}px`
+    zoomBtnWrapper.style.height = `${heightAfterScale}px`
+    zoomBtnWrapper.style.width = `${widthAfterScale}px`
+  }
+
+  useEffect(() => {
+    const img = imgRef.current
+    if (!img) return
+    const imgRect = img.getBoundingClientRect()
+    if (!imgRect) return
+    const zoomBtnWrapper = zoomButtonRef.current?.parentElement
+    if (!zoomBtnWrapper) return
+    updateZoomButtonWrapper(img, imgRect, zoomBtnWrapper)
+  }, [zoom])
 
   return (
     <>
@@ -87,10 +111,7 @@ export const PlacedImage = ({
 
       {displayZoomButton &&
         createPortal(
-          <div
-            style={{ transform: `scale(${zoom})` }}
-            className="NAME-zoom-placed-image-btn-wrapper hidden fixed bg-transparent top-0 left-0 z-99 border-2 border-main-cl"
-          >
+          <div className="NAME-zoom-placed-image-btn-wrapper hidden fixed bg-transparent top-0 left-0 z-99 border-2 border-main-cl">
             <button
               ref={zoomButtonRef}
               onClick={(e) => e.stopPropagation()}

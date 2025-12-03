@@ -53,7 +53,6 @@ export const useTemplateStore = create(
       })
     },
     pickTemplateOnRestore: (template, printAreaForTemplate) => {
-      console.log('>>> [ddd] pick Template On Restore Params:', template)
       const { pickedTemplate, allTemplates } = get()
       const templateId = template.id
       const finalTemplate = allTemplates.find((t) => t.id === templateId)
@@ -69,7 +68,6 @@ export const useTemplateStore = create(
           frame
         )
       }
-      console.log('>>> [ddd] template picked on restore:', finalTemplate)
       set({ pickedTemplate: finalTemplate })
     },
 
@@ -123,7 +121,6 @@ export const useTemplateStore = create(
           frame
         )
       }
-      console.log('>>> template picked:', template)
       set({ pickedTemplate: template })
     },
 
@@ -140,7 +137,6 @@ export const useTemplateStore = create(
       if (!pickedTemplate) return
 
       const templates = [...allTemplates]
-      console.log('>>> [ddd] all templates:', templates)
       if (frameId) {
         // Thêm vào frame cụ thể
         for (const template of templates) {
@@ -169,7 +165,6 @@ export const useTemplateStore = create(
         for (const template of templates) {
           if (template.id === currentTemplateId) {
             const foundFrameIndex = template.frames.findIndex((f) => !f.placedImage)
-            console.log('>>> [ddd] found frame index:', foundFrameIndex)
             console.log('>>> [ddd] template frames:', template.frames)
             if (foundFrameIndex >= 0) {
               const foundFrame = template.frames[foundFrameIndex]
@@ -231,7 +226,6 @@ export const useTemplateStore = create(
     },
 
     updatePickedTemplate: (template) => {
-      console.log('>>> [ddd] update Picked Template:', template)
       set({ pickedTemplate: { ...template } })
     },
   }))

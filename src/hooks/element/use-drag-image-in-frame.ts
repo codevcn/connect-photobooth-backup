@@ -45,7 +45,6 @@ export const useDragImageInFrame = (
 
     // Tìm frame container
     const frameElement = imageElement.closest('.NAME-frame-placed-image-wrapper') as HTMLElement
-    console.log('>>> frameElement:', frameElement)
     if (!frameElement) return false
 
     // Lấy bounds của frame (relative to viewport)

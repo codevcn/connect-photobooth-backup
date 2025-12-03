@@ -144,7 +144,6 @@ export const PrintAreaOverlay = ({
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
   const editMode = useEditModeStore((s) => s.editMode)
   const containerScale = useEditAreaStore((s) => s.editAreaScaleValue)
-  console.log('>>> [ddd] view picked template:', pickedTemplate)
 
   const handleClickFrame = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,

@@ -65,14 +65,14 @@ export const useFastBoxes = () => {
 
         // Khởi tạo module
         const module = await window.createFastBoxes()
-        
+
         if (!mounted) return
 
         moduleRef.current = module
         setIsLoading(false)
       } catch (err) {
         if (!mounted) return
-        
+
         const errorMessage = err instanceof Error ? err.message : 'Unknown error'
         setError(errorMessage)
         setIsLoading(false)
@@ -97,8 +97,7 @@ export const useFastBoxes = () => {
     const maybeMem =
       mod.wasmMemory ||
       (mod.asm &&
-        (mod.asm.memory ||
-          Object.values(mod.asm).find((v) => v instanceof WebAssembly.Memory))) ||
+        (mod.asm.memory || Object.values(mod.asm).find((v) => v instanceof WebAssembly.Memory))) ||
       Object.values(mod).find((v) => v instanceof WebAssembly.Memory)
 
     if (maybeMem && 'buffer' in maybeMem) {
@@ -141,11 +140,6 @@ export const useFastBoxes = () => {
 
       // Parse kết quả
       const result = JSON.parse(resultJson)
-      
-      // Debug: log để kiểm tra format
-      console.log('>>> WASM result:', result)
-      console.log('>>> WASM result type:', typeof result)
-      console.log('>>> WASM result.boxes:', result.boxes)
 
       // Xử lý nhiều format khác nhau
       let boxes = []

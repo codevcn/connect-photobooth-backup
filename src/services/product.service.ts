@@ -32,11 +32,11 @@ class ProductService {
   }
 
   async preSendMockupImage(image: Blob, filename: string): Promise<TPreSentMockupImageRes> {
-    console.log('>>> [ser] image:', { image, filename })
+    console.log('>>> [ser] pre sent image:', { image, filename })
     const formData = new FormData()
     formData.append('file', image, filename)
     const response = await postPreSendMockupImage(formData)
-    console.log('>>> [ser] res:', response)
+    console.log('>>> [ser] pre send res:', response)
     if (!response.success || !response.data?.data) {
       throw new Error(response.error || 'Không thể gửi mockup image đến server')
     }

@@ -93,7 +93,6 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
 
   const handleClickCheck = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { scaleInput, angleInput, posXYInputs } = getAllInputsInForm()
-    console.log('>>> [lis]:', { scaleInput, angleInput, posXYInputs })
     handleChangeProperties(
       scaleInput?.value ? parseFloat(scaleInput.value) / 100 : undefined,
       angleInput?.value ? parseFloat(angleInput.value) : undefined,

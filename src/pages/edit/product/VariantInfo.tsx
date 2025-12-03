@@ -77,7 +77,6 @@ const findVariantByAttributes = (
   onFound: (variant: TClientProductVariant | null) => void
 ): void => {
   setTimeout(() => {
-    console.log('>>> [pi] find:', { selectedAttrs })
     let foundVariant = null
     const { material, scent, color, size } = selectedAttrs
     for (const variant of variants) {
@@ -116,7 +115,6 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
   const [selectedImageToPreview, setSelectedImageToPreview] = useState<string>()
   const handlePickVariant = useProductUIDataStore((s) => s.handlePickVariant)
-  console.log('>>> [pi] log ra:', { pickedVariant, selectedAttributes })
 
   const initSelectedAttributesOnPickedVariantChange = () => {
     const attrs: Record<string, string> = {}

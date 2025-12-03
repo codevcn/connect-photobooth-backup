@@ -31,7 +31,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
             .handleImageData(result.data, (percentage, images, error) => {
               setProgress(percentage)
               if (error) {
-                console.error('>>> Lỗi lấy dữ liệu mã QR:', error)
+                console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
                 setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
                 toast.error(error.message)
                 return
@@ -47,7 +47,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
               }
             })
             .catch((err) => {
-              console.error('>>> Lỗi xử lý dữ liệu mã QR:', err)
+              console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
               setError('Không thể xử lý mã QR. Vui lòng thử lại.')
               toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
             })
@@ -98,7 +98,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
     )
     scannerRef.current = qrScanner
     qrScanner.start().catch((error) => {
-      console.log('>>> error:', error)
+      console.log('>>> [qr] error:', error)
       setError('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
       toast.error('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
     })
@@ -147,13 +147,13 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   //       .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
   //         setProgress(percentage)
   //         if (error) {
-  //           console.error('>>> Lỗi lấy dữ liệu mã QR:', error)
+  //           console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
   //           setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
   //           toast.error(error.message)
   //           return
   //         }
   //         if (images) {
-  //           console.log('>>> images extracted:', images)
+  //           console.log('>>> [qr] images extracted:', images)
   //           onScanSuccess(
   //             images.map((img) => ({
   //               ...img,
@@ -163,7 +163,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   //         }
   //       })
   //       .catch((err) => {
-  //         console.error('>>> Lỗi xử lý dữ liệu mã QR:', err)
+  //         console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
   //         setError('Không thể xử lý mã QR. Vui lòng thử lại.')
   //         toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
   //       })

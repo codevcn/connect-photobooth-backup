@@ -101,7 +101,6 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
     })
   },
   selectElement: (elementId, elementType, elementURL) => {
-    console.log('>>> [se] info:', { elementId, elementType, elementURL })
     set({ selectedElement: { elementType, elementId, elementURL } })
   },
   cancelSelectingElement: () => {

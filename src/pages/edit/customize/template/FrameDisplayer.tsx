@@ -65,7 +65,6 @@ export const FramesDisplayer = ({
 
   const restoreOffsetY = () => {
     requestAnimationFrame(() => {
-      console.log('>>> [fff] res gg:', restoredOffsetYRef.current)
       if (restoredOffsetYRef.current !== 0) {
         setPosition((pos) => {
           if (pos.y !== restoredOffsetYRef.current) {

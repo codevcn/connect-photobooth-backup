@@ -6,7 +6,7 @@ import { PageLoading } from '@/components/custom/Loading'
 import { useProductStore } from '@/stores/product/product.store'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
 
-const PageWrapper = () => {
+const Layout = () => {
   const [error, setError] = useState<string | null>(null)
   const products = useProductStore((s) => s.products)
   const setProducts = useProductStore((s) => s.setProducts) //>>> checked: OK
@@ -17,7 +17,6 @@ const PageWrapper = () => {
   const fetchProducts = async () => {
     try {
       const data = await productService.fetchProductsByPage(1, 20)
-      console.log('>>> [ser] service fetch products by page:', data)
       setProducts(data)
       setFetched(true)
     } catch (error) {
@@ -69,4 +68,4 @@ const PageWrapper = () => {
   )
 }
 
-export default PageWrapper
+export default Layout

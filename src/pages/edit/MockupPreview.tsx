@@ -20,7 +20,6 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
    * Sử dụng modern-screenshot để có chất lượng cao
    */
   const generatePreview = () => {
-    console.log('>>> [clean] goi ham generate Preview')
     const container = document.body.querySelector<HTMLDivElement>('.NAME-print-area-container')
     if (!container) {
       return setError('Không tìm thấy khu vực chỉnh sửa')
@@ -66,7 +65,7 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
       },
       (error) => {
         removeMockPrintArea()
-        console.log('>>> [err] error:', error)
+        console.error('>>> [err] error:', error)
         setError('Không thể tạo bản xem trước. Vui lòng thử lại.')
       }
     )

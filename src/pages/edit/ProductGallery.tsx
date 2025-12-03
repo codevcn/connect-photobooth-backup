@@ -94,10 +94,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   }
 
   const initFirstProduct = () => {
-    console.log('>>> [ddd] mockupId at gallery:', mockupId)
     if (!mockupId) {
       if (allTemplates.length > 0 && firstProduct && firstProduct.length === 3) {
-        console.log('>>> [ddd] run this init first product')
         useProductUIDataStore
           .getState()
           .handlePickFirstProduct(firstProduct[0], firstProduct[1], firstProduct[2])

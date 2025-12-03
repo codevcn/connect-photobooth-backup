@@ -69,7 +69,6 @@ const AddingToCartLoadingModal = () => {
  */
 const restoreMockupVisualStates = (mockupId: string) => {
   const savedMockup = LocalStorageHelper.getSavedMockupData()
-  console.log('>>> [ddd] savedMockup:', { savedMockup, mockupId })
   if (!savedMockup) return
 
   const cartItems = savedMockup.productsInCart
@@ -90,7 +89,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
       }
     }
   }
-  console.log('>>> [ddd] ko tim thay:', {
+  console.log('>>> [reto] ko tim thay:', {
     foundMockup,
     foundProductVariant,
     foundProductId,
@@ -103,7 +102,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
   setTimeout(() => {
     // Restore text elements
     const restoredTextElements = foundMockup.elementsVisualState.texts || []
-    console.log('>>> [ddd] texts:', restoredTextElements)
+    console.log('>>> [reto] texts:', restoredTextElements)
     if (restoredTextElements.length > 0) {
       useEditedElementStore
         .getState()
@@ -112,7 +111,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
 
     // Restore printed image elements
     const restoredPrintedImageElements = foundMockup.elementsVisualState.printedImages || []
-    console.log('>>> [ddd] printedImages:', restoredPrintedImageElements)
+    console.log('>>> [reto] printedImages:', restoredPrintedImageElements)
     if (restoredPrintedImageElements.length > 0) {
       useEditedElementStore.getState().setPrintedImageElements(
         restoredPrintedImageElements.map((printedImage) => ({
@@ -124,7 +123,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
 
     // Restore sticker elements
     const restoredStickerElements = foundMockup.elementsVisualState.stickers || []
-    console.log('>>> [ddd] stickers:', restoredStickerElements)
+    console.log('>>> [reto] stickers:', restoredStickerElements)
     if (restoredStickerElements.length > 0) {
       useEditedElementStore
         .getState()
@@ -135,17 +134,17 @@ const restoreMockupVisualStates = (mockupId: string) => {
 
     // Restore product, variant, surface, and template
     const product = useProductStore.getState().getProductById(foundProductId)
-    console.log('>>> [ddd] product 86:', product)
+    console.log('>>> [reto] product 86:', product)
     if (!product) return
     const variantId = foundProductVariant.variantId
     const variant = product.variants.find((v) => v.id === variantId)
-    console.log('>>> [ddd] variant:', variant)
+    console.log('>>> [reto] variant:', variant)
     if (!variant) return
     const surface = product.printAreaList.find((s) => s.id === foundMockup.surfaceInfo.id)
-    console.log('>>> [ddd] surface:', surface)
+    console.log('>>> [reto] surface:', surface)
     if (!surface) return
     const storedTemplates = foundMockup.elementsVisualState.storedTemplates || []
-    console.log('>>> [ddd] storedTemplates:', storedTemplates)
+    console.log('>>> [reto] storedTemplates:', storedTemplates)
     useProductUIDataStore
       .getState()
       .handlePickProductOnRestore(product, storedTemplates[0], variant, surface)
