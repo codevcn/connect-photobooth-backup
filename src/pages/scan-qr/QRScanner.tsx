@@ -19,7 +19,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
   const initializeScanner = useCallback(() => {
     if (!videoRef.current) return
-    console.log('>>> run this initializeScanner')
+    console.log('>>> [qr] run this initializeScanner')
     const qrScanner = new QrScanner(
       videoRef.current,
       (result) => {
@@ -36,7 +36,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
                 return
               }
               if (images) {
-                console.log('>>> images extracted:', images)
+                console.log('>>> [qr] images extracted:', images)
                 onScanSuccess(
                   images.map((img) => ({
                     ...img,
@@ -82,17 +82,17 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
         // Tăng tần suất quét
         maxScansPerSecond: 10, // Tăng từ 1 lên 10
         // Giảm chất lượng video để xử lý nhanh hơn
-        calculateScanRegion: (video) => {
-          // Chỉ quét vùng trung tâm (giảm diện tích cần xử lý)
-          const smallestDimension = Math.min(video.videoWidth, video.videoHeight)
-          const scanRegionSize = Math.round(0.7 * smallestDimension)
-          return {
-            x: Math.round((video.videoWidth - scanRegionSize) / 2),
-            y: Math.round((video.videoHeight - scanRegionSize) / 2),
-            width: scanRegionSize,
-            height: scanRegionSize,
-          }
-        },
+        // calculateScanRegion: (video) => {
+        //   // Chỉ quét vùng trung tâm (giảm diện tích cần xử lý)
+        //   const smallestDimension = Math.min(video.videoWidth, video.videoHeight)
+        //   const scanRegionSize = Math.round(0.7 * smallestDimension)
+        //   return {
+        //     x: Math.round((video.videoWidth - scanRegionSize) / 2),
+        //     y: Math.round((video.videoHeight - scanRegionSize) / 2),
+        //     width: scanRegionSize,
+        //     height: scanRegionSize,
+        //   }
+        // },
       }
     )
     scannerRef.current = qrScanner
@@ -171,7 +171,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
   return (
     <div className="w-full">
-      <div className="relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
+      <div className="relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg max-h-[90vh]">
         <video
           ref={videoRef}
           className="max-w-[600px] max-h-[90vh] w-full h-full object-cover transition-transform duration-300"
