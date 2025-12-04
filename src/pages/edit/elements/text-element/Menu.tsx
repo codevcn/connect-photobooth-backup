@@ -5,6 +5,7 @@ import { ColorPickerModal } from './ColorPicker'
 import { TextFontPicker } from './FontPicker'
 import { createInitialConstants } from '@/utils/contants'
 import { createPortal } from 'react-dom'
+import { getContrastColor } from '@/utils/helpers'
 
 type TPropertyType = 'font-size' | 'angle' | 'posXY' | 'zindex-up' | 'zindex-down'
 
@@ -24,6 +25,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
     )
   }
   const pickedElementRootRef = useRef<HTMLElement>(getPickedElementRoot())
+  const [currentColor, setCurrentColor] = useState<string>('#000')
 
   useEffect(() => {
     pickedElementRootRef.current = getPickedElementRoot()
@@ -238,10 +240,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
       className="NAME-menu-section NAME-menu-text-element STYLE-hide-scrollbar smd:text-base smd:px-0 smd:mt-2 px-2 text-sm w-full"
     >
       <h3 className="text-xs smd:text-sm smd:mt-3 mb-1 font-bold">Tùy chỉnh văn bản</h3>
-      <div
-        ref={menuRef}
-        className="spmd:gap-2 grid-cols-3 gap-1 grid rounded-md text-white"
-      >
+      <div ref={menuRef} className="spmd:gap-2 grid-cols-3 gap-1 grid rounded-md text-white">
         <div className="NAME-form-group NAME-form-content h-8 smd:h-9 col-span-3 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
@@ -414,7 +413,10 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
         <div className="NAME-form-group NAME-form-color flex items-stretch justify-center gap-1 rounded">
           <div
             onClick={() => setShowColorPicker((pre) => !pre)}
-            className="flex items-center justify-center cursor-pointer h-8 smd:h-9 w-full gap-1 mobile-touch bg-main-cl rounded shadow px-1"
+            className="flex items-center justify-center cursor-pointer h-8 smd:h-9 w-full gap-1 mobile-touch rounded shadow px-1"
+            style={{
+              backgroundImage: `linear-gradient(to right, #fff, ${currentColor})`,
+            }}
           >
             <div className="flex gap-1 mx-1">
               <svg
@@ -422,8 +424,8 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
+                fill="#fff"
+                stroke="#f54900"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -443,6 +445,8 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
                 onHideShow={setShowColorPicker}
                 onColorChange={handleAdjustColorOnElement}
                 inputText={inputText || ''}
+                currentColor={currentColor}
+                setCurrentColor={setCurrentColor}
               />,
               document.body
             )}

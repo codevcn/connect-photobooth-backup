@@ -180,18 +180,22 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
   }, [elementId, elementType, elementURL])
 
   return (
-    <div className="w-full">
-      <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">
+    <div className="3xl:text-[1.5em] w-full text-[1em]">
+      <h3 className="smd:text-[1em] text-xs mb-1 font-bold text-gray-800">
         Chọn ảnh <span className="smd:inline hidden">chụp photobooth</span>
       </h3>
       <div className="flex flex-wrap gap-1 items-center overflow-x-auto gallery-scroll w-full">
         {printedImages.length > 0 &&
           printedImages.map((printedImage, index) => (
-            <div key={printedImage.id} onClick={() => setPickedImage(printedImage)}>
+            <div
+              className="shadow-lg"
+              key={printedImage.id}
+              onClick={() => setPickedImage(printedImage)}
+            >
               <img
                 className={`${
                   index === 0 ? 'aspect-video' : 'aspect-square'
-                } h-12 border-2 border-main-cl object-contain mobile-touch`}
+                } 3xl:h-20 h-12 border-2 border-main-cl object-contain mobile-touch`}
                 src={printedImage.url}
                 alt="Ảnh chụp photobooth"
               />

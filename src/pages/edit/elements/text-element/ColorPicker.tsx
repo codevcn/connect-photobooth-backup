@@ -10,14 +10,17 @@ type ColorPickerModalProps = {
   onHideShow: (show: boolean) => void
   onColorChange: (color: string) => void
   inputText: string
+  currentColor: string
+  setCurrentColor: (color: string) => void
 }
 
 export const ColorPickerModal = ({
   onHideShow,
   onColorChange,
   inputText,
+  currentColor,
+  setCurrentColor,
 }: ColorPickerModalProps) => {
-  const [currentColor, setCurrentColor] = useState<string>('#fe6e87')
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const handleColorPickerChange = (color: string) => {

@@ -126,30 +126,30 @@ export const TemplatesPicker = ({ printedImages }: TTemplatePickerProps) => {
   }
 
   return (
-    <div className="NAME-sss w-full">
-      <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Chọn mẫu in</h3>
-      <div className="smd:grid-cols-3 smd:overflow-x-hidden smd:grid-flow-row grid-rows-1 grid-flow-col overflow-x-auto grid-flow grid gap-2 w-full gallery-scroll">
+    <div className="w-full">
+      <h3 className="3xl:text-[1.5em] smd:text-base text-xs mb-1 font-bold text-gray-800">
+        Chọn mẫu in
+      </h3>
+      <div className="5xl:grid-cols-3 3xl:grid-cols-2 smd:grid-cols-3 smd:overflow-x-hidden smd:grid-flow-row grid-rows-1 grid-flow-col overflow-x-auto grid-flow grid gap-2 w-full gallery-scroll">
         <div
           onClick={handlePickNoTemplate}
           className="flex items-center justify-center flex-col aspect-square min-h-16 border border-dashed p-1 border-gray-600 rounded bg-white mobile-touch cursor-pointer transition"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-circle-x-icon lucide-circle-x text-gray-500"
+            className="lucide lucide-circle-x-icon lucide-circle-x text-gray-500 w-6 h-6 3xl:w-12 3xl:h-12"
           >
             <circle cx="12" cy="12" r="10" />
             <path d="m15 9-6 6" />
             <path d="m9 9 6 6" />
           </svg>
-          <p className="text-gray-700 text-xs mt-1 text-center w-fit font-medium">
+          <p className="5xl:text-[1.3em] 3xl:p-1 3xl:font-bold text-gray-500 text-[1.5em] mt-1 text-center w-fit font-medium">
             Không <span className="smd:inline hidden">sử dụng</span> mẫu
           </p>
         </div>

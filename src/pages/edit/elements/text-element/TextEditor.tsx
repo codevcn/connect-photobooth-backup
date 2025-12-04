@@ -130,7 +130,7 @@ export const EditorModalWrapper = () => {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="lucide lucide-type-icon lucide-type text-main-cl w-6 h-6 smd:w-8 smd:h-8"
+          className="lucide lucide-type-icon lucide-type text-main-cl w-6 h-6 smd:w-8 smd:h-8 3xl:w-12 3xl:h-12"
         >
           <path d="M12 4v16" />
           <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
@@ -208,8 +208,10 @@ export const TextEditor = () => {
   }, [elementType])
 
   return (
-    <div ref={containerRef} className="smd:mt-4 mt-2 flex-1">
-      <h3 className="smd:text-base text-xs mb-1 font-bold text-gray-800">Thêm văn bản</h3>
+    <div ref={containerRef} className="3xl:text-[1.5em] smd:mt-4 mt-2 flex-1">
+      <h3 className="3xl:text-[1em] smd:text-base text-xs mb-1 font-bold text-gray-800">
+        Thêm văn bản
+      </h3>
       <EditorModalWrapper />
       {/* <TextMenuWrapper /> */}
     </div>
