@@ -35,7 +35,7 @@ type TFramesDisplayerProps = {
   scrollable: boolean
 }>
 
-const FramesDisplayerForOverview = ({
+const FramesDisplayerForPreview = ({
   template,
   plusIconReplacer,
   frameStyles,
@@ -96,7 +96,7 @@ export const PrintAreaOverlayPreview = ({
         printAreaOptions?.className
       )}
     >
-      <FramesDisplayerForOverview
+      <FramesDisplayerForPreview
         template={printTemplate}
         frameClassNames={{
           container: 'border-none',
@@ -143,7 +143,6 @@ export const PrintAreaOverlay = ({
 }: TPrintAreaOverlayProps) => {
   const pickedTemplate = useTemplateStore((s) => s.pickedTemplate)
   const editMode = useEditModeStore((s) => s.editMode)
-  const containerScale = useEditAreaStore((s) => s.editAreaScaleValue)
 
   const handleClickFrame = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -197,8 +196,8 @@ export const PrintAreaOverlay = ({
           displaySelectingColor
           scrollable={false}
           printedImages={printedImages}
-          containerScale={containerScale}
           displayZoomButton={true}
+          hint="from PrintAreaOverlay"
         />
       )}
     </div>

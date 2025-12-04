@@ -65,6 +65,7 @@ type TemplateFrameProps = {
   scrollable: boolean
   onImageLoad?: () => void
   displayZoomButton?: boolean
+  hint?: string
 }>
 
 export const TemplateFrame = ({
@@ -81,6 +82,7 @@ export const TemplateFrame = ({
   scrollable = true,
   onImageLoad,
   displayZoomButton = false,
+  hint,
 }: TemplateFrameProps) => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const frameSelected = selectedElement?.elementId === templateFrame.id

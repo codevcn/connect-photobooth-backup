@@ -2,6 +2,7 @@ import { createInitialConstants } from '@/utils/contants'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { TElementType, TPrintedImageVisualState } from '@/utils/types/global'
 import { useEffect, useRef } from 'react'
+import { toast } from 'react-toastify'
 
 type TPropertyType = 'scale' | 'angle' | 'posXY' | 'zindex-up' | 'zindex-down'
 
@@ -121,13 +122,13 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
       const posXYInputs = menuSection?.querySelectorAll<HTMLInputElement>(
         '.NAME-form-position input'
       )
-      if (posXYInputs) posXYInputs[0].value = posX.toFixed(0)
+      if (posXYInputs && posXYInputs.length > 0) posXYInputs[0].value = posX.toFixed(0)
     }
     if (posY || posY === 0) {
       const posXYInputs = menuSection?.querySelectorAll<HTMLInputElement>(
         '.NAME-form-position input'
       )
-      if (posXYInputs) posXYInputs[1].value = posY.toFixed(0)
+      if (posXYInputs && posXYInputs.length > 0) posXYInputs[1].value = posY.toFixed(0)
     }
   }
 
@@ -167,9 +168,9 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
       <h3 className="text-xs smd:text-sm smd:mt-3 mb-1 font-bold">Tùy chỉnh ảnh photobooth</h3>
       <div
         ref={menuRef}
-        className="smd:grid-cols-2 2xl:grid-cols-3 smd:gap-2 smd:grid-rows-1 smd:grid-flow-row grid-flow-col grid-rows-2 gap-1 grid rounded-md text-white"
+        className="smd:grid-cols-2 smd:grid-flow-row 2xl:grid-cols-3 smd:gap-2 grid-rows-1 grid-flow-col gap-1 grid rounded-md text-white"
       >
-        <div className="NAME-form-group NAME-form-scale h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+        {/* <div className="NAME-form-group NAME-form-scale h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -196,7 +197,7 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
             />
             <span className="text-white text-[1em] font-bold">%</span>
           </div>
-        </div>
+        </div> */}
         <div className="NAME-form-group NAME-form-angle h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
@@ -284,7 +285,7 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
             </button>
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-position 2xl:col-span-2 flex items-center bg-main-cl rounded px-1 py-1 shadow">
+        {/* <div className="NAME-form-group NAME-form-position 2xl:col-span-2 flex items-center bg-main-cl rounded px-1 py-1 shadow">
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -320,11 +321,11 @@ export const PrintedImageElementMenu = ({ elementId, onClose }: TPrintedImageEle
               className="smd:h-6.5 h-6 text-black bg-white rounded px-1 text-[1em] outline-none w-full"
             />
           </div>
-        </div>
-        <div className="smd:row-span-1 smd:col-span-2 2xl:col-span-1 row-span-2 flex items-center">
+        </div> */}
+        <div className="smd:col-span-2 2xl:col-span-1 flex items-center">
           <button
             onClick={handleClickCheck}
-            className="group smd:h-8 smd:px-1 h-full px-3 w-full cursor-pointer flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded"
+            className="smd:h-8 smd:px-1 2xl:h-full group h-full px-3 w-full cursor-pointer flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

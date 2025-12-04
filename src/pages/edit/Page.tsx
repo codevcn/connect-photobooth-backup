@@ -193,16 +193,6 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       }
     }
 
-    const listenWindowResize = () => {
-      cancelSelectingZoomingImages()
-      cancelSelectingElement()
-    }
-
-    const listenWindowScroll = () => {
-      cancelSelectingZoomingImages()
-      cancelSelectingElement()
-    }
-
     if (mockupId && firstRenderRef.current) {
       restoreMockupVisualStates(mockupId)
       firstRenderRef.current = false
@@ -210,12 +200,8 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
 
     loadAllFonts()
     document.body.addEventListener('pointerdown', listenPointerDownOnPage)
-    window.addEventListener('scroll', listenWindowScroll)
-    window.addEventListener('resize', listenWindowResize)
     return () => {
       document.body.removeEventListener('pointerdown', listenPointerDownOnPage)
-      window.removeEventListener('scroll', listenWindowScroll)
-      window.removeEventListener('resize', listenWindowResize)
       useEditedElementStore.getState().resetData()
       useElementLayerStore.getState().resetData()
       useProductUIDataStore.getState().resetData()

@@ -379,6 +379,7 @@ export type TPrintTemplate = {
   grayscale?: number // 0-100 percentage
   initialVisualState?: Partial<{
     offsetY: number
+    offsetX: number
   }>
 }
 
@@ -401,6 +402,9 @@ export type TPlacedImage = {
   imgURL: string
   prrintedImageWidth: number
   printedImageHeight: number
+  initialVisualState?: Partial<{
+    zoom: number
+  }>
 }
 
 export type TPlacementState = {

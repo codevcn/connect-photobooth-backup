@@ -175,13 +175,13 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
       const posXYInputs = menuSection?.querySelectorAll<HTMLInputElement>(
         '.NAME-form-position input'
       )
-      if (posXYInputs) posXYInputs[0].value = posX.toFixed(0)
+      if (posXYInputs && posXYInputs.length > 0) posXYInputs[0].value = posX.toFixed(0)
     }
     if (posY || posY === 0) {
       const posXYInputs = menuSection?.querySelectorAll<HTMLInputElement>(
         '.NAME-form-position input'
       )
-      if (posXYInputs) posXYInputs[1].value = posY.toFixed(0)
+      if (posXYInputs && posXYInputs.length > 0) posXYInputs[1].value = posY.toFixed(0)
     }
   }
 
@@ -240,9 +240,9 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
       <h3 className="text-xs smd:text-sm smd:mt-3 mb-1 font-bold">Tùy chỉnh văn bản</h3>
       <div
         ref={menuRef}
-        className="sm:grid-cols-2 2xl:grid-cols-3 spmd:gap-2 sm:grid-rows-2 sms:grid-flow-row grid-rows-3 grid-flow-col gap-1 grid rounded-md text-white"
+        className="spmd:gap-2 grid-cols-3 gap-1 grid rounded-md text-white"
       >
-        <div className="NAME-form-group NAME-form-content h-8 smd:h-9 2xl:col-span-3 col-span-1 flex items-center bg-main-cl rounded px-1 shadow">
+        <div className="NAME-form-group NAME-form-content h-8 smd:h-9 col-span-3 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -266,7 +266,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
             />
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-fontSize h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+        {/* <div className="NAME-form-group NAME-form-fontSize h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -292,7 +292,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
               onKeyDown={(e) => catchEnter(e, 'font-size')}
             />
           </div>
-        </div>
+        </div> */}
         <div className="NAME-form-group NAME-form-angle h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
@@ -321,7 +321,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
             <span className="text-white text-[1em] font-bold">độ</span>
           </div>
         </div>
-        <div className="NAME-form-group NAME-form-position h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
+        {/* <div className="NAME-form-group NAME-form-position h-8 smd:h-9 flex items-center bg-main-cl rounded px-1 shadow">
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -355,8 +355,8 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
               onKeyDown={(e) => catchEnter(e, 'posXY')}
             />
           </div>
-        </div>
-        <div className="NAME-form-group NAME-form-zindex h-8 smd:h-9 flex items-center justify-between bg-main-cl rounded px-1 shadow">
+        </div> */}
+        <div className="NAME-form-group NAME-form-zindex h-8 smd:h-9 col-span-2 flex items-center justify-between bg-main-cl rounded px-1 shadow">
           <div className="mr-0.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -450,7 +450,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
         <div className="NAME-form-group NAME-form-font flex items-stretch justify-center gap-1 relative rounded">
           <div
             onClick={() => setShowTextFontPicker((pre) => !pre)}
-            className="flex items-center justify-center cursor-pointer gap-1 h-8 smd:h-9 w-full mobile-touch bg-main-cl rounded shadow px-1"
+            className="flex items-center justify-center cursor-pointer gap-1 h-full sm:h-8 smd:h-9 w-full mobile-touch bg-main-cl rounded shadow px-1"
           >
             <div className="flex gap-1 mx-1">
               <div>
@@ -477,7 +477,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
               document.body
             )}
         </div>
-        <div className="2xl:col-span-3 sm:row-span-1 row-span-2 flex items-center">
+        <div className="flex items-center">
           <button
             onClick={handleClickCheck}
             className="group 2xl:h-9 smd:px-1 px-3 w-full h-full cursor-pointer flex flex-nowrap items-center justify-center shadow-md font-bold bg-main-cl gap-1 text-white mobile-touch rounded"

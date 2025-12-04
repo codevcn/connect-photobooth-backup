@@ -61,6 +61,7 @@ export const useTemplateStore = create(
       finalTemplate.initialVisualState = {
         ...(template.initialVisualState || {}),
       }
+      finalTemplate.frames = template.frames
       if (pickedTemplate && pickedTemplate.id === finalTemplate.id) return
       for (const frame of finalTemplate.frames) {
         assignFrameSizeByTemplateType(
@@ -69,6 +70,7 @@ export const useTemplateStore = create(
           frame
         )
       }
+      console.log('>>> [reto] finalTemplate on restore:', finalTemplate)
       set({ pickedTemplate: finalTemplate })
     },
 
@@ -233,16 +235,16 @@ export const useTemplateStore = create(
     updateTemplateGrayscale: (templateId, grayscale) => {
       const { allTemplates, pickedTemplate } = get()
       const templates = [...allTemplates]
-      
+
       for (const template of templates) {
         if (template.id === templateId) {
           template.grayscale = grayscale
           break
         }
       }
-      
+
       set({ allTemplates: templates })
-      
+
       // Update picked template if it's the one being modified
       if (pickedTemplate && pickedTemplate.id === templateId) {
         set({ pickedTemplate: { ...pickedTemplate, grayscale } })

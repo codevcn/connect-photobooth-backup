@@ -99,7 +99,7 @@ export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn
     if (postFunctionDrag && containerRef.current) {
       postFunctionDrag(containerRef.current, currentPosition)
     }
-  }, [postFunctionDrag, currentPosition])
+  }, [currentPosition, postFunctionDrag])
 
   // Effect để đăng ký/hủy sự kiện
   useEffect(() => {
@@ -110,17 +110,17 @@ export const useDragElement = (options: UseDraggableOptions): UseDraggableReturn
     button.addEventListener('pointerdown', handleStart)
 
     // Sự kiện move và end trên document để xử lý khi kéo ra ngoài
-    document.body.addEventListener('pointermove', handleMove)
+    window.addEventListener('pointermove', handleMove)
 
-    document.body.addEventListener('pointerup', handleEnd)
+    window.addEventListener('pointerup', handleEnd)
 
     // Cleanup
     return () => {
       button.removeEventListener('pointerdown', handleStart)
 
-      document.body.removeEventListener('pointermove', handleMove)
+      window.removeEventListener('pointermove', handleMove)
 
-      document.body.removeEventListener('pointerup', handleEnd)
+      window.removeEventListener('pointerup', handleEnd)
 
       document.body.style.cursor = 'default'
       document.body.style.userSelect = 'auto'

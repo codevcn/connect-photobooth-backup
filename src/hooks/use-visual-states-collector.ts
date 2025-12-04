@@ -56,15 +56,28 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
 
       const pickedTemplate = useTemplateStore.getState().pickedTemplate
       if (pickedTemplate) {
-        const dataset = document.body
-          .querySelector<HTMLElement>('.NAME-frames-displayer-print-area')
-          ?.getAttribute('data-visual-state')
-        if (dataset) {
-          elementsVisualState.storedTemplates?.push({
-            ...pickedTemplate,
-            initialVisualState: JSON.parse(dataset).initialVisualState,
-          })
-        }
+        elementsVisualState.storedTemplates?.push({
+          ...pickedTemplate,
+          frames: pickedTemplate.frames.map((frame) => {
+            const placedImageId = frame.placedImage?.id
+            if (!placedImageId) return frame
+            const placedImage = document.body.querySelector<HTMLElement>(
+              `.NAME-print-area-container .NAME-frame-placed-image[data-placed-image-id="${placedImageId}"]`
+            )
+            if (!placedImage) return frame
+            const imgVisualState = placedImage.getAttribute('data-visual-state')
+            if (imgVisualState && frame.placedImage) {
+              return {
+                ...frame,
+                placedImage: {
+                  ...frame.placedImage,
+                  initialVisualState: JSON.parse(imgVisualState).initialVisualState,
+                },
+              }
+            }
+            return frame
+          }),
+        })
       }
 
       // Clean up empty arrays
@@ -73,7 +86,7 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
       if (elementsVisualState.storedTemplates?.length === 0)
         delete elementsVisualState.storedTemplates
 
-      console.log('>>> [coll] element visual state oiiiiiiiiiiiii:', elementsVisualState)
+      console.log('>>> [reto] element visual state oiiiiiiiiiiiii:', elementsVisualState)
       return elementsVisualState
     },
     []

@@ -64,7 +64,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
       document.body.style.cursor = 'ew-resize'
       document.body.style.userSelect = 'none'
     },
-    [currentZoom]
+    [currentZoom, onZoomStart]
   )
 
   // Xử lý khi di chuyển
@@ -101,7 +101,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
       }
       setCurrentZoom(adjustedScale)
     },
-    [sensitivity, minZoom, maxZoom]
+    [sensitivity, minZoom, maxZoom, setCurrentZoom]
   )
 
   // Xử lý khi thả chuột/tay
@@ -118,7 +118,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
   // Reset zoom
   const resetZoom = useCallback(() => {
     setCurrentZoom(currentZoom)
-  }, [currentZoom])
+  }, [currentZoom, setCurrentZoom])
 
   // Effect để đăng ký/hủy sự kiện
   useEffect(() => {
@@ -150,7 +150,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
       document.body.style.cursor = 'default'
       document.body.style.userSelect = 'auto'
     }
-  }, [])
+  }, [handleStart, handleMove, handleEnd])
 
   return {
     zoomButtonRef,

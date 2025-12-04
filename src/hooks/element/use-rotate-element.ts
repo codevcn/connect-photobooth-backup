@@ -91,7 +91,7 @@ export const useRotateElement = (options: UseElementRotationOptions): UseElement
     // Cập nhật góc xoay mới
     const newRotation = startRotationRef.current + angleDelta
     setCurrentRotation(newRotation)
-  }, [])
+  }, [getAngleFromCenter, setCurrentRotation])
 
   // Xử lý khi thả chuột/tay
   const handleEnd = useCallback(() => {

@@ -84,7 +84,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                   <h3 className="text-[1em] font-semibold text-gray-900 leading-tight">{name}</h3>
                   <button
                     onClick={() => {
-                      toast.info('Đang tạm khóa')
+                      // toast.info('Đang tạm khóa')
                       // tempObject.firstBackFromCartEdit_allowedPrintAreaChange = true
                       onEditMockup(mockupData.id)
                     }}

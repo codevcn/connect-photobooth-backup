@@ -14,13 +14,14 @@ import {
   assignFrameSizeByTemplateType,
   stylePlacedImageByTemplateType,
 } from '@/configs/print-template/templates-helpers'
+import { generateUniqueId } from '@/utils/helpers'
 
 export const initFramePlacedImageByPrintedImage = (
   frameIndexProperty: TTemplateFrame['index'],
   printedImage: TPrintedImage
 ): TPlacedImage => {
   return {
-    id: printedImage.id,
+    id: generateUniqueId(),
     imgURL: printedImage.url,
     placementState: {
       frameIndex: frameIndexProperty,

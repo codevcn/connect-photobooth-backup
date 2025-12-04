@@ -44,7 +44,7 @@ const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
       <img
         src={url || '/images/placeholder.svg'}
         alt={`Printed Image`}
-        className="max-w-full max-h-[calc(100vh-135px)] group-hover:scale-105 transition-transform duration-200 object-contain"
+        className="smd:max-h-[calc(100vh-135px)] max-h-[calc(100vh-200px)] max-w-full group-hover:scale-105 transition-transform duration-200 object-contain"
       />
     </div>
   )

@@ -16,6 +16,9 @@ import { initFramePlacedImageByPrintedImage } from '../../helpers'
 import { useSearchParams } from 'react-router-dom'
 import { typeToObject } from '@/utils/helpers'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
+import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+
+type TVisualState = Pick<TStoredTemplate, 'initialVisualState'>['initialVisualState']
 
 type TFramesDisplayerProps = {
   template: TPrintTemplate
@@ -38,8 +41,8 @@ type TFramesDisplayerProps = {
   displaySelectingColor: boolean
   allowDragging: boolean
   scrollable: boolean
-  containerScale: number
   displayZoomButton: boolean
+  hint: string
 }>
 
 export const FramesDisplayer = ({
@@ -54,33 +57,40 @@ export const FramesDisplayer = ({
   allowDragging = true,
   scrollable = true,
   printedImages,
-  containerScale = 1,
   displayZoomButton = false,
+  hint,
 }: TFramesDisplayerProps) => {
   const { type } = template
+  const containerScale = useEditAreaStore((s) => s.editAreaScaleValue)
   const mockupId = useSearchParams()[0].get('mockupId')
   const pickedProductId = useProductUIDataStore((s) => s.pickedProduct?.id)
-  const restoredOffsetYRef = useRef(0)
+  const restoredVisualState = useRef<TVisualState>({})
   const hasRestoredRef = useRef(false)
-
-  const restoreOffsetY = () => {
-    requestAnimationFrame(() => {
-      if (restoredOffsetYRef.current !== 0) {
-        setPosition((pos) => {
-          if (pos.y !== restoredOffsetYRef.current) {
-            return { ...pos, y: restoredOffsetYRef.current }
-          }
-          return pos
-        })
-      }
-    })
-  }
 
   const containerRef = useRef<HTMLDivElement>(null)
   const elementsBoxRef = useRef<HTMLDivElement>(null)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef<TPosition>({ x: 0, y: 0 })
+
+  const restoreOffsetY = () => {
+    requestAnimationFrame(() => {
+      const visualState = restoredVisualState.current
+      if (visualState) {
+        const visualState: TVisualState = {}
+        if (visualState.offsetX) {
+          visualState.offsetX = visualState.offsetX
+        }
+        if (visualState.offsetY) {
+          visualState.offsetY = visualState.offsetY
+        }
+        setPosition({
+          x: visualState.offsetX || 0,
+          y: visualState.offsetY || 0,
+        })
+      }
+    })
+  }
 
   const stopDraggingByZoomPlacedImageButton = (
     e: Event | React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -180,9 +190,8 @@ export const FramesDisplayer = ({
   }
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search)
-    if (searchParams.get('mockupId') && !hasRestoredRef.current) {
-      restoredOffsetYRef.current = template.initialVisualState?.offsetY || 0
+    if (new URLSearchParams(window.location.search).get('mockupId') && !hasRestoredRef.current) {
+      restoredVisualState.current = template.initialVisualState || {}
       restoreOffsetY()
       hasRestoredRef.current = true
     }
@@ -193,14 +202,12 @@ export const FramesDisplayer = ({
   }, [template.id, pickedProductId])
 
   useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('pointermove', handleMouseMove)
-      window.addEventListener('pointerup', handleMouseUp)
-      return () => {
-        window.removeEventListener('pointermove', handleMouseMove)
-        window.removeEventListener('pointerup', handleMouseUp)
-      }
-    }
+    // window.addEventListener('pointermove', handleMouseMove)
+    // window.addEventListener('pointerup', handleMouseUp)
+    // return () => {
+    //   window.removeEventListener('pointermove', handleMouseMove)
+    //   window.removeEventListener('pointerup', handleMouseUp)
+    // }
   }, [isDragging, position])
 
   return (
@@ -219,7 +226,7 @@ export const FramesDisplayer = ({
         }}
         data-visual-state={JSON.stringify(
           typeToObject<Pick<TStoredTemplate, 'initialVisualState'>>({
-            initialVisualState: { offsetY: position.y },
+            initialVisualState: { offsetY: position.y, offsetX: position.x },
           })
         )}
       >
@@ -238,7 +245,9 @@ export const FramesDisplayer = ({
             displayZoomButton={displayZoomButton}
             onImageLoad={() => {
               // Chỉ restore lần đầu khi load từ mockupId
-              if (mockupId && !hasRestoredRef.current && restoredOffsetYRef.current !== 0) {
+              if (mockupId && !hasRestoredRef.current && restoredVisualState.current) {
+                console.log('>>> [reto] use eff:', template)
+                restoredVisualState.current = template.initialVisualState || {}
                 restoreOffsetY()
                 hasRestoredRef.current = true
               }

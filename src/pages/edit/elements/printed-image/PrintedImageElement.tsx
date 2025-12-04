@@ -75,6 +75,7 @@ export const PrintedImageElement = ({
       },
       isShown: true,
     })
+    requestAnimationFrame(updateInteractiveButtonsVisual)
   }
 
   useEffect(() => {
