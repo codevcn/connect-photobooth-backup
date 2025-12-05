@@ -77,14 +77,22 @@ export const GlobalKeyboardProvider = () => {
   //   [hideKeyboard]
   // )
 
+  const hideKeyboardIfOnMobile = useCallback(() => {
+    if (checkIfMobileScreen()) {
+      hideKeyboard()
+    }
+  }, [hideKeyboard])
+
   // Đăng ký event listeners
   useEffect(() => {
     document.addEventListener('focusin', handleFocus as EventListener)
     // document.addEventListener('focusout', handleBlur as EventListener)
+    window.addEventListener('resize', hideKeyboardIfOnMobile)
 
     return () => {
       document.removeEventListener('focusin', handleFocus as EventListener)
       // document.removeEventListener('focusout', handleBlur as EventListener)
+      window.removeEventListener('resize', hideKeyboardIfOnMobile)
     }
   }, [handleFocus])
 
