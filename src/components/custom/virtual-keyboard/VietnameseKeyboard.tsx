@@ -109,8 +109,8 @@ export const VietnameseKeyboard = ({
     '{bksp}': `
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="26"
+        height="26"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -145,8 +145,8 @@ export const VietnameseKeyboard = ({
     '{shift}': `
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="26"
+        height="26"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -161,8 +161,8 @@ export const VietnameseKeyboard = ({
     '{space}': `
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="26"
+        height="26"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -177,8 +177,8 @@ export const VietnameseKeyboard = ({
     '{clear}': `
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="26"
+        height="26"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -194,8 +194,8 @@ export const VietnameseKeyboard = ({
     '{done}': `
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -243,14 +243,14 @@ export const VietnameseKeyboard = ({
   }
 
   return (
-    <div className={`${keyboardName} w-full shadow-[0_3px_10px_rgba(0,0,0,0.8)]`}>
+    <div className={`${keyboardName} 5xl:text-[26px] w-full shadow-[0_3px_10px_rgba(0,0,0,0.8)]`}>
       {/* Display area - hiển thị nội dung đang nhập */}
       <div className="px-3 py-2 bg-white border-b border-gray-200">
         <input
           type="text"
           value={input}
           placeholder={placeholder}
-          className="w-full outline-transparent focus:outline-main-cl overflow-y-auto px-2 py-1.5 text-base border border-gray-200 rounded-lg bg-gray-50 whitespace-pre-wrap wrap-break-word"
+          className="w-full outline-transparent focus:outline-main-cl overflow-y-auto px-2 py-1.5 text-[1em] border border-gray-200 rounded-lg bg-gray-50 whitespace-pre-wrap wrap-break-word"
           onChange={(e) => setInput(e.target.value)}
           ref={textDisplayerRef}
           onKeyDown={catchEnterKey}
@@ -258,13 +258,13 @@ export const VietnameseKeyboard = ({
       </div>
 
       {/* Input method toggle - chuyển đổi VNI/Telex */}
-      <div className="px-3 py-2 bg-white border-b border-gray-200 flex items-center gap-2">
-        <span className="text-sm text-gray-600 font-medium">Kiểu gõ:</span>
+      <div className="text-[0.8em] px-3 py-2 bg-white border-b border-gray-200 flex items-center gap-2">
+        <span className="text-gray-600 font-medium">Kiểu gõ:</span>
         <button
           onClick={() => toggleInputMethod('telex')}
           className={`${
             inputMethod === 'telex' ? 'bg-main-cl text-white' : 'text-gray-800'
-          } px-3 py-1.5 rounded-lg font-semibold text-sm mobile-touch border border-gray-300`}
+          } px-3 py-1.5 rounded-lg font-semibold mobile-touch border border-gray-300`}
         >
           TELEX
         </button>
@@ -272,7 +272,7 @@ export const VietnameseKeyboard = ({
           onClick={() => toggleInputMethod('vni')}
           className={`${
             inputMethod === 'vni' ? 'bg-main-cl text-white' : 'text-gray-800'
-          } px-3 py-1.5 rounded-lg font-semibold text-sm mobile-touch border border-gray-300`}
+          } px-3 py-1.5 rounded-lg font-semibold mobile-touch border border-gray-300`}
         >
           VNI
         </button>

@@ -84,28 +84,12 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (min-width: 1590px) {
   .vietnamese-keyboard-drawer .hg-button {
-    height: 40px;
-    font-size: 14px;
+    font-size: 28px;
   }
 
-  .vietnamese-keyboard-drawer .hg-button-space {
-    min-width: 180px;
-  }
-
-  .vietnamese-keyboard-drawer .hg-button-shift {
-    min-width: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  .vietnamese-keyboard-drawer .hg-button {
-    height: 38px;
-    font-size: 13px;
-  }
-
-  .vietnamese-keyboard-drawer .hg-button-space {
-    min-width: 140px;
+  .vietnamese-keyboard-drawer .hg-button-bksp {
+    font-size: 28px;
   }
 }

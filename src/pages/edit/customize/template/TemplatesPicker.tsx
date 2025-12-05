@@ -130,7 +130,7 @@ export const TemplatesPicker = ({ printedImages }: TTemplatePickerProps) => {
       <h3 className="5xl:text-[1.5em] smd:text-base text-xs mb-1 font-bold text-gray-800">
         Chọn mẫu in
       </h3>
-      <div className="5xl:grid-cols-2 smd:grid-cols-3 smd:overflow-x-hidden smd:grid-flow-row grid-rows-1 grid-flow-col overflow-x-auto grid-flow grid gap-2 w-full gallery-scroll">
+      <div className="smd:grid-cols-3 smd:overflow-x-hidden smd:grid-flow-row grid-rows-1 grid-flow-col overflow-x-auto grid-flow grid gap-2 w-full gallery-scroll">
         <div
           onClick={handlePickNoTemplate}
           className="flex items-center justify-center flex-col aspect-square min-h-16 border border-dashed p-1 border-gray-600 rounded bg-white mobile-touch cursor-pointer transition"
