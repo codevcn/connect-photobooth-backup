@@ -2,6 +2,7 @@ import { useEffect, useCallback, useRef, useState } from 'react'
 import { VietnameseKeyboard } from '@/components/custom/virtual-keyboard/VietnameseKeyboard'
 import { createPortal } from 'react-dom'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
+import { checkIfMobileScreen } from '@/utils/helpers'
 
 export enum ETextFieldNameForKeyBoard {
   VIRLTUAL_KEYBOARD_TEXTFIELD = 'NAME-virltual-keyboard-textfield',
@@ -31,8 +32,8 @@ export const GlobalKeyboardProvider = () => {
   // Xử lý khi input được focus
   const handleFocus = useCallback(
     (e: FocusEvent) => {
+      if (checkIfMobileScreen()) return // Không hiện bàn phím ảo trên mobile
       const target = e.target as HTMLElement
-
       // Kiểm tra xem element có phải là input/textarea không
       if (target.tagName === 'INPUT') {
         showKeyboard(target as HTMLInputElement)

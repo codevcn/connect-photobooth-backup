@@ -541,3 +541,7 @@ export const getFinalColorValue = () => {
   const attr = useProductUIDataStore.getState().pickedVariant?.attributes
   return attr?.color || attr?.hex
 }
+
+export const checkIfMobileScreen = (): boolean => {
+  return window.innerWidth < 662
+}
