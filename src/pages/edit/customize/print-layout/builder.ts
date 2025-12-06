@@ -1,6 +1,6 @@
 import { createInitialConstants } from '@/utils/contants'
 import { generateUniqueId } from '@/utils/helpers'
-import { TLayoutType } from '@/utils/types/default-template'
+import { TLayoutType } from '@/utils/types/print-layout'
 import { TPrintedImage, TPrintedImageVisualState, TSizeInfo } from '@/utils/types/global'
 
 // ============================================================================
@@ -324,7 +324,7 @@ export type TBuildLayoutResult = {
  * Build layout tối ưu cho printed images trong allowed print area
  * @returns Layout đã được tính position cho các elements, hoặc null nếu không có ảnh
  */
-export const buildDefaultTemplateLayout = (
+export const buildDefaultLayout = (
   _printAreaContainer: HTMLElement, // Reserved for future use (e.g., constraints, boundaries)
   allowedPrintArea: HTMLElement,
   printedImages: TPrintedImage[],

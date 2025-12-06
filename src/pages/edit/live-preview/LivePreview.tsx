@@ -13,7 +13,8 @@ import { adjustSizeOfPlacedImageOnPlaced, cancelSelectingZoomingImages } from '.
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { MyDevComponent } from '@/dev/components/Preview'
-import { buildDefaultTemplateLayout } from '../customize/default-template/builder'
+import { buildDefaultLayout } from '../customize/print-layout/builder'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
 type TZoomButtonsProps = {
   scale: number
@@ -122,6 +123,7 @@ export const LivePreview = ({
   printedImages,
 }: TLivePreviewProps) => {
   const prevProductIdRef = useRef<TBaseProduct['id'] | null>(null)
+  const pickedLayout = useLayoutStore((s) => s.pickedLayout)
 
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find(
@@ -152,13 +154,7 @@ export const LivePreview = ({
         zoomEditAreaController.reset()
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            const defaultTemplate = buildDefaultTemplateLayout(
-              printAreaContainerRef.current!,
-              allowedPrintAreaRef.current!,
-              printedImages,
-              4
-            )
-            useEditedElementStore.getState().initBuiltPrintedImageElements(defaultTemplate.elements)
+            useEditedElementStore.getState().initBuiltPrintedImageElements(pickedLayout!.elements)
             eventEmitter.emit(EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED)
           })
         })

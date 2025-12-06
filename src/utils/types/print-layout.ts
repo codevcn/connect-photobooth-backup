@@ -1,3 +1,5 @@
+import { TPrintedImageVisualState } from './global'
+
 export type TLayoutType =
   | 'full'
   | 'half-width'
@@ -10,8 +12,9 @@ export type TLayoutType =
   | '4-horizon'
   | '4-vertical'
 
-export type TDefaultTemplate = {
+export type TPrintLayout = {
   id: string
   name: string
   layoutType: TLayoutType
+  printedImageElements: TPrintedImageVisualState[]
 }

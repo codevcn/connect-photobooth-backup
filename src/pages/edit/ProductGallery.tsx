@@ -1,47 +1,104 @@
-import { TBaseProduct, TPrintAreaInfo, TPrintedImage, TPrintTemplate } from '@/utils/types/global'
+import {
+  TBaseProduct,
+  TPrintAreaInfo,
+  TPrintedImage,
+  TPrintedImageVisualState,
+} from '@/utils/types/global'
 import { PrintAreaOverlayPreview } from './live-preview/PrintAreaOverlay'
 import { usePrintArea } from '@/hooks/use-print-area'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
-import { initTheBestTemplateForPrintedImages } from './helpers'
-import { use, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { useTemplateStore } from '@/stores/ui/template.store'
 import { useSearchParams } from 'react-router-dom'
+import { buildDefaultLayout } from './customize/print-layout/builder'
+import { TPrintLayout } from '@/utils/types/print-layout'
+import { hardCodedLayoutData } from '@/configs/print-layout/print-layout-data'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
+
+type TPrintedImageProps = {
+  printedImageVisualState: TPrintedImageVisualState
+}
+
+const PrintedImage = ({ printedImageVisualState }: TPrintedImageProps) => {
+  const { position, height, width } = printedImageVisualState
+  return (
+    <div
+      style={{
+        top: position.y,
+        left: position.x,
+        width,
+        height,
+      }}
+      className="absolute pointer-events-none overflow-hidden select-none"
+    >
+      <img
+        src={printedImageVisualState.path}
+        alt="Ảnh photobooth"
+        style={{
+          height,
+          aspectRatio: width! / height!,
+        }}
+      />
+    </div>
+  )
+}
 
 type TProductProps = {
   product: TBaseProduct
-  initialTemplate: TPrintTemplate
   firstPrintAreaInProduct: TPrintAreaInfo
   onPickProduct: (
     product: TBaseProduct,
-    initialTemplate: TPrintTemplate,
+    initialLayout: TPrintLayout,
     firstPrintAreaInProduct: TPrintAreaInfo
   ) => void
-  onInitTemplates: (initialTemplate: TPrintTemplate) => void
   isPicked: boolean
   onInitFirstProduct: (
     product: TBaseProduct,
-    initialTemplate: TPrintTemplate,
+    initialLayout: TPrintLayout,
     firstPrintAreaInProduct: TPrintAreaInfo
   ) => void
+  printedImages: TPrintedImage[]
 }
 
 const Product = ({
   product,
-  initialTemplate,
   onPickProduct,
-  onInitTemplates,
   isPicked,
   onInitFirstProduct,
   firstPrintAreaInProduct,
+  printedImages,
 }: TProductProps) => {
-  const firstPrintArea = product.printAreaList[0]
-  const { printAreaRef, printAreaContainerRef } = usePrintArea(firstPrintArea)
+  const [initialLayout, setInitialLayout] = useState<TPrintLayout>()
+
+  const buildInitialLayout = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!printAreaContainerRef.current || !printAreaRef.current) return
+        const { layout } = buildDefaultLayout(
+          printAreaContainerRef.current,
+          printAreaRef.current,
+          printedImages
+        )
+        setInitialLayout({
+          ...hardCodedLayoutData(layout.type)[0],
+          printedImageElements: layout.elements,
+        })
+      })
+    })
+  }
+
+  const { printAreaRef, printAreaContainerRef } = usePrintArea(
+    firstPrintAreaInProduct,
+    buildInitialLayout
+  )
 
   useEffect(() => {
-    onInitTemplates(initialTemplate)
-    onInitFirstProduct(product, initialTemplate, firstPrintAreaInProduct)
-  }, [])
+    if (initialLayout) onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+  }, [initialLayout])
+
+  useEffect(() => {
+    buildInitialLayout()
+  }, [product.id])
 
   return (
     <div
@@ -51,14 +108,22 @@ const Product = ({
       className={`${
         isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
       } NAME-gallery-product spmd:w-full spmd:h-auto h-[100px] aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative rounded-xl transition-transform duration-200 border border-gray-200`}
-      onClick={() => onPickProduct(product, initialTemplate, firstPrintAreaInProduct)}
+      onClick={() => {
+        if (initialLayout) onPickProduct(product, initialLayout, firstPrintAreaInProduct)
+      }}
     >
       <img
-        src={firstPrintArea.imageUrl || '/images/placeholder.svg'}
+        src={firstPrintAreaInProduct.imageUrl || '/images/placeholder.svg'}
         alt={product.name}
         className="NAME-product-image min-h-full max-h-full w-full h-full object-contain rounded-xl"
       />
-      <PrintAreaOverlayPreview printTemplate={initialTemplate} printAreaRef={printAreaRef} />
+      <PrintAreaOverlayPreview printAreaRef={printAreaRef} />
+      {initialLayout?.printedImageElements.map((printedImageVisualState) => (
+        <PrintedImage
+          key={printedImageVisualState.id}
+          printedImageVisualState={printedImageVisualState}
+        />
+      ))}
     </div>
   )
 }
@@ -72,10 +137,9 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const printedImages = usePrintedImageStore((s) => s.printedImages)
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const handlePickProduct = useProductUIDataStore((s) => s.handlePickProduct)
-  const initializeAddingTemplates = useTemplateStore((s) => s.initializeAddingTemplates)
-  const allTemplates = useTemplateStore((s) => s.allTemplates)
+  const allLayouts = useLayoutStore((s) => s.allLayouts)
   const mockupId = useSearchParams()[0].get('mockupId')
-  const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintTemplate, TPrintAreaInfo]>()
+  const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintLayout, TPrintAreaInfo]>()
   const hasPickedProduct = useRef(false)
 
   const scrollToPickedProduct = () => {
@@ -89,13 +153,9 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     }
   }
 
-  const handleInitTemplate = (initialTemplate: TPrintTemplate) => {
-    initializeAddingTemplates([initialTemplate])
-  }
-
   const initFirstProduct = () => {
     if (!mockupId) {
-      if (allTemplates.length > 0 && firstProduct && firstProduct.length === 3) {
+      if (allLayouts.length > 0 && firstProduct && firstProduct.length === 3) {
         useProductUIDataStore
           .getState()
           .handlePickFirstProduct(firstProduct[0], firstProduct[1], firstProduct[2])
@@ -105,28 +165,22 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   const handleSetFirstProduct = (
     firstProductInList: TBaseProduct,
-    initialTemplate: TPrintTemplate,
+    initialLayout: TPrintLayout,
     initialSurface: TPrintAreaInfo
   ) => {
     if (!firstProduct && !hasPickedProduct.current) {
       hasPickedProduct.current = true
-      setFirstProduct([firstProductInList, initialTemplate, initialSurface])
+      setFirstProduct([firstProductInList, initialLayout, initialSurface])
     }
   }
 
   useEffect(() => {
     initFirstProduct()
-  }, [allTemplates.length, firstProduct?.length])
+  }, [allLayouts.length, firstProduct?.length])
 
   useEffect(() => {
     scrollToPickedProduct()
   }, [pickedProduct?.id])
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     initPlacedImageStyle('.NAME-products-gallery .NAME-frame-placed-image')
-  //   }, 0)
-  // }, [products])
 
   return (
     <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base text-sm w-full h-fit pb-1 flex flex-col bg-white border border-gray-200">
@@ -143,17 +197,10 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
                 key={product.id}
                 product={product}
                 firstPrintAreaInProduct={firstPrintArea}
-                initialTemplate={initTheBestTemplateForPrintedImages(
-                  {
-                    height: firstPrintArea.area.printH,
-                    width: firstPrintArea.area.printW,
-                  },
-                  printedImages
-                )}
-                onPickProduct={handlePickProduct}
-                onInitTemplates={(initialTemplate) => handleInitTemplate(initialTemplate)}
                 isPicked={product.id === pickedProduct?.id}
+                onPickProduct={handlePickProduct}
                 onInitFirstProduct={handleSetFirstProduct}
+                printedImages={printedImages}
               />
             )
           })}

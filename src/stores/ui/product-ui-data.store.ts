@@ -7,6 +7,8 @@ import {
 } from '@/utils/types/global'
 import { create } from 'zustand'
 import { useTemplateStore } from './template.store'
+import { useLayoutStore } from './print-layout.store'
+import { TPrintLayout } from '@/utils/types/print-layout'
 
 type TProductUIDataStore = {
   pickedProduct: TBaseProduct | null
@@ -26,12 +28,12 @@ type TProductUIDataStore = {
   getProductAttachedData: (productId: TBaseProduct['id']) => TProductAttatchedData | undefined
   handlePickProduct: (
     prod: TBaseProduct,
-    initialTemplate: TPrintTemplate,
+    initialLayout: TPrintLayout,
     printArea: TPrintAreaInfo
   ) => void
   handlePickFirstProduct: (
     prod: TBaseProduct,
-    initialTemplate: TPrintTemplate,
+    initialLayout: TPrintLayout,
     printArea: TPrintAreaInfo
   ) => void
   handlePickVariant: (variant: TClientProductVariant) => void
@@ -129,17 +131,18 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     useTemplateStore.getState().pickTemplateOnRestore(initialTemplate, initialSurface)
   },
 
-  handlePickProduct: (product, initialTemplate, printArea) => {
+  handlePickProduct: (product, initialLayout, printArea) => {
     set({
       pickedProduct: product,
       pickedVariant: product.variants[0],
       pickedSurface: printArea,
     })
-    useTemplateStore.getState().pickTemplate(initialTemplate.id, printArea)
+    // useTemplateStore.getState().pickTemplate(initialTemplate.id, printArea)
+    useLayoutStore.getState().pickLayout(initialLayout)
   },
 
-  handlePickFirstProduct: (product, initialTemplate, printArea) => {
-    get().handlePickProduct(product, initialTemplate, printArea)
+  handlePickFirstProduct: (product, initialLayout, printArea) => {
+    get().handlePickProduct(product, initialLayout, printArea)
   },
 
   handlePickVariant: (variant) => {

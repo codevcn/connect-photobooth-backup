@@ -14,7 +14,7 @@ import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useDragEditBackground } from '@/hooks/use-drag-edit-background'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { MyDevComponent } from '@/dev/components/Preview'
-import { buildDefaultTemplateLayout } from '../customize/default-template/builder'
+import { buildDefaultLayout } from '../customize/print-layout/builder'
 
 type TZoomButtonsProps = {
   scale: number
@@ -144,7 +144,7 @@ export const LivePreview = ({
       eventEmitter.emit(EInternalEvents.ELEMENTS_OUT_OF_BOUNDS_CHANGED)
       controls.reset()
       const now = performance.now()
-      const defaultTemplate = buildDefaultTemplateLayout(
+      const defaultTemplate = buildDefaultLayout(
         printAreaContainerRef.current!,
         allowedPrintAreaRef.current!,
         printedImages,

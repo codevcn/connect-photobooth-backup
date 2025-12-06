@@ -76,7 +76,6 @@ const FramesDisplayerForPreview = ({
 
 type TPrintAreaOverlayPreviewProps = {
   printAreaRef: React.RefObject<HTMLDivElement | null>
-  printTemplate: TPrintTemplate
 } & Partial<{
   printAreaOptions: {
     className: string
@@ -84,19 +83,15 @@ type TPrintAreaOverlayPreviewProps = {
 }>
 
 export const PrintAreaOverlayPreview = ({
-  printTemplate,
   printAreaOptions,
   printAreaRef,
 }: TPrintAreaOverlayPreviewProps) => {
   return (
     <div
       ref={printAreaRef}
-      className={cn(
-        `${printTemplate.type} z-5 flex justify-center items-center absolute transition duration-200`,
-        printAreaOptions?.className
-      )}
+      className={cn(`z-5 flex justify-center items-center absolute`, printAreaOptions?.className)}
     >
-      <FramesDisplayerForPreview
+      {/* <FramesDisplayerForPreview
         template={printTemplate}
         frameClassNames={{
           container: 'border-none',
@@ -105,7 +100,7 @@ export const PrintAreaOverlayPreview = ({
         displayerClassNames={{ container: 'bg-transparent' }}
         allowDragging={false}
         printedImages={[]}
-      />
+      /> */}
     </div>
   )
 }
