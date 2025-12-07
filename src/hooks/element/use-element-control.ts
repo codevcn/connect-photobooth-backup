@@ -61,8 +61,7 @@ export const useElementControl = (
   printAreaAllowedRef: React.RefObject<HTMLDivElement | null>,
   containerForElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
   elementType: TElementType,
-  initialParams?: TInitialParams,
-  path?: string
+  initialParams?: TInitialParams
 ): TElementControlReturn => {
   const {
     position: initialPosition,
@@ -364,10 +363,9 @@ export const useElementControl = (
       containerObserver.unobserve(container)
     }
   }, [elementId])
-console.log('>>> [con] ele lays:', {elementLayers, elementId,path})
+
   useEffect(() => {
     const layer = elementLayers.find((l) => l.elementId === elementId)
-    console.log('>>> [con] layer:', layer)
     if (layer) {
       setZindex(layer.index)
     }
