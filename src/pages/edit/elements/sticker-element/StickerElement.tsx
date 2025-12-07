@@ -34,7 +34,7 @@ export const StickerElement = ({
   removeStickerElement,
   printAreaContainerRef,
 }: TStickerElementProps) => {
-  const { path, id, mountType, height, width } = element
+  const { path, id, mountType, height, width, grayscale } = element
   const rootRef = useRef<HTMLElement | null>(null)
   const scaleFactor = useEditAreaStore((state) => state.editAreaScaleValue)
   const {
@@ -57,7 +57,6 @@ export const StickerElement = ({
     buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
     isShown: false,
   })
-  const [grayscale, setGrayscale] = useState<number>(element.grayscale || 0)
 
   const updateInteractiveButtonsVisual = () => {
     if (!isSelected) return
@@ -101,9 +100,6 @@ export const StickerElement = ({
   ) => {
     if (elementId === id) {
       handleSetElementState(posX, posY, scale, angle, zindex)
-    }
-    if (grayscale || grayscale === 0) {
-      setGrayscale(grayscale)
     }
   }
 
@@ -228,7 +224,7 @@ export const StickerElement = ({
           zindex,
           height,
           width,
-          grayscale,
+          grayscale: grayscale || 0,
         })
       )}
       onDragStart={(e) => e.preventDefault()}
@@ -237,9 +233,9 @@ export const StickerElement = ({
     >
       <div className={`NAME-element-main-box select-none relative origin-center h-full w-full`}>
         <div
-          className="h-full w-full"
+          className="NAME-element-display-wrapper h-full w-full"
           style={{
-            filter: `grayscale(${grayscale}%)`,
+            filter: `grayscale(${grayscale || 0}%)`,
           }}
         >
           <img

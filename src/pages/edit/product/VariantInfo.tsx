@@ -315,7 +315,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
           <CustomScrollbar
             classNames={{
               container: '5xl:text-[0.4em] font-bold py-2 text-sm w-full overflow-x-hidden',
-              content: 'flex flex-nowrap gap-3 overflow-x-auto no-scrollbar py-1 pb-2',
+              content: 'flex flex-nowrap gap-3 overflow-x-auto no-scrollbar p-1 pb-2',
             }}
           >
             {Object.keys(mergedAttributes.uniqueColors).map((color) => {

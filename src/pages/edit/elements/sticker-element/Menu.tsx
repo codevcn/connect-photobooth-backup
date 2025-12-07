@@ -1,15 +1,19 @@
 import { createInitialConstants } from '@/utils/contants'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { TElementType, TStickerVisualState } from '@/utils/types/global'
+import { TElementType, TPrintedImageVisualState, TStickerVisualState } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 
 type TGrayscaleControlProps = {
   grayscale: number
   setGrayscale: (value: number) => void
-  onChange: (value: number) => void
+  pickedElementRootRef?: React.RefObject<HTMLElement | null>
 }
 
-const GrayscaleControl = ({ grayscale, setGrayscale, onChange }: TGrayscaleControlProps) => {
+const GrayscaleControl = ({
+  grayscale,
+  setGrayscale,
+  pickedElementRootRef,
+}: TGrayscaleControlProps) => {
   const [showPopover, setShowPopover] = useState(false)
 
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -69,7 +73,19 @@ const GrayscaleControl = ({ grayscale, setGrayscale, onChange }: TGrayscaleContr
 
   const handleGrayscaleChange = (value: number) => {
     setGrayscale(value)
-    onChange(value)
+    const root = pickedElementRootRef?.current
+    root
+      ?.querySelector<HTMLElement>('.NAME-element-display-wrapper')
+      ?.style.setProperty('filter', `grayscale(${value}%)`)
+    root?.setAttribute(
+      'data-visual-state',
+      JSON.stringify({
+        ...(JSON.parse(
+          root?.getAttribute('data-visual-state') || '{}'
+        ) as TPrintedImageVisualState),
+        grayscale: value,
+      })
+    )
   }
 
   return (
@@ -170,8 +186,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
     angle?: number,
     posX?: number,
     posY?: number,
-    zIndex?: number,
-    grayscale?: number
+    zIndex?: number
   ) => {
     eventEmitter.emit(
       EInternalEvents.SUBMIT_STICKER_ELE_PROPS,
@@ -180,8 +195,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
       angle,
       posX,
       posY,
-      zIndex,
-      grayscale
+      zIndex
     )
   }
 
@@ -338,16 +352,7 @@ export const StickerElementMenu = ({ elementId, onClose }: TStickerElementMenu) 
           <GrayscaleControl
             grayscale={grayscale}
             setGrayscale={setGrayscale}
-            onChange={(grayscale) => {
-              handleChangeProperties(
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                grayscale
-              )
-            }}
+            pickedElementRootRef={pickedElementRootRef}
           />
         </div>
         <div className="NAME-form-group NAME-form-zindex 5xl:h-14 h-8 smd:h-9 flex items-center justify-between bg-main-cl rounded px-1 shadow">

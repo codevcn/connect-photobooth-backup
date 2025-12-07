@@ -7,6 +7,7 @@ import { PreviewImage } from './PreviewImage'
 import { buildLayoutByLayoutType } from './builder'
 import { createInitialConstants } from '@/utils/contants'
 import { CustomScrollbar } from '@/components/custom/CustomScrollbar'
+import { handlePutPrintedImagesInLayout } from '../../helpers'
 
 type TLayoutsPickerProps = {
   printedImages: TPrintedImage[]
@@ -23,6 +24,8 @@ export const LayoutsPicker = ({ printedImages }: TLayoutsPickerProps) => {
 
   const handlePickTemplate = (layout: TPrintLayout) => {
     useEditedElementStore.getState().cancelSelectingElement()
+    console.log('>>> [sto] pick layout at picker:', layout)
+    // handlePutPrintedImagesInLayout(layout)
     useLayoutStore.getState().pickLayout(layout)
   }
 

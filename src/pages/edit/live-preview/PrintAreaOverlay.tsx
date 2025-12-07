@@ -74,7 +74,7 @@ const FramesDisplayerForPreview = ({
 }
 
 type TPrintAreaOverlayPreviewProps = {
-  printAreaRef: React.RefObject<HTMLDivElement | null>
+  registerPrintAreaRef: (node: HTMLDivElement | null) => void
 } & Partial<{
   printAreaOptions: {
     className: string
@@ -83,11 +83,11 @@ type TPrintAreaOverlayPreviewProps = {
 
 export const PrintAreaOverlayPreview = ({
   printAreaOptions,
-  printAreaRef,
+  registerPrintAreaRef,
 }: TPrintAreaOverlayPreviewProps) => {
   return (
     <div
-      ref={printAreaRef}
+      ref={registerPrintAreaRef}
       className={cn(`z-5 flex justify-center items-center absolute`, printAreaOptions?.className)}
     >
       {/* <FramesDisplayerForPreview
@@ -161,7 +161,7 @@ export const PrintAreaOverlay = ({
         registerRef?.(node)
       }}
       className={cn(
-        'NAME-print-area-allowed z-6 border border-white border-dashed flex justify-center items-center absolute transition',
+        'NAME-print-area-allowed z-6 border border-white border-dashed flex justify-center items-center absolute',
         printAreaOptions?.className,
         displayWarningOverlay
           ? isOutOfBounds
@@ -175,8 +175,6 @@ export const PrintAreaOverlay = ({
             ? 'rgba(239, 68, 68, 0.1)'
             : 'rgba(96, 165, 250, 0.1)'
           : 'transparent',
-        animationDuration:
-          createCommonConstants<number>('ANIMATION_DURATION_PRINT_AREA_BOUNDS_CHANGE') + 'ms',
       }}
       data-is-out-of-bounds={isOutOfBounds}
     >

@@ -26,6 +26,7 @@ import { PrintedImageElementMenu } from './elements/printed-image/Menu'
 import { cancelSelectingZoomingImages } from './helpers'
 import { toast } from 'react-toastify'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -146,11 +147,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
     const surface = product.printAreaList.find((s) => s.id === foundMockup.surfaceInfo.id)
     console.log('>>> [reto] surface:', surface)
     if (!surface) return
-    const storedTemplates = foundMockup.elementsVisualState.storedTemplates || []
-    console.log('>>> [reto] storedTemplates:', storedTemplates)
-    useProductUIDataStore
-      .getState()
-      .handlePickProductOnRestore(product, storedTemplates[0], variant, surface)
+    useProductUIDataStore.getState().handlePickProductOnRestore(product, variant, surface)
   }, 0)
 }
 
@@ -226,7 +223,8 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       useEditedElementStore.getState().resetData()
       useElementLayerStore.getState().resetData()
       useProductUIDataStore.getState().resetData()
-      useTemplateStore.getState().resetData()
+      // useTemplateStore.getState().resetData()
+      useLayoutStore.getState().resetData()
     }
   }, [])
 

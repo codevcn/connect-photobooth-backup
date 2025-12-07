@@ -62,14 +62,6 @@ export const useZoomEditBackground = (
     setScale((prev) => Math.max(prev * zoomOutCoefficient, minZoom))
   }
 
-  const maxZoomAllowedPrintAreaIntoView = () => {
-    const allowedPrintArea = allowedPrintAreaRef.current
-    if (!allowedPrintArea) return
-    const wrapper = printAreaContainerWrapperRef.current
-    if (!wrapper) return
-    setScale(calculateMaxScaleForAllowedPrintArea(allowedPrintArea, wrapper))
-  }
-
   const detectCollisionByAllowedPrintArea = () => {
     if (scale === createInitialConstants<number>('ELEMENT_ZOOM')) return
     const allowedPrintArea = allowedPrintAreaRef.current
@@ -143,19 +135,6 @@ export const useZoomEditBackground = (
     })
   }, [scale])
 
-  // Zoom edit area khi printed images được build và mount xong
-  useEffect(() => {
-    if (!printedImagesBuildId) return
-    if (preBuildIdRef.current === printedImagesBuildId) return
-    preBuildIdRef.current = printedImagesBuildId
-    // Đợi 1 frame để đảm bảo DOM đã mount xong
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        maxZoomAllowedPrintAreaIntoView()
-      })
-    })
-  }, [printedImagesBuildId, printedImages.length])
-
   return {
     allowedPrintAreaRef,
     scale,
@@ -167,6 +146,5 @@ export const useZoomEditBackground = (
       reset,
       setZoom: setScale,
     },
-    maxZoomAllowedPrintAreaIntoView,
   }
 }

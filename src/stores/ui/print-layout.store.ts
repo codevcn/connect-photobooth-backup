@@ -10,12 +10,16 @@ type TLayoutStore = {
   pickLayout: (layout: TPrintLayout) => void
   setAllLayouts: (layouts: TPrintLayout[]) => void
   updateLayoutElements: (layoutId: string, elements: TPrintedImageVisualState[]) => void
+  resetData: () => void
 }
 
 export const useLayoutStore = create<TLayoutStore>((set, get) => ({
   pickedLayout: null,
   allLayouts: hardCodedLayoutData() || [],
 
+  resetData: () => {
+    set({ pickedLayout: null })
+  },
   pickLayout: (layout: TPrintLayout) => set({ pickedLayout: layout }),
   setAllLayouts: (layouts: TPrintLayout[]) => set({ allLayouts: layouts }),
   updateLayoutElements: (layoutId: string, elements: TPrintedImageVisualState[]) => {

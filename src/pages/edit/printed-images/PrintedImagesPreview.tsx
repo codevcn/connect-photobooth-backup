@@ -6,6 +6,7 @@ import { useEditedElementStore } from '@/stores/element/element.store'
 import { generateUniqueId, getNaturalSizeOfImage } from '@/utils/helpers'
 import { createInitialConstants } from '@/utils/contants'
 import { PrintedImagesModal } from './PrintedImagesModal'
+import { CustomScrollbar } from '@/components/custom/CustomScrollbar'
 
 type ImageProps = {
   img: TPrintedImage
@@ -181,10 +182,13 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
 
   return (
     <div className="5xl:text-[1.5em] w-full text-[1em]">
-      <h3 className="smd:text-[1em] text-xs mb-1 font-bold text-gray-800">
-        Chọn ảnh <span className="smd:inline hidden">chụp photobooth</span>
-      </h3>
-      <div className="flex flex-wrap gap-1 items-center overflow-x-auto gallery-scroll w-full">
+      <h3 className="smd:text-[1em] text-xs mb-1 font-bold text-gray-800">Thêm ảnh vào vùng in</h3>
+      <CustomScrollbar
+        classNames={{
+          container: 'w-full pb-1',
+          content: 'flex flex-nowrap gap-1 items-center overflow-x-auto gallery-scroll w-full',
+        }}
+      >
         {printedImages.length > 0 &&
           printedImages.map((printedImage, index) => (
             <div
@@ -195,7 +199,7 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
               <img
                 className={`${
                   index === 0 ? 'aspect-video' : 'aspect-square'
-                } 5xl:h-20 h-12 border-2 border-main-cl object-contain mobile-touch`}
+                } 5xl:h-20 h-12 min-w-12 border-2 border-main-cl object-contain mobile-touch`}
                 src={printedImage.url}
                 alt="Ảnh chụp photobooth"
               />
@@ -210,7 +214,7 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
             />,
             document.body
           )}
-      </div>
+      </CustomScrollbar>
 
       {elementId && elementType === 'template-frame' && elementURL && (
         <div className="smd:block hidden w-full">

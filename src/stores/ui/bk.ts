@@ -5,35 +5,56 @@ import { create } from 'zustand'
 type TUseElementLayerStore = {
   elementLayers: TElementLayerState[] // min index is ELEMENT_ZINDEX_STEP
 
-  setElementLayers: (elementLayers: TElementLayerState[]) => void
-  addToElementLayers: (elementLayer: TElementLayerState) => void
-  removeFromElementLayers: (elementId: string[]) => void
+  addElementLayers: (elementLayers: TElementLayerState[]) => void
+  removeElementLayers: (elementId: string[]) => void
   updateElementLayerIndex: (elementId: string, newIndex: number) => void
   resetData: () => void
 }
 
-export const useElementLayerStore = create<TUseElementLayerStore>((set) => ({
+export const useElementLayerStore = create<TUseElementLayerStore>((set, get) => ({
   elementLayers: [],
 
   resetData: () => {
     set({ elementLayers: [] })
   },
-  setElementLayers: (elementLayers) => set({ elementLayers }),
-  addToElementLayers: (newElementLayer) =>
-    set(({ elementLayers }) => {
-      if (elementLayers.some((el) => el.elementId === newElementLayer.elementId)) {
-        return { elementLayers }
+  addElementLayers: (newElementLayers) => {
+    const { elementLayers } = get()
+    const layersToAdd = [...newElementLayers]
+    if (elementLayers.length > 0) {
+      if (elementLayers.some((el) => layersToAdd.some((newEl) => newEl.elementId === el.elementId)))
+        return
+      const maxIndex = Math.max(...elementLayers.map((layer) => layer.index))
+      let index = 1
+      for (const layer of layersToAdd) {
+        layer.index = maxIndex + index * createInitialConstants<number>('ELEMENT_ZINDEX_STEP')
+        index++
       }
-      return { elementLayers: [...elementLayers, newElementLayer] }
-    }),
-  removeFromElementLayers: (elementIds) => {
-    set((state) => ({
-      elementLayers: state.elementLayers.filter((el) => !elementIds.includes(el.elementId)),
-    }))
+      console.log('>>> [idx] layersToAdd 1:', layersToAdd)
+      set({ elementLayers: [...elementLayers, ...layersToAdd] })
+    } else {
+      let index = 1
+      for (const layer of layersToAdd) {
+        layer.index = index * createInitialConstants<number>('ELEMENT_ZINDEX_STEP')
+        index++
+      }
+      console.log('>>> [idx] layersToAdd 2:', layersToAdd)
+      set({ elementLayers: layersToAdd })
+    }
+    // set(({ elementLayers }) => {
+    //   if (elementLayers.some((el) => el.elementId === newElementLayers.elementId)) {
+    //     return { elementLayers }
+    //   }
+    //   return { elementLayers: [...elementLayers, ...newElementLayers] }
+    // })
+  },
+  removeElementLayers: (elementIds) => {
+    set({
+      elementLayers: get().elementLayers.filter((el) => !elementIds.includes(el.elementId)),
+    })
   },
   updateElementLayerIndex: (elementId, newIndex) => {
-    return set((state) => {
-      const currentLayers = state.elementLayers
+    return set(() => {
+      const currentLayers = get().elementLayers
       // Tìm index hiện tại của element
       const currentIndex = currentLayers.findIndex((layer) => layer.elementId === elementId)
       if (currentIndex === -1) return { elementLayers: currentLayers }

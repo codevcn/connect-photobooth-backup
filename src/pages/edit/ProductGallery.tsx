@@ -1,13 +1,8 @@
-import {
-  TBaseProduct,
-  TPrintAreaInfo,
-  TPrintedImage,
-  TPrintedImageVisualState,
-} from '@/utils/types/global'
+import { TBaseProduct, TPrintAreaInfo, TPrintedImage } from '@/utils/types/global'
 import { PrintAreaOverlayPreview } from './live-preview/PrintAreaOverlay'
 import { usePrintArea } from '@/hooks/use-print-area'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { useSearchParams } from 'react-router-dom'
 import { buildDefaultLayout } from './customize/print-layout/builder'
@@ -43,6 +38,8 @@ const Product = ({
   printedImages,
 }: TProductProps) => {
   const [initialLayout, setInitialLayout] = useState<TPrintLayout>()
+  // const previewPrintAreaRef = useRef<HTMLDivElement | null>(null)
+  // const previewPrintAreaContainerRef = useRef<HTMLDivElement | null>(null)
 
   const buildInitialLayout = () => {
     requestAnimationFrame(() => {
@@ -54,10 +51,13 @@ const Product = ({
           printedImages,
           createInitialConstants('LAYOUT_PADDING')
         )
-        setInitialLayout({
+        const initialLayout: TPrintLayout = {
           ...hardCodedLayoutData(layout.type)[0],
           printedImageElements: layout.elements,
-        })
+          wastedSpace: layout.wastedArea,
+        }
+        setInitialLayout(initialLayout)
+        onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
       })
     })
   }
@@ -68,21 +68,20 @@ const Product = ({
   )
 
   useEffect(() => {
-    if (initialLayout) onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
-  }, [initialLayout])
-
-  useEffect(() => {
     buildInitialLayout()
   }, [product.id])
 
   return (
     <div
-      ref={printAreaContainerRef}
+      ref={(node) => {
+        // previewPrintAreaContainerRef.current = node
+        printAreaContainerRef.current = node
+      }}
       data-product-id={product.id}
       data-is-picked={isPicked}
       className={`${
         isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
-      } NAME-gallery-product spmd:w-full spmd:h-auto h-[100px] aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative rounded-xl transition-transform duration-200 border border-gray-200`}
+      } NAME-gallery-product spmd:w-full spmd:h-auto h-[100px] aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative rounded-xl border border-gray-200`}
       onClick={() => {
         if (initialLayout) onPickProduct(product, initialLayout, firstPrintAreaInProduct)
       }}
@@ -92,7 +91,12 @@ const Product = ({
         alt={product.name}
         className="NAME-product-image min-h-full max-h-full w-full h-full object-contain rounded-xl"
       />
-      <PrintAreaOverlayPreview printAreaRef={printAreaRef} />
+      <PrintAreaOverlayPreview
+        registerPrintAreaRef={(node) => {
+          printAreaRef.current = node
+          // previewPrintAreaRef.current = node
+        }}
+      />
       {initialLayout?.printedImageElements.map((printedImageVisualState) => (
         <PreviewImage
           key={printedImageVisualState.id}
@@ -115,7 +119,6 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const allLayouts = useLayoutStore((s) => s.allLayouts)
   const mockupId = useSearchParams()[0].get('mockupId')
   const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintLayout, TPrintAreaInfo]>()
-  const hasPickedProduct = useRef(false)
 
   const scrollToPickedProduct = () => {
     if (pickedProduct) {
@@ -131,6 +134,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const initFirstProduct = () => {
     if (!mockupId) {
       if (allLayouts.length > 0 && firstProduct && firstProduct.length === 3) {
+        console.log('>>> [gal] init first product:', firstProduct)
         useProductUIDataStore
           .getState()
           .handlePickFirstProduct(firstProduct[0], firstProduct[1], firstProduct[2])
@@ -143,15 +147,15 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     initialLayout: TPrintLayout,
     initialSurface: TPrintAreaInfo
   ) => {
-    if (!firstProduct && !hasPickedProduct.current) {
-      hasPickedProduct.current = true
+    if (firstProductInList.id === products[0].id) {
+      console.log('>>> [gal] set first product:', firstProductInList, initialLayout, initialSurface)
       setFirstProduct([firstProductInList, initialLayout, initialSurface])
     }
   }
 
   useEffect(() => {
     initFirstProduct()
-  }, [allLayouts.length, firstProduct?.length])
+  }, [allLayouts.length, firstProduct?.length, firstProduct?.map((item) => item.id).join('-')])
 
   useEffect(() => {
     scrollToPickedProduct()

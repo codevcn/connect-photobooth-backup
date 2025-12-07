@@ -15,6 +15,9 @@ import {
   stylePlacedImageByTemplateType,
 } from '@/configs/print-template/templates-helpers'
 import { generateUniqueId } from '@/utils/helpers'
+import { useEditedElementStore } from '@/stores/element/element.store'
+import { TPrintLayout } from '@/utils/types/print-layout'
+import { reAssignElementsByLayoutData } from './customize/print-layout/new'
 
 export const initFramePlacedImageByPrintedImage = (
   frameIndexProperty: TTemplateFrame['index'],
@@ -450,4 +453,18 @@ export const cancelSelectingZoomingImages = () => {
   )) {
     el.classList.add('hidden')
   }
+}
+
+export const handlePutPrintedImagesInLayout = (
+  layout: TPrintLayout,
+  allowedPrintArea: HTMLElement
+) => {
+  console.log('>>> [uuu] inputs:', { layout, allowedPrintArea })
+  console.trace('[uuu] trace:')
+  const printedImages = reAssignElementsByLayoutData(
+    structuredClone(layout),
+    allowedPrintArea,
+    createInitialConstants('LAYOUT_PADDING')
+  )
+  useEditedElementStore.getState().initBuiltPrintedImageElements(printedImages)
 }

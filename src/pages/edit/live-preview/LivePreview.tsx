@@ -9,7 +9,7 @@ import { SectionLoading } from '@/components/custom/Loading'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { createCommonConstants, createInitialConstants } from '@/utils/contants'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
-import { cancelSelectingZoomingImages } from '../helpers'
+import { cancelSelectingZoomingImages, handlePutPrintedImagesInLayout } from '../helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { MyDevComponent } from '@/dev/components/Preview'
@@ -125,6 +125,7 @@ export const LivePreview = ({
 }: TLivePreviewProps) => {
   const prevProductIdRef = useRef<TBaseProduct['id'] | null>(null)
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
+  console.log('>>> [uuu] picked layou--t:', pickedLayout)
 
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find(
@@ -149,30 +150,37 @@ export const LivePreview = ({
     zoomEditAreaController.reset()
   }
 
-  const handlePutPrintedImagesInLayout = (pickedLayout: TPrintLayout) => {
-    useEditedElementStore
-      .getState()
-      .initBuiltPrintedImageElements(
-        reAssignElementsByLayoutData(
-          structuredClone(pickedLayout),
-          allowedPrintAreaRef.current!,
-          createInitialConstants('LAYOUT_PADDING')
-        )
-      )
-  }
+  // const handlePutPrintedImagesInLayout = (layout: TPrintLayout) => {
+  //   console.log('>>> [kkk] put put:', {
+  //     layout,
+  //     pickedLayout,
+  //   })
+  //   console.trace('>>> [kkk] vui vui vui:')
+  //   const printedImages = reAssignElementsByLayoutData(
+  //     structuredClone(layout),
+  //     allowedPrintAreaRef.current!,
+  //     createInitialConstants('LAYOUT_PADDING')
+  //   )
+  //   useEditedElementStore.getState().initBuiltPrintedImageElements(printedImages)
+  // }
 
   const handlePrintAreaUpdated = () => {
     const currentProductId = pickedProduct.id
     const isProductChanged = prevProductIdRef.current !== currentProductId
     prevProductIdRef.current = currentProductId
+    // Lưu layout id tại thời điểm gọi để kiểm tra sau
+    const layoutIdAtCallTime = pickedLayout?.id
     setTimeout(() => {
-      if (isProductChanged && pickedLayout) {
+      if (isProductChanged && layoutIdAtCallTime) {
         // nếu print area thay đổi do đổi sản phẩm
         resetZoomWhenProductChange()
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            handlePutPrintedImagesInLayout(pickedLayout)
-            useEditedElementStore.getState().resetPrintedImagesBuildId()
+            // Lấy giá trị mới nhất từ store
+            const currentLayout = useLayoutStore.getState().pickedLayout
+            if (currentLayout && currentLayout.id === layoutIdAtCallTime) {
+              handlePutPrintedImagesInLayout(currentLayout, allowedPrintAreaRef.current!)
+            }
             eventEmitter.emit(EInternalEvents.EDITED_PRINT_AREA_CHANGED)
           })
         })
@@ -247,7 +255,19 @@ export const LivePreview = ({
 
   useEffect(() => {
     if (!pickedLayout || pickedProduct.id !== prevProductIdRef.current) return
-    handlePutPrintedImagesInLayout(pickedLayout)
+    // Lưu layout id để kiểm tra sau khi RAF hoàn thành
+    const layoutIdAtCallTime = pickedLayout.id
+    console.log('>>> [gal] ren sau:', { pickedLayout, pickedProduct })
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Lấy giá trị mới nhất từ store để tránh closure stale
+        const currentLayout = useLayoutStore.getState().pickedLayout
+        // Chỉ thực hiện nếu layout vẫn còn là layout đã trigger effect này
+        if (currentLayout && currentLayout.id === layoutIdAtCallTime) {
+          handlePutPrintedImagesInLayout(currentLayout, allowedPrintAreaRef.current!)
+        }
+      })
+    })
   }, [pickedLayout?.id, pickedProduct.id])
 
   return (

@@ -43,9 +43,14 @@ type TProductUIDataStore = {
   ) => void
   setIsAddingToCart: (isAdding: boolean) => void
   setCartCount: (count: number) => void
+  // handlePickProductOnRestore: (
+  //   product: TBaseProduct,
+  //   initialTemplate: TPrintTemplate,
+  //   initialVariant: TClientProductVariant,
+  //   initialSurface: TPrintAreaInfo
+  // ) => void
   handlePickProductOnRestore: (
     product: TBaseProduct,
-    initialTemplate: TPrintTemplate,
     initialVariant: TClientProductVariant,
     initialSurface: TPrintAreaInfo
   ) => void
@@ -79,12 +84,7 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   },
 
   updateProductAttachedData: (productId, data) => {
-    console.log('>>> [note] pr:', {
-      productId,
-      data,
-    })
     const existingData = [...(get().productsAttachedData || [])]
-    console.log('>>> [note] existingData:', existingData)
     if (existingData.length === 0) {
       set({ productsAttachedData: [{ productId, ...data }] })
     } else {
@@ -122,13 +122,20 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     }
   },
 
-  handlePickProductOnRestore: (product, initialTemplate, initialVariant, initialSurface) => {
+  // handlePickProductOnRestore: (product, initialTemplate, initialVariant, initialSurface) => {
+  //   set({
+  //     pickedProduct: product,
+  //     pickedVariant: initialVariant,
+  //     pickedSurface: initialSurface,
+  //   })
+  //   useTemplateStore.getState().pickTemplateOnRestore(initialTemplate, initialSurface)
+  // },
+  handlePickProductOnRestore: (product, initialVariant, initialSurface) => {
     set({
       pickedProduct: product,
       pickedVariant: initialVariant,
       pickedSurface: initialSurface,
     })
-    useTemplateStore.getState().pickTemplateOnRestore(initialTemplate, initialSurface)
   },
 
   handlePickProduct: (product, initialLayout, printArea) => {
@@ -138,6 +145,7 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
       pickedSurface: printArea,
     })
     // useTemplateStore.getState().pickTemplate(initialTemplate.id, printArea)
+    console.log('>>> [sto] handle pick layout at store:', initialLayout)
     useLayoutStore.getState().pickLayout(initialLayout)
   },
 
