@@ -296,52 +296,39 @@ export const useElementControl = (
   const stayElementVisualOnAllowedPrintArea = () => {
     const elementPreOffset = elementPreviousRelativeProps.current
     if (!elementPreOffset) return
-
     const allowedPrintArea = printAreaAllowedRef.current
     const element = elementRootRef.current
     if (!allowedPrintArea || !element) return
-
     const allowedPrintAreaLeft = allowedPrintArea.offsetLeft
     const allowedPrintAreaTop = allowedPrintArea.offsetTop
     const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
     const elementRect = element.getBoundingClientRect()
-
-    // Calculate new position maintaining relative offset from print area
-    const newX = allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft
-    const newY = allowedPrintAreaTop + elementPreOffset.relativeOffsetTop
-    if (
-      newX + elementRect.width - (element.offsetWidth / elementRect.width) * element.offsetWidth >
-      allowedPrintAreaLeft + allowedPrintAreaRect.width
-    ) {
-    }
-
-    // Clamp to boundaries (with small margin)
-    const maxX = allowedPrintAreaLeft + allowedPrintAreaRect.width - elementRect.width - 4
-    const maxY = allowedPrintAreaTop + allowedPrintAreaRect.height - elementRect.height - 4
-
-    const clampedX = Math.max(allowedPrintAreaLeft, Math.min(newX, maxX))
-    const clampedY = Math.max(allowedPrintAreaTop, Math.min(newY, maxY))
-
-    handleSetElementPosition(clampedX, clampedY)
+    handleSetElementPosition(
+      Math.min(
+        allowedPrintAreaLeft + elementPreOffset.relativeOffsetLeft,
+        allowedPrintAreaLeft + allowedPrintAreaRect.width - elementRect.width - 4
+      ),
+      Math.min(
+        allowedPrintAreaTop + elementPreOffset.relativeOffsetTop,
+        allowedPrintAreaTop + allowedPrintAreaRect.height - elementRect.height - 4
+      )
+    )
   }
 
   const captureElementOffsetBeforeChange = () => {
     const root = elementRootRef.current
     if (!root) return
-    const printAreaAllowed = printAreaAllowedRef.current
-    if (!printAreaAllowed) return
-    const allowedPrintAreaLeft = printAreaAllowed.offsetLeft
-    const allowedPrintAreaTop = printAreaAllowed.offsetTop
+    const allowedPrintAreaLeft = printAreaAllowedRef.current?.offsetLeft
+    const allowedPrintAreaTop = printAreaAllowedRef.current?.offsetTop
     if (!allowedPrintAreaLeft || !allowedPrintAreaTop) return
-    const allowedPrintAreaRect = printAreaAllowed.getBoundingClientRect()
 
     const offsetLeft = root.offsetLeft
     const offsetTop = root.offsetTop
 
     // Save to ref for immediate access
     elementPreviousRelativeProps.current = {
-      relativeOffsetLeft: ((offsetLeft - allowedPrintAreaLeft) / allowedPrintAreaRect.width) * 100,
-      relativeOffsetTop: ((offsetTop - allowedPrintAreaTop) / allowedPrintAreaRect.height) * 100,
+      relativeOffsetLeft: offsetLeft - allowedPrintAreaLeft,
+      relativeOffsetTop: offsetTop - allowedPrintAreaTop,
     }
   }
 

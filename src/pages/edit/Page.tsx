@@ -114,7 +114,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
         .setTextElements(restoredTextElements.map((text) => ({ ...text, isFromSaved: true })))
       useElementLayerStore.getState().addElementLayers(
         restoredTextElements.map((text) => ({
-          elementId: generateUniqueId(),
+          elementId: text.id,
           index: text.zindex,
           elementType: 'text',
         }))
@@ -133,7 +133,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
       )
       useElementLayerStore.getState().addElementLayers(
         restoredPrintedImageElements.map((printedImage) => ({
-          elementId: generateUniqueId(),
+          elementId: printedImage.id,
           index: printedImage.zindex,
           elementType: 'printed-image',
           isLayoutImage: printedImage.isInitWithLayout,
@@ -152,7 +152,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
         )
       useElementLayerStore.getState().addElementLayers(
         restoredStickerElements.map((sticker) => ({
-          elementId: generateUniqueId(),
+          elementId: sticker.id,
           index: sticker.zindex,
           elementType: 'sticker',
         }))

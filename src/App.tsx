@@ -18,7 +18,7 @@ window.cancelIdleCallback =
     clearTimeout(id)
   }
 
-import { Routes, Route, BrowserRouter } from 'react-router-dom'
+import { Routes, Route, BrowserRouter, useSearchParams } from 'react-router-dom'
 import EditPage from '@/pages/edit/Layout'
 import NotFound from '@/pages/NotFound'
 import { LocalStorageHelper } from './utils/localstorage'
@@ -34,6 +34,7 @@ import MaintainPage from './pages/maintain/Page'
 import { AppTempContainer } from './components/custom/TempContainer'
 import { Dev } from './dev/pages/Dev'
 import { GlobalKeyboardProvider } from './providers/GlobalKeyboardProvider'
+import { useQueryString } from './hooks/extensions'
 
 // const IdleCountdown = () => {
 //   const navigate = useNavigate()
@@ -57,6 +58,7 @@ import { GlobalKeyboardProvider } from './providers/GlobalKeyboardProvider'
 
 function AppContent() {
   const { clearAllPrintedImages } = usePrintedImageStore()
+  const queryString = useQueryString()
 
   const handleReturnHome = () => {
     if (isHomePage()) {
@@ -98,7 +100,7 @@ function AppContent() {
         <Route path="*" element={<NotFound />} />
       </Routes>
 
-      <GlobalKeyboardProvider />
+      {queryString && <GlobalKeyboardProvider />}
 
       {/* <IdleCountdown /> */}
     </>

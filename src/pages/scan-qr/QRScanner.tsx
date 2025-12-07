@@ -4,6 +4,7 @@ import { qrGetter } from '@/configs/brands/photoism/qr-getter'
 import { toast } from 'react-toastify'
 import { TUserInputImage } from '@/utils/types/global'
 import { useFastBoxes } from '@/hooks/use-fast-boxes'
+import { useQueryString } from '@/hooks/extensions'
 
 type QRScannerProps = {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -16,6 +17,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
   const { detectFromFile, isReady } = useFastBoxes()
+  const queryString = useQueryString()
 
   const initializeScanner = useCallback(() => {
     if (!videoRef.current) return
@@ -128,7 +130,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   }, [])
 
   useEffect(() => {
-    if (!isReady) return
+    if (!isReady || !queryString) return
     qrGetter.setDetectFromFileHandler(detectFromFile as any)
     // initializeScanner()
     if (error) {
@@ -171,53 +173,54 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   }, [isReady])
 
   return (
-    <div className="w-full">
-      <div className="relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg max-h-[90vh]">
-        <video
-          ref={videoRef}
-          className="max-w-[600px] max-h-[90vh] w-full h-full object-cover transition-transform duration-300"
-          playsInline
-        />
-        {error ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 p-4 animate-fade-in-down">
-            <p className="text-red-600 text-lg font-bold text-center">{error}</p>
-          </div>
-        ) : (
-          <>
-            {isScanning && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center animate-fade-in-down">
-                <div className="w-4/5">
-                  <div className="bg-white rounded-full h-4 overflow-hidden mb-4 shadow-lg">
-                    <div
-                      className="bg-pink-400 h-full transition-all duration-100"
-                      style={{ width: `${progress}%` }}
-                    />
+    queryString && (
+      <div className="w-full">
+        <div className="relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg max-h-[90vh]">
+          <video
+            ref={videoRef}
+            className="max-w-[600px] max-h-[90vh] w-full h-full object-cover transition-transform duration-300"
+            playsInline
+          />
+          {error ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 p-4 animate-fade-in-down">
+              <p className="text-red-600 text-lg font-bold text-center">{error}</p>
+            </div>
+          ) : (
+            <>
+              {isScanning && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center animate-fade-in-down">
+                  <div className="w-4/5">
+                    <div className="bg-white rounded-full h-4 overflow-hidden mb-4 shadow-lg">
+                      <div
+                        className="bg-pink-400 h-full transition-all duration-100"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <p className="text-white text-center font-medium animate-pulse">
+                      <span>Đang xử lý ảnh của bạn...</span>
+                      <span> {progress}</span>
+                      <span>%</span>
+                    </p>
                   </div>
-                  <p className="text-white text-center font-medium animate-pulse">
-                    <span>Đang xử lý ảnh của bạn...</span>
-                    <span> {progress}</span>
-                    <span>%</span>
-                  </p>
                 </div>
-              </div>
-            )}
-            {!isScanning && (
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 border-2 border-pink-400 rounded-lg opacity-30 animate-pulse"></div>
-              </div>
-            )}
-          </>
+              )}
+              {!isScanning && (
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 border-2 border-pink-400 rounded-lg opacity-30 animate-pulse"></div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        {!isScanning && !error && (
+          <p
+            className="text-center mt-2 text-white text-sm animate-fade-in-up"
+            style={{ animationDelay: '0.2s' }}
+          >
+            Hãy đưa mã QR vào khung để quét
+          </p>
         )}
       </div>
-      {!isScanning && !error && (
-        <p
-          className="text-center mt-2 text-white text-sm animate-fade-in-up"
-          style={{ animationDelay: '0.2s' }}
-        >
-          Hãy đưa mã QR vào khung để quét
-        </p>
-      )}
-    </div>
-    // <></>
+    )
   )
 }

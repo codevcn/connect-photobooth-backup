@@ -11,6 +11,8 @@ import { hardCodedLayoutData } from '@/configs/print-layout/print-layout-data'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { PreviewImage } from './customize/print-layout/PreviewImage'
 import { createInitialConstants } from '@/utils/contants'
+import { useElementLayerStore } from '@/stores/ui/element-layer.store'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TProductProps = {
   product: TBaseProduct
@@ -114,10 +116,21 @@ type TProductGalleryProps = {
 export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const printedImages = usePrintedImageStore((s) => s.printedImages)
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
-  const handlePickProduct = useProductUIDataStore((s) => s.handlePickProduct)
   const allLayouts = useLayoutStore((s) => s.allLayouts)
   const mockupId = useSearchParams()[0].get('mockupId')
   const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintLayout, TPrintAreaInfo]>()
+
+  const handlePickProduct = (
+    product: TBaseProduct,
+    initialLayout: TPrintLayout,
+    firstPrintAreaInProduct: TPrintAreaInfo
+  ) => {
+    useProductUIDataStore
+      .getState()
+      .handlePickProduct(product, initialLayout, firstPrintAreaInProduct)
+    useEditedElementStore.getState().resetData()
+    useElementLayerStore.getState().resetData()
+  }
 
   const scrollToPickedProduct = () => {
     if (pickedProduct) {
