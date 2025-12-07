@@ -472,7 +472,7 @@ export const handlePutPrintedImagesInLayout = (
   })
   useEditedElementStore.getState().initBuiltPrintedImageElements(imageVisualStates)
   useElementLayerStore.getState().removeImageLayoutElements()
-  useElementLayerStore.getState().addElementLayers(
+  useElementLayerStore.getState().addLayoutImageLayers(
     imageVisualStates.map((visualState) => ({
       elementId: visualState.id,
       index: visualState.zindex,

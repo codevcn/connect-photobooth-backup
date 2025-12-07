@@ -14,6 +14,7 @@ type TUseElementLayerStore = {
   initElementLayersWithIndex: (elementLayers: TElementLayerState[]) => void
   resetData: () => void
   removeImageLayoutElements: () => void
+  addLayoutImageLayers: (layoutImageLayers: TElementLayerState[]) => void
 }
 
 export const useElementLayerStore = create<TUseElementLayerStore>((set, get) => ({
@@ -29,6 +30,28 @@ export const useElementLayerStore = create<TUseElementLayerStore>((set, get) => 
   resetData: () => {
     set({ elementLayers: [] })
   },
+  addLayoutImageLayers: (layers) => {
+    const { elementLayers } = get()
+    const layersToAdd = [...layers]
+    // Sắp xếp: layoutImage ở dưới cùng (index thấp nhất)
+    const layoutImageLayers = elementLayers
+      .filter((layer) => layer.isLayoutImage)
+      .concat(layersToAdd)
+    const normalLayers = elementLayers.filter((layer) => !layer.isLayoutImage)
+
+    // Gán lại index: layoutImage có index thấp hơn
+    let currentIndex = 1
+    for (const layer of layoutImageLayers) {
+      layer.index = currentIndex * ELEMENT_ZINDEX_STEP
+      currentIndex++
+    }
+    for (const layer of normalLayers) {
+      layer.index = currentIndex * ELEMENT_ZINDEX_STEP
+      currentIndex++
+    }
+
+    set({ elementLayers: [...layoutImageLayers, ...normalLayers] })
+  },
   addElementLayers: (newElementLayers) => {
     const { elementLayers } = get()
     const layersToAdd = [...newElementLayers]
@@ -38,7 +61,6 @@ export const useElementLayerStore = create<TUseElementLayerStore>((set, get) => 
     }
 
     let updatedLayers: TElementLayerState[]
-
     if (elementLayers.length > 0) {
       const maxIndex = Math.max(...elementLayers.map((layer) => layer.index))
       let index = 1
@@ -58,22 +80,7 @@ export const useElementLayerStore = create<TUseElementLayerStore>((set, get) => 
       updatedLayers = layersToAdd
     }
 
-    // Sắp xếp: layoutImage ở dưới cùng (index thấp nhất)
-    const layoutImageLayers = updatedLayers.filter((layer) => layer.isLayoutImage)
-    const normalLayers = updatedLayers.filter((layer) => !layer.isLayoutImage)
-
-    // Gán lại index: layoutImage có index thấp hơn
-    let currentIndex = 1
-    for (const layer of layoutImageLayers) {
-      layer.index = currentIndex * ELEMENT_ZINDEX_STEP
-      currentIndex++
-    }
-    for (const layer of normalLayers) {
-      layer.index = currentIndex * ELEMENT_ZINDEX_STEP
-      currentIndex++
-    }
-
-    set({ elementLayers: [...layoutImageLayers, ...normalLayers] })
+    set({ elementLayers: updatedLayers })
   },
   removeElementLayers: (elementIds) => {
     set({
