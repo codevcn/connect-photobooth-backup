@@ -23,6 +23,7 @@ type TTextElementProps = {
   selectElement: (elementId: string, elementType: 'text') => void
   removeTextElement: (textElementId: string) => void
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
+  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null
 }
 
 export const TextElement = ({
@@ -32,6 +33,7 @@ export const TextElement = ({
   selectElement,
   removeTextElement,
   printAreaContainerRef,
+  elementControlRef,
 }: TTextElementProps) => {
   const { id, mountType } = element
   const rootRef = useRef<HTMLElement | null>(null)
@@ -43,20 +45,27 @@ export const TextElement = ({
     forDrag: { ref: refForDrag, dragButtonRef },
     state: { position, angle, zindex, fontSize, textColor, content, fontFamily, fontWeight, scale },
     handleSetElementState,
-  } = useTextElementControl(id, rootRef, allowedPrintAreaRef, printAreaContainerRef, {
-    maxFontSize: MAX_TEXT_FONT_SIZE,
-    minFontSize: MIN_TEXT_FONT_SIZE,
-    position: element.position,
-    angle: element.angle,
-    fontSize: element.fontSize,
-    textColor: element.textColor,
-    content: element.content,
-    zindex: element.zindex,
-    fontFamily: element.fontFamily,
-    fontWeight: element.fontWeight,
-    scale: element.scale,
-    mountType,
-  })
+  } = useTextElementControl(
+    id,
+    rootRef,
+    allowedPrintAreaRef,
+    printAreaContainerRef,
+    elementControlRef,
+    {
+      maxFontSize: MAX_TEXT_FONT_SIZE,
+      minFontSize: MIN_TEXT_FONT_SIZE,
+      position: element.position,
+      angle: element.angle,
+      fontSize: element.fontSize,
+      textColor: element.textColor,
+      content: element.content,
+      zindex: element.zindex,
+      fontFamily: element.fontFamily,
+      fontWeight: element.fontWeight,
+      scale: element.scale,
+      mountType,
+    }
+  )
   const [interactiveBtns, setInteractiveBtns] = useState<TInteractiveButtonsState>({
     buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
     isShown: false,

@@ -1,7 +1,7 @@
 import { useRotateElement } from '@/hooks/element/use-rotate-element'
 import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { useDragElement } from '@/hooks/element/use-drag-element'
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useImperativeHandle } from 'react'
 import { createInitialConstants } from '@/utils/contants'
 import {
   TElementMountType,
@@ -76,6 +76,7 @@ export const useElementControl = (
     x: initialPosition?.x || createInitialConstants<number>('ELEMENT_X'),
     y: initialPosition?.y || createInitialConstants<number>('ELEMENT_Y'),
   })
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const edgesMargin: number = 10 // px
   const handleSetElementPosition = (posX: TPosition['x'], posY: TPosition['y']) => {
@@ -91,7 +92,8 @@ export const useElementControl = (
     if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height - edgesMargin)
       return
     setPosition({ x: posX, y: posY })
-    setTimeout(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
       const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
       const rootElement = elementRootRef.current
       if (!containerForElementAbsoluteTo || !rootElement) return
@@ -342,7 +344,7 @@ export const useElementControl = (
     const container = containerForElementAbsoluteToRef.current
     if (!container) return
     const containerObserver = new ResizeObserver((entries) => {
-      stayElementVisualOnAllowedPrintArea()
+      // stayElementVisualOnAllowedPrintArea()
     })
     containerObserver.observe(container)
     eventEmitter.on

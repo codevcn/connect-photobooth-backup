@@ -6,6 +6,7 @@ import { typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { createPortal } from 'react-dom'
+import { persistElementPositionToPrintArea } from '../helpers'
 
 const MAX_ZOOM: number = 4
 const MIN_ZOOM: number = 0.4
@@ -24,6 +25,7 @@ type TPrintedImageElementProps = {
   selectElement: (elementId: string, elementType: 'printed-image', path: string) => void
   removePrintedImageElement: (printedImageElementId: string) => void
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
+  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null
 }
 
 export const PrintedImageElement = ({
@@ -33,6 +35,7 @@ export const PrintedImageElement = ({
   selectElement,
   removePrintedImageElement,
   printAreaContainerRef,
+  elementControlRef,
 }: TPrintedImageElementProps) => {
   const { path, id, mountType, height, width, grayscale, isInitWithLayout } = element
   const rootRef = useRef<HTMLElement | null>(null)
@@ -223,6 +226,9 @@ export const PrintedImageElement = ({
           width,
           isInitWithLayout,
         })
+      )}
+      data-persist-position={JSON.stringify(
+        persistElementPositionToPrintArea(rootRef.current, allowedPrintAreaRef.current, scale)
       )}
       onDragStart={(e) => e.preventDefault()}
       onDrop={(e) => e.preventDefault()}

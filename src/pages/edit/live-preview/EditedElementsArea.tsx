@@ -8,11 +8,13 @@ import { PrintedImageElement } from '../elements/printed-image/PrintedImageEleme
 type TEditedElementsAreaProps = {
   allowedPrintAreaRef: React.RefObject<HTMLDivElement | null>
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
+  elementControlRef: React.RefObject<{ todo: (param: any) => void }>
 }
 
 export const EditedElementsArea = ({
   allowedPrintAreaRef,
   printAreaContainerRef,
+  elementControlRef,
 }: TEditedElementsAreaProps) => {
   const stickerElements = useEditedElementStore((s) => s.stickerElements)
   const textElements = useEditedElementStore((s) => s.textElements)
@@ -39,6 +41,7 @@ export const EditedElementsArea = ({
               useEditedElementStore.getState().removeStickerElement(elementId)
             }}
             printAreaContainerRef={printAreaContainerRef}
+            elementControlRef={elementControlRef}
           />
         ))}
 
@@ -56,6 +59,7 @@ export const EditedElementsArea = ({
               useEditedElementStore.getState().removeTextElement(elementId)
             }}
             printAreaContainerRef={printAreaContainerRef}
+            elementControlRef={elementControlRef}
           />
         ))}
 
@@ -73,6 +77,7 @@ export const EditedElementsArea = ({
               useEditedElementStore.getState().removePrintedImageElement(elementId)
             }}
             printAreaContainerRef={printAreaContainerRef}
+            elementControlRef={elementControlRef}
           />
         ))}
     </>

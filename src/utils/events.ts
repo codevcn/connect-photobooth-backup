@@ -12,6 +12,7 @@ export enum EInternalEvents {
   HIDE_SHOW_PRINTED_IMAGES_MODAL = 'HIDE_SHOW_PRINTED_IMAGES_MODAL',
   CROP_PRINTED_IMAGE_ON_FRAME = 'CROP_PRINTED_IMAGE_ON_FRAME',
   ADD_TO_CART = 'ADD_TO_CART',
+  BEFORE_PRINT_AREA_CHANGE = 'BEFORE_PRINT_AREA_CHANGE',
   EDITED_PRINT_AREA_CHANGED = 'EDITED_PRINT_AREA_CHANGED',
 }
 
@@ -57,6 +58,7 @@ interface IInternalEvents {
     frameIdToAddPrintedImage?: string
   ) => void
   [EInternalEvents.ADD_TO_CART]: () => void
+  [EInternalEvents.BEFORE_PRINT_AREA_CHANGE]: () => void
   [EInternalEvents.EDITED_PRINT_AREA_CHANGED]: () => void
 }
 

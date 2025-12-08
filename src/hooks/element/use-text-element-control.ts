@@ -51,6 +51,7 @@ export const useTextElementControl = (
   elementRootRef: React.RefObject<HTMLElement | null>,
   printAreaAllowedRef: React.RefObject<HTMLDivElement | null>,
   containerForElementAbsoluteToRef: React.RefObject<HTMLDivElement | null>,
+  elementControlRef: React.RefObject<{ todo: (param: any) => void }> | null,
   initialParams?: TInitialTextParams
 ): TTextElementControlReturn => {
   const {
