@@ -83,7 +83,7 @@ const PrintedImagePreviewModal = ({ printedImage, onClose }: PrintedImageProps) 
         index: createInitialConstants<number>('ELEMENT_ZINDEX'),
       },
     ])
-    // useEditedElementStore.getState().selectElement(elementId, 'printed-image', printedImg.url)
+    useEditedElementStore.getState().selectElement(elementId, 'printed-image', printedImg.url)
     onClose()
   }
 
