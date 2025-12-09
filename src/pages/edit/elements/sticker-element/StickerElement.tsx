@@ -141,11 +141,11 @@ export const StickerElement = ({
     display.onload = () => {
       const { naturalWidth, naturalHeight } = display
       if (naturalWidth > naturalHeight) {
-        root.style.width = `${DEFAULT_ELEMENT_DIMENSION_SIZE}px`
+        root.style.width = `${DEFAULT_ELEMENT_DIMENSION_SIZE()}px`
         root.style.aspectRatio = `${naturalWidth} / ${naturalHeight}`
         root.style.height = 'auto'
       } else {
-        root.style.height = `${DEFAULT_ELEMENT_DIMENSION_SIZE}px`
+        root.style.height = `${DEFAULT_ELEMENT_DIMENSION_SIZE()}px`
         root.style.aspectRatio = `${naturalWidth} / ${naturalHeight}`
         root.style.width = 'auto'
       }
@@ -212,7 +212,7 @@ export const StickerElement = ({
         transform: `scale(${scale}) rotate(${angle}deg)`,
         zIndex: zindex,
         ...(mountType === 'from-new'
-          ? { height: `${DEFAULT_ELEMENT_DIMENSION_SIZE}px` }
+          ? { height: `${DEFAULT_ELEMENT_DIMENSION_SIZE()}px` }
           : {
               height: `${height}px`,
               aspectRatio: `${width} / ${height}`,
