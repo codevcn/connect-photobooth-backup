@@ -152,12 +152,15 @@ export const PrintedImageElementMenuForDesktop = ({
   // Calculate popover position based on element position
   const calculatePopoverPosition = () => {
     const printAreaContainer = document.body.querySelector<HTMLElement>(
-      '.NAME-print-area-container'
+      '.NAME-print-area-container-wrapper'
     )
     if (!printAreaContainer) return
+    const menu = menuRef.current
+    if (!menu) return
+    const menuRect = menu.getBoundingClientRect()
     const printAreaContainerRect = printAreaContainer.getBoundingClientRect()
-    let top = printAreaContainerRect.top + 10
-    let left = printAreaContainerRect.left + 10
+    let top = (printAreaContainerRect.height - menuRect.height) / 2
+    let left = printAreaContainerRect.right - menuRect.width - 10
 
     // const element = pickedElementRootRef.current
     // if (!element || !popoverRef.current) return

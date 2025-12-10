@@ -42,12 +42,15 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
   // Calculate popover position based on element position
   const calculatePopoverPosition = () => {
     const printAreaContainer = document.body.querySelector<HTMLElement>(
-      '.NAME-print-area-container'
+      '.NAME-print-area-container-wrapper'
     )
     if (!printAreaContainer) return
+    const menu = menuRef.current
+    if (!menu) return
+    const menuRect = menu.getBoundingClientRect()
     const printAreaContainerRect = printAreaContainer.getBoundingClientRect()
-    let top = printAreaContainerRect.top + 10
-    let left = printAreaContainerRect.left + 10
+    let top = (printAreaContainerRect.height - menuRect.height) / 2
+    let left = printAreaContainerRect.right - menuRect.width - 10
 
     // const element = pickedElementRootRef.current
     // if (!element || !popoverRef.current) return
@@ -476,7 +479,7 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
             <div className="NAME-form-group NAME-form-color flex items-stretch flex-1 justify-center gap-1 rounded">
               <div
                 onClick={() => setShowColorPicker((pre) => !pre)}
-                className="flex items-center justify-center cursor-pointer h-9 w-full gap-1 mobile-touch rounded shadow px-1"
+                className="flex items-center justify-center border-2 border-gray-300 cursor-pointer h-9 w-full gap-1 mobile-touch rounded shadow px-1"
                 style={{
                   backgroundImage: `linear-gradient(to right, #fff, ${currentColor})`,
                 }}

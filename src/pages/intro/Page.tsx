@@ -26,7 +26,10 @@ const IntroPage = () => {
             disablePictureInPicture
             controlsList="nodownload"
           >
-            <source src="/videos/intro-video-newest.mp4" type="video/mp4" />
+            <source
+              src="https://photobooth-public.s3.ap-southeast-1.amazonaws.com/video/video-intro.mp4"
+              type="video/mp4"
+            />
           </video>
         </div>
       </div>

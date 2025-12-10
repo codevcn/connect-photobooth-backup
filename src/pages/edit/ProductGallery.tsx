@@ -189,6 +189,21 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   return (
     <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base text-sm w-full h-fit pb-1 flex flex-col bg-white border border-gray-200">
+      <button className="w-full py-2 px-1 border-b border-gray-300">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-move-left-icon lucide-move-left w-6 h-6"
+        >
+          <path d="M6 8L2 12L6 16" />
+          <path d="M2 12H22" />
+        </svg>
+      </button>
       <h2 className="5xl:text-[1.3em] text-[1em] py-2 w-full text-center font-bold text-gray-800 flex items-center justify-center gap-2">
         Gian hàng sản phẩm
       </h2>
