@@ -67,6 +67,7 @@ export const TextElement = ({
       mountType,
     }
   )
+  console.log('>>> text color:', { textColor })
   const [interactiveBtns, setInteractiveBtns] = useState<TInteractiveButtonsState>({
     buttonsContainerStyle: { top: 0, left: 0, width: 0, height: 0 },
     isShown: false,

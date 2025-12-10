@@ -178,7 +178,8 @@ export const ColorPickerModal = ({
               return (
                 <button
                   key={color.hex}
-                  onClick={() => handleColorSelect(color.hex)}
+                  // onClick={() => handleColorSelect(color.hex)}
+                  onPointerDown={() => handleColorSelect(color.hex)}
                   title={color.name}
                   className={`aspect-square rounded-lg transition-all hover:scale-110 active:scale-95 ${
                     isSelected

@@ -235,16 +235,16 @@ export const StickerElementMenuForDesktop = ({ elementId, onClose }: TStickerEle
   // Drag effect
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleDragMove)
-      window.addEventListener('mouseup', handleDragEnd)
+      window.addEventListener('pointermove', handleDragMove)
+      window.addEventListener('pointerup', handleDragEnd)
     } else {
-      window.removeEventListener('mousemove', handleDragMove)
-      window.removeEventListener('mouseup', handleDragEnd)
+      window.removeEventListener('pointermove', handleDragMove)
+      window.removeEventListener('pointerup', handleDragEnd)
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleDragMove)
-      window.removeEventListener('mouseup', handleDragEnd)
+      window.removeEventListener('pointermove', handleDragMove)
+      window.removeEventListener('pointerup', handleDragEnd)
     }
   }, [isDragging, dragOffset])
 
@@ -261,9 +261,9 @@ export const StickerElementMenuForDesktop = ({ elementId, onClose }: TStickerEle
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('pointerdown', handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('pointerdown', handleClickOutside)
     }
   }, [onClose])
 

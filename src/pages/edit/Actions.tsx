@@ -155,7 +155,7 @@ export const Actions = () => {
               title="Xem giỏ hàng"
             >
               {cartCount > 0 && (
-                <span className="5xl:text-[25px] h-5 w-5 5xl:h-5 5xl:w-5 text-main-cl bg-white rounded-full text-[20px] leading-none font-bold flex items-center justify-center">
+                <span className="5xl:text-[25px] h-5 w-5 5xl:h-6 5xl:w-6 text-main-cl bg-white rounded-full text-[20px] leading-none font-bold flex items-center justify-center">
                   {cartCount}
                 </span>
               )}

@@ -237,22 +237,6 @@ export const PrintedImageElementMenuForDesktop = ({
     }
   }, [elementId])
 
-  // Drag effect
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener('mousemove', handleDragMove)
-      window.addEventListener('mouseup', handleDragEnd)
-    } else {
-      window.removeEventListener('mousemove', handleDragMove)
-      window.removeEventListener('mouseup', handleDragEnd)
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', handleDragMove)
-      window.removeEventListener('mouseup', handleDragEnd)
-    }
-  }, [isDragging, dragOffset])
-
   const handleChangeProperties = (
     scale?: number,
     angle?: number,
@@ -330,16 +314,16 @@ export const PrintedImageElementMenuForDesktop = ({
   // Drag effect
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleDragMove)
-      window.addEventListener('mouseup', handleDragEnd)
+      window.addEventListener('pointermove', handleDragMove)
+      window.addEventListener('pointerup', handleDragEnd)
     } else {
-      window.removeEventListener('mousemove', handleDragMove)
-      window.removeEventListener('mouseup', handleDragEnd)
+      window.removeEventListener('pointermove', handleDragMove)
+      window.removeEventListener('pointerup', handleDragEnd)
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleDragMove)
-      window.removeEventListener('mouseup', handleDragEnd)
+      window.removeEventListener('pointermove', handleDragMove)
+      window.removeEventListener('pointerup', handleDragEnd)
     }
   }, [isDragging, dragOffset])
 
