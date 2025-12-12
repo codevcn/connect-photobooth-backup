@@ -15,7 +15,15 @@ import {
 export class LocalStorageHelper {
   private static mockupImageName = 'mockup-data'
 
-  private static generateMockupId(): string {
+  static setPtbid(ptbid: string) {
+    localStorage.setItem('ptbid', ptbid)
+  }
+
+  static getPtbid(): string | null {
+    return localStorage.getItem('ptbid')
+  }
+
+  static generateMockupId(): string {
     return generateUniqueId()
   }
 

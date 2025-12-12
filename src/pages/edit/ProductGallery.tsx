@@ -107,17 +107,12 @@ const Product = ({
       >
         {product.name}
       </div>
-      <div className="bg-gray-100 z-40 rounded-lg px-1 text-xs text-gray-600 absolute top-1 right-1 shadow-md">
-        {productIndex}
-        <span>/</span>
-        {productsCount}
-      </div>
       <div
         className={`${
           isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
         } w-full z-10 h-fit pt-2.5 px-2 text-center leading-tight rounded-b-lg absolute top-[90%] left-0 text-[10px] bg-gray-200`}
       >
-        Sai lệch 90% so với in thực tế
+        Màu in giống 90% so với thực tế
       </div>
       <div className="w-full h-full border border-gray-200 bg-white relative z-30">
         <img
@@ -309,6 +304,10 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     }
   }
 
+  const findProductIndex = () => {
+    return products.findIndex((p) => p.id === pickedProduct?.id) + 1
+  }
+
   useEffect(() => {
     initFirstProduct()
   }, [allLayouts.length, firstProduct?.length, firstProduct?.map((item) => item.id).join('-')])
@@ -319,6 +318,11 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   return (
     <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base text-sm w-full h-fit pb-1 flex flex-col bg-white border-r border-r-gray-200">
+      {/* <div className="bg-gray-100 z-40 rounded-lg px-1 text-xs text-gray-600 absolute top-1 right-1 shadow-md">
+        {findProductIndex()}
+        <span>/</span>
+        {products.length}
+      </div> */}
       <ConfirmExitModal
         show={showExitModal}
         onConfirm={handleConfirmExit}

@@ -297,20 +297,20 @@ export const calculateInitialImageElementPosition = (
   imageNaturalSize: TSizeInfo,
   scaleFactor: number
 ): TPosition => {
-  const allowedPrintArea = document.querySelector<HTMLElement>('.NAME-print-area-allowed')
-  if (!allowedPrintArea) return { x: 0, y: 0 }
-  const printAreaContainer = document.querySelector<HTMLElement>('.NAME-print-area-container')
+  const printAreaContainer = document.body.querySelector<HTMLElement>('.NAME-print-area-container')
   if (!printAreaContainer) return { x: 0, y: 0 }
+  const allowedPrintArea = printAreaContainer.querySelector<HTMLElement>('.NAME-print-area-allowed')
+  if (!allowedPrintArea) return { x: 0, y: 0 }
   const allowedPrintAreaRect = allowedPrintArea.getBoundingClientRect()
   const printAreaContainerRect = printAreaContainer.getBoundingClientRect()
   const imgRatio = imageNaturalSize.width / imageNaturalSize.height
   let imgHeight: number
   let imgWidth: number
-  if (imageNaturalSize.width > allowedPrintAreaRect.width) {
-    imgWidth = DEFAULT_ELEMENT_DIMENSION_SIZE()
+  if (imgRatio > allowedPrintAreaRect.width / allowedPrintAreaRect.height) {
+    imgWidth = allowedPrintAreaRect.width
     imgHeight = imgWidth / imgRatio
   } else {
-    imgHeight = DEFAULT_ELEMENT_DIMENSION_SIZE()
+    imgHeight = allowedPrintAreaRect.height
     imgWidth = imgHeight * imgRatio
   }
   return {

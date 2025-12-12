@@ -1,3 +1,4 @@
+import { LocalStorageHelper } from '@/utils/localstorage'
 import { TCreateOrderReq, TOrderResponse, TOrderStatusRes, TOrderStatus } from '@/utils/types/api'
 import {
   TPaymentProductItem,
@@ -20,6 +21,10 @@ export class OrderAdapter {
     storeCode: string,
     voucherCode?: string
   ): TCreateOrderReq {
+    const ptbid = LocalStorageHelper.getPtbid()
+    if (!ptbid) {
+      throw new Error('Thiếu dữ liệu để thực hiện thanh toán')
+    }
     console.log('>>> [cat] cart items:', cartItems)
     // Validate cart items
     const items: TCreateOrderReq['items'] = []
@@ -49,7 +54,7 @@ export class OrderAdapter {
       }
     }
     return {
-      device_id: 'ptm01',
+      device_id: ptbid,
       customer: {
         name: shippingInfo.name,
         email: shippingInfo.email,

@@ -9,6 +9,7 @@ import { apiClient } from '@/services/api/api-client'
 import { TBaseProduct, TPrintedImage, TUserInputImage } from '@/utils/types/global'
 import { generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
+import { LocalStorageHelper } from '@/utils/localstorage'
 
 const LayoutFUN = () => {
   const [error, setError] = useState<string | null>(null)
@@ -27,6 +28,7 @@ const LayoutFUN = () => {
       },
     })
     const json = await data.json()
+    LocalStorageHelper.setPtbid(json.ptbid)
     console.log('>>> json:', json)
 
     return await new Promise<TPrintedImage[]>((resolve, reject) => {

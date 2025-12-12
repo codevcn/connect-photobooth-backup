@@ -120,9 +120,7 @@ export const PaymentMethodSelector = ({
                 </div>
                 <div>
                   <p className="5xl:text-[0.6em] text-sm text-gray-600 font-medium">Đang chọn</p>
-                  <p className="5xl:text-[0.7em] font-bold text-gray-900">
-                    Thanh toán khi nhận hàng
-                  </p>
+                  <p className="5xl:text-[0.7em] font-bold text-gray-900">Thanh toán ngân hàng</p>
                 </div>
               </div>
               <div className="bg-green-500 rounded-full p-1">
@@ -143,7 +141,7 @@ export const PaymentMethodSelector = ({
           </div>
         ) : (
           <button
-            onClick={() => onSelectMethod('cod')}
+            onClick={() => onSelectMethod('momo')}
             className="w-full h-[55px] bg-white text-gray-900 flex items-center justify-center gap-2 rounded-xl border-2 border-gray-300 shadow-sm transition hover:border-main-cl active:scale-95"
           >
             <svg
@@ -162,7 +160,7 @@ export const PaymentMethodSelector = ({
               <circle cx="12" cy="12" r="2" />
               <path d="M6 12h.01M18 12h.01" />
             </svg>
-            <span className="5xl:text-[0.7em] font-medium">Thanh toán khi nhận hàng</span>
+            <span className="5xl:text-[0.7em] font-medium">Thanh toán ngân hàng</span>
           </button>
         )}
       </div>
