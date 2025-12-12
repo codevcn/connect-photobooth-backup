@@ -159,7 +159,7 @@ export const ColorPickerModal = ({
             style={{
               backgroundColor: getContrastColor(currentColor),
             }}
-            className="w-full bg-gray-50 rounded-xl border-2 border-gray-300 p-4 text-center"
+            className="w-full bg-gray-50 rounded-xl border-2 border-gray-300 p-2 text-center"
           >
             <p className="5xl:text-4xl text-3xl font-bold" style={{ color: currentColor }}>
               {inputText}
@@ -181,7 +181,7 @@ export const ColorPickerModal = ({
                   // onClick={() => handleColorSelect(color.hex)}
                   onPointerDown={() => handleColorSelect(color.hex)}
                   title={color.name}
-                  className={`aspect-square rounded-lg transition-all hover:scale-110 active:scale-95 ${
+                  className={`shadow-[0_0_3px_gray] aspect-square rounded-lg transition-all hover:scale-110 active:scale-95 ${
                     isSelected
                       ? 'ring-4 ring-main-cl ring-offset-2 scale-110'
                       : 'hover:ring-2 hover:ring-gray-400'

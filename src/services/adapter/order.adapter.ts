@@ -25,7 +25,6 @@ export class OrderAdapter {
     if (!ptbid) {
       throw new Error('Thiếu dữ liệu để thực hiện thanh toán')
     }
-    console.log('>>> [cat] cart items:', cartItems)
     // Validate cart items
     const items: TCreateOrderReq['items'] = []
     for (const item of cartItems) {
@@ -132,8 +131,8 @@ export class OrderAdapter {
 
     if (lowerDesc.includes('momo')) {
       return { method: 'momo', title: 'MoMo' }
-    } else if (lowerDesc.includes('zalo')) {
-      return { method: 'zalo', title: 'ZaloPay' }
+    } else if (lowerDesc.includes('zalopay')) {
+      return { method: 'zalopay', title: 'ZaloPay' }
     } else {
       return { method: 'cod', title: 'Thanh toán khi nhận hàng' }
     }

@@ -172,7 +172,7 @@ export type TDetectCollisionWithViewportEdgesResult = {
   collidedEdge: 'left' | 'right' | 'top' | 'bottom' | null
 }
 
-export type TPaymentType = 'momo' | 'zalo' | 'cod' | 'bank-transfer'
+export type TPaymentType = 'momo' | 'zalopay' | 'cod' | 'bank-transfer'
 
 export type TBrands = 'photoism'
 
@@ -359,6 +359,12 @@ export type TEndOfPaymentData = {
     discount: number
     total: number
     voucherCode?: string
+  }
+  bankTransferInfo?: {
+    bankName: string
+    accountNumber: string
+    accountName: string
+    transferContent: string
   }
 }
 

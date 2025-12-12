@@ -15,6 +15,7 @@ type TInitialContentsType =
   | 'PAYMENT_ZALO_COLOR'
   | 'PAYMENT_MOMO_COLOR'
   | 'PAYMENT_COD_COLOR'
+  | 'PAYMENT_BANK_TRANSFER_COLOR'
   | 'PLACED_IMG_FRAME_INDEX'
   | 'PLACED_IMG_OBJECT_FIT'
   | 'PLACED_IMG_ZOOM'
@@ -66,6 +67,8 @@ export const createInitialConstants = <R>(type: TInitialContentsType): R => {
       return '#A50064' as R
     case 'PAYMENT_COD_COLOR':
       return '#008000' as R
+    case 'PAYMENT_BANK_TRANSFER_COLOR':
+      return '#16a34a' as R
     case 'PLACED_IMG_FRAME_INDEX':
       return 1 as R
     case 'PLACED_IMG_OBJECT_FIT':

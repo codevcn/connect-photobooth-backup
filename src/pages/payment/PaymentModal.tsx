@@ -117,7 +117,11 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
       }
 
       // Step 2: Handle payment based on method
-      if (paymentMethod === 'momo' || paymentMethod === 'zalo') {
+      if (
+        paymentMethod === 'momo' ||
+        paymentMethod === 'zalopay' ||
+        paymentMethod === 'bank-transfer'
+      ) {
         // Use payment instructions from order response
         if (payment_instructions && payment_instructions.length > 0) {
           const paymentInstruction = payment_instructions[0]
@@ -127,7 +131,10 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
             QRCode: paymentInstruction.qr_code,
             paymentMethod: {
               method: paymentMethod,
-              title: capitalizeFirstLetter(paymentMethod),
+              title:
+                paymentMethod === 'bank-transfer'
+                  ? 'Chuyển khoản ngân hàng'
+                  : capitalizeFirstLetter(paymentMethod),
             },
             orderHashCode: order.hash_code,
             paymentDetails,
@@ -177,7 +184,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
         onClick={() => handleHideShowModal(false)}
         className="bg-black/50 absolute inset-0 z-10"
       ></div>
-      <div className="flex flex-col pt-12 bg-white rounded-2xl z-20 overflow-hidden relative shadow-2xl w-fit max-w-[98vw] max-h-[95vh] animate-in slide-in-from-bottom duration-200">
+      <div className="flex flex-col pt-8 bg-white rounded-2xl z-20 overflow-hidden relative shadow-2xl w-fit max-w-[98vw] max-h-[95vh] animate-in slide-in-from-bottom duration-200">
         {confirming && (
           <div className="absolute flex justify-center items-center w-full h-full top-0 text-white left-0 bg-black/50 z-30">
             <SectionLoading
@@ -221,7 +228,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
           style={{
             display: endOfPayment ? 'none' : 'block',
           }}
-          className="md:px-6 px-4 pb-4 space-y-4 relative z-10 overflow-y-auto grow gallery-scroll"
+          className="md:px-6 px-4 pb-4 space-y-4 pt-4 relative z-10 overflow-y-auto grow gallery-scroll"
         >
           {/* Shipping Information */}
           <ShippingInfoForm ref={formRef} errors={errors} />
@@ -253,7 +260,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
             </button>
             <button
               onClick={() => onHideShow(false)}
-              className="5xl:text-[0.9em] md:text-lg text-base w-full h-[45px] rounded-md bg-gray-200 text-gray-800 font-bold active:scale-90 transition"
+              className="5xl:text-[0.9em] md:text-lg text-base w-full h-10 rounded-md bg-gray-200 text-gray-800 font-bold active:scale-90 transition"
             >
               Hủy
             </button>

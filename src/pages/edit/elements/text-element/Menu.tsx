@@ -421,7 +421,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
         <div className="NAME-form-group NAME-form-color 5xl:h-14 flex items-stretch justify-center gap-1 rounded">
           <div
             onClick={() => setShowColorPicker((pre) => !pre)}
-            className="flex items-center justify-center cursor-pointer 5xl:h-12 h-8 smd:h-9 w-full gap-1 mobile-touch rounded shadow px-1"
+            className="flex items-center justify-center cursor-pointer shadow-[0_0_4px_gray] 5xl:h-12 h-8 smd:h-9 w-full gap-1 mobile-touch rounded px-1"
             style={{
               backgroundImage: `linear-gradient(to right, #fff, ${currentColor})`,
             }}
@@ -435,7 +435,7 @@ export const TextElementMenu = ({ elementId, onClose }: TPrintedImageMenuProps) 
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-palette-icon lucide-palette text-white 5xl:w-8 5xl:h-8"
+                className="lucide lucide-palette-icon lucide-palette text-white w-4 h-4 5xl:w-8 5xl:h-8"
               >
                 <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
                 <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />

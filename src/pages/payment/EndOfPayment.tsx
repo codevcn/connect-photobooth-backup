@@ -7,12 +7,13 @@ import { paymentService } from '@/services/payment.service'
 import { TOrderStatusRes } from '@/utils/types/api'
 import { toast } from 'react-toastify'
 
-interface TQRCanvasProps {
+type TQRCanvasProps = {
   value: string
   size?: number
+  onCanvasReady?: (canvas: HTMLCanvasElement) => void
 }
 
-const QRCanvas = ({ value, size = 200 }: TQRCanvasProps) => {
+const QRCanvas = ({ value, size = 200, onCanvasReady }: TQRCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -20,8 +21,11 @@ const QRCanvas = ({ value, size = 200 }: TQRCanvasProps) => {
 
     QRCode.toCanvas(canvasRef.current, value, { width: size }, (error) => {
       if (error) console.error(error)
+      else if (canvasRef.current && onCanvasReady) {
+        onCanvasReady(canvasRef.current)
+      }
     })
-  }, [value, size])
+  }, [value, size, onCanvasReady])
 
   return <canvas ref={canvasRef} width={size} height={size} />
 }
@@ -30,8 +34,10 @@ const getColorByPaymentMethod = (method: TPaymentType): string => {
   switch (method) {
     case 'momo':
       return createInitialConstants<string>('PAYMENT_MOMO_COLOR')
-    case 'zalo':
+    case 'zalopay':
       return createInitialConstants<string>('PAYMENT_ZALO_COLOR')
+    case 'bank-transfer':
+      return createInitialConstants<string>('PAYMENT_BANK_TRANSFER_COLOR')
     default:
       return createInitialConstants<string>('PAYMENT_COD_COLOR')
   }
@@ -47,7 +53,14 @@ interface EndOfPaymentProps {
 }
 
 export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
-  const { countdownInSeconds, QRCode, paymentMethod, orderHashCode, paymentDetails } = data
+  const {
+    countdownInSeconds,
+    QRCode,
+    paymentMethod,
+    orderHashCode,
+    paymentDetails,
+    bankTransferInfo,
+  } = data
   const { method, title } = paymentMethod
   const { subtotal, shipping, discount, total, voucherCode } = paymentDetails
   const colorByPaymentMethod = getColorByPaymentMethod(method)
@@ -55,6 +68,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
   const [paymentStatus, setPaymentStatus] = useState<TPaymentStatus>({ status: 'pending' })
   const { status, reason } = paymentStatus
   const [transactionCode, setTransactionCode] = useState<string>('')
+  const [qrCanvas, setQrCanvas] = useState<HTMLCanvasElement | null>(null)
 
   const countdownHandler = () => {
     if (!containerRef.current) return
@@ -102,13 +116,45 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
     // Optionally show error to user or retry
   }
 
+  const downloadQRCode = () => {
+    if (!qrCanvas) {
+      toast.error('QR code chưa sẵn sàng để tải xuống')
+      return
+    }
+
+    try {
+      qrCanvas.toBlob((blob) => {
+        if (!blob) {
+          toast.error('Không thể tạo file ảnh QR code')
+          return
+        }
+
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `payment-qr-${orderHashCode || 'code'}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+        toast.success('Đã tải QR code thành công!')
+      })
+    } catch (error) {
+      console.error('Error downloading QR code:', error)
+      toast.error('Có lỗi xảy ra khi tải QR code')
+    }
+  }
+
   useEffect(() => {
     return countdownHandler()
   }, [countdownInSeconds])
 
   // Start payment status polling for online payment methods
   useEffect(() => {
-    if ((method === 'momo' || method === 'zalo') && orderHashCode) {
+    if (
+      (method === 'momo' || method === 'zalopay' || method === 'bank-transfer') &&
+      orderHashCode
+    ) {
       const stopPolling = paymentService.startPaymentStatusPolling(
         orderHashCode,
         handlePaymentStatusUpdate,
@@ -123,16 +169,19 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
   }, [method, orderHashCode])
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center justify-center px-2 py-4">
-      <div className="relative bg-white rounded-2xl shadow flex flex-col items-center w-full p-4 md:p-6 border-2 border-gray-200 max-w-4xl">
-        {method === 'momo' || method === 'zalo' ? (
+    <div
+      ref={containerRef}
+      className="flex flex-col items-center px-2 py-2 overflow-y-auto gallery-scroll max-h-[calc(95vh-80px)]"
+    >
+      <div className="relative bg-white rounded-xl shadow flex flex-col items-center w-full p-3 border border-gray-200 max-w-4xl">
+        {method === 'momo' || method === 'zalopay' || method === 'bank-transfer' ? (
           status === 'completed' ? (
-            <div className="flex flex-col items-center pt-4 pb-2 px-4 w-full">
-              <div className="flex justify-center items-center h-[100px] w-[100px] rounded-full bg-green-600">
+            <div className="flex flex-col items-center py-3 px-3 w-full">
+              <div className="flex justify-center items-center h-20 w-20 rounded-full bg-green-600">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="50"
-                  height="50"
+                  width="40"
+                  height="40"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -144,7 +193,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
               </div>
-              <div className="text-gray-800 mt-4 w-full text-center">
+              <div className="text-gray-800 mt-3 w-full text-center">
                 <p>
                   <span>Đã hoàn tất thanh toán với </span>
                   <span className="font-bold" style={{ color: colorByPaymentMethod }}>
@@ -165,12 +214,12 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
               </div>
             </div>
           ) : status === 'failed' ? (
-            <div className="flex flex-col items-center pt-4 pb-2 px-4 w-full">
-              <div className="flex justify-center items-center h-[100px] w-[100px] rounded-full bg-red-600">
+            <div className="flex flex-col items-center py-3 px-3 w-full">
+              <div className="flex justify-center items-center h-20 w-20 rounded-full bg-red-600">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="50"
-                  height="50"
+                  width="40"
+                  height="40"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -183,7 +232,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
                   <path d="m6 6 12 12" />
                 </svg>
               </div>
-              <div className="text-red-600 mt-4 w-full text-center">
+              <div className="text-red-600 mt-3 w-full text-center">
                 <p>
                   <span>Thanh toán không thành công với </span>
                   <span className="font-bold" style={{ color: colorByPaymentMethod }}>
@@ -198,11 +247,12 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
               </div>
             </div>
           ) : (
+            // Momo/Zalo/Bank Transfer UI
             <div className="w-full">
               {/* Header */}
-              <div className="mb-4 pb-3 border-b border-gray-200">
-                <h3 className="text-xl font-bold text-gray-800">Thông tin thanh toán</h3>
-                <p className="text-sm text-gray-500 mt-1">
+              <div className="mb-3 pb-2 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-800">Thông tin thanh toán</h3>
+                <p className="text-sm text-gray-500 mt-0.5">
                   <span>Quét mã QR để thanh toán với </span>
                   <span className="font-bold" style={{ color: colorByPaymentMethod }}>
                     {title}
@@ -211,38 +261,62 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
               </div>
 
               {/* Main Content: QR + Payment Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Left Column: QR Code */}
                 <div className="flex flex-col items-center justify-center">
-                  <div
-                    className="p-6 rounded-xl shadow-lg"
-                    style={{ backgroundColor: colorByPaymentMethod }}
-                  >
-                    <QRCanvas value={QRCode} size={200} />
+                  <div className="relative">
+                    <div
+                      className="p-3 rounded-lg shadow-lg"
+                      style={{ backgroundColor: colorByPaymentMethod }}
+                    >
+                      <QRCanvas value={QRCode} size={140} onCanvasReady={setQrCanvas} />
+                    </div>
+                    <button
+                      onClick={downloadQRCode}
+                      className="top-1/2 -translate-y-1/2 left-[calc(100%+8px)] absolute p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors active:scale-95"
+                      title="Tải QR Code"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-download w-6 h-6"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" x2="12" y1="15" y2="3" />
+                      </svg>
+                    </button>
                   </div>
-                  <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-600 mb-1">Mã QR hết hạn sau</p>
-                    <p className="text-2xl font-bold text-red-600 NAME-countdown">
-                      {formatTime(countdownInSeconds)}
-                    </p>
+                  <div className="mt-3 text-center">
+                    <p className="text-xs text-gray-600 mb-0.5">Mã QR hết hạn sau</p>
+                    <div className="flex items-center justify-center gap-2">
+                      <p className="text-xl font-bold text-red-600 NAME-countdown">
+                        {formatTime(countdownInSeconds)}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 {/* Right Column: Payment Details */}
-                <div className="flex flex-col justify-center space-y-3">
-                  <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                <div className="flex flex-col justify-center">
+                  <div className="bg-gray-50 rounded-lg p-3 space-y-2">
                     {/* Subtotal */}
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Tạm tính</span>
-                      <span className="font-semibold text-gray-800">
+                      <span className="text-sm text-gray-600">Tạm tính</span>
+                      <span className="text-sm font-semibold text-gray-800">
                         {formatNumberWithCommas(subtotal)} VND
                       </span>
                     </div>
 
                     {/* Shipping */}
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Phí vận chuyển</span>
-                      <span className="font-semibold text-gray-800">
+                      <span className="text-sm text-gray-600">Phí vận chuyển</span>
+                      <span className="text-sm font-semibold text-gray-800">
                         {shipping > 0 ? `${formatNumberWithCommas(shipping)} VND` : 'Miễn phí'}
                       </span>
                     </div>
@@ -250,20 +324,20 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
                     {/* Discount */}
                     {discount > 0 && (
                       <div className="flex justify-between items-center">
-                        <span className="text-green-600">
+                        <span className="text-sm text-green-600">
                           Giảm giá {voucherCode && `(${voucherCode})`}
                         </span>
-                        <span className="font-semibold text-green-600">
+                        <span className="text-sm font-semibold text-green-600">
                           -{formatNumberWithCommas(discount)} VND
                         </span>
                       </div>
                     )}
 
-                    <div className="border-t border-gray-300 pt-3 mt-3">
+                    <div className="border-t border-gray-300 pt-2 mt-2">
                       {/* Total */}
-                      <div className="flex justify-between items-center gap-6">
-                        <span className="text-lg font-bold text-gray-800">Tổng cộng</span>
-                        <span className="text-2xl font-bold text-red-600">
+                      <div className="flex justify-between items-center gap-4">
+                        <span className="text-base font-bold text-gray-800">Tổng cộng</span>
+                        <span className="text-xl font-bold text-red-600">
                           {formatNumberWithCommas(total)} VND
                         </span>
                       </div>
@@ -272,9 +346,9 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
 
                   {/* Order Code */}
                   {orderHashCode && (
-                    <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
-                      <p className="text-sm text-gray-600 mb-1">Mã đơn hàng</p>
-                      <p className="font-mono font-bold text-pink-600">{orderHashCode}</p>
+                    <div className="bg-pink-50 border border-pink-200 rounded-lg p-2">
+                      <p className="text-xs text-gray-600 mb-0.5">Mã đơn hàng</p>
+                      <p className="font-mono text-sm font-bold text-pink-600">{orderHashCode}</p>
                     </div>
                   )}
                 </div>
@@ -284,19 +358,19 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
         ) : (
           <div className="w-full">
             {/* Header */}
-            <div className="mb-4 pb-3 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-800">Đặt hàng thành công!</h3>
-              <p className="text-sm text-gray-500 mt-1">Thanh toán khi nhận hàng (COD)</p>
+            <div className="mb-3 pb-2 border-b border-gray-200">
+              <h3 className="text-lg font-bold text-gray-800">Đặt hàng thành công!</h3>
+              <p className="text-sm text-gray-500 mt-0.5">Thanh toán khi nhận hàng (COD)</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Left: Icon */}
               <div className="flex flex-col items-center justify-center">
-                <div className="flex justify-center items-center h-[120px] w-[120px] rounded-full bg-green-50 border-4 border-green-200">
+                <div className="flex justify-center items-center h-[100px] w-[100px] rounded-full bg-green-50 border-4 border-green-200">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="60"
-                    height="60"
+                    width="50"
+                    height="50"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -314,29 +388,29 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
                     <circle cx="7" cy="19" r="2" />
                   </svg>
                 </div>
-                <div className="text-center text-gray-800 text-base font-medium mt-4">
-                  <p className="font-bold text-lg">Cảm ơn bạn đã đặt hàng!</p>
-                  <p className="text-sm text-gray-600 mt-2">
+                <div className="text-center text-gray-800 text-sm font-medium mt-3">
+                  <p className="font-bold text-base">Cảm ơn bạn đã đặt hàng!</p>
+                  <p className="text-sm text-gray-600 mt-1">
                     Đơn hàng đang được xử lý và sẽ được giao sớm nhất
                   </p>
                 </div>
               </div>
 
               {/* Right: Payment Details */}
-              <div className="flex flex-col justify-center space-y-3">
-                <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div className="flex flex-col justify-center">
+                <div className="bg-gray-50 rounded-lg p-3 space-y-2">
                   {/* Subtotal */}
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 font-medium">Tạm tính</span>
-                    <span className="font-semibold text-gray-800">
+                    <span className="text-sm text-gray-600 font-medium">Tạm tính</span>
+                    <span className="text-sm font-semibold text-gray-800">
                       <span>{formatNumberWithCommas(subtotal)}</span> VND
                     </span>
                   </div>
 
                   {/* Shipping */}
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Phí vận chuyển</span>
-                    <span className="font-semibold text-gray-800">
+                    <span className="text-sm text-gray-600">Phí vận chuyển</span>
+                    <span className="text-sm font-semibold text-gray-800">
                       {shipping > 0 ? `${formatNumberWithCommas(shipping)} VND` : 'Miễn phí'}
                     </span>
                   </div>
@@ -344,20 +418,20 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
                   {/* Discount */}
                   {discount > 0 && (
                     <div className="flex justify-between items-center">
-                      <span className="text-green-600">
+                      <span className="text-sm text-green-600">
                         Giảm giá {voucherCode && `(${voucherCode})`}
                       </span>
-                      <span className="font-semibold text-green-600">
+                      <span className="text-sm font-semibold text-green-600">
                         -{formatNumberWithCommas(discount)} VND
                       </span>
                     </div>
                   )}
 
-                  <div className="border-t border-gray-300 pt-3 mt-3">
+                  <div className="border-t border-gray-300 pt-2 mt-2">
                     {/* Total */}
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-gray-800">Tổng thanh toán</span>
-                      <span className="text-2xl font-bold text-red-600">
+                      <span className="text-base font-bold text-gray-800">Tổng thanh toán</span>
+                      <span className="text-xl font-bold text-red-600">
                         {formatNumberWithCommas(total)} VND
                       </span>
                     </div>
@@ -366,16 +440,16 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
 
                 {/* Order Code */}
                 {orderHashCode && (
-                  <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
-                    <p className="text-sm text-gray-600 mb-1">Mã đơn hàng</p>
-                    <p className="font-mono font-bold text-pink-600">{orderHashCode}</p>
+                  <div className="bg-pink-50 border border-pink-200 rounded-lg p-2">
+                    <p className="text-xs text-gray-600 mb-0.5">Mã đơn hàng</p>
+                    <p className="font-mono text-sm font-bold text-pink-600">{orderHashCode}</p>
                   </div>
                 )}
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-sm text-blue-800">
-                    💡 Vui lòng chuẩn bị số tiền{' '}
-                    <span className="font-bold">{formatNumberWithCommas(total)} VND</span> khi nhận
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                  <p className="text-xs text-blue-800">
+                    Vui lòng chuẩn bị số tiền
+                    <span className="font-bold"> {formatNumberWithCommas(total)} VND</span> khi nhận
                     hàng
                   </p>
                 </div>
@@ -388,12 +462,12 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
       {(method === 'cod' || status === 'completed' || status === 'failed') && (
         <button
           onClick={backToEditPage}
-          className="flex items-center gap-2 mt-4 text-main-cl font-bold active:underline"
+          className="flex items-center gap-1.5 mt-3 text-sm text-main-cl font-bold active:underline"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
