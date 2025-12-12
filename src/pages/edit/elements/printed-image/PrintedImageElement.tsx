@@ -56,8 +56,9 @@ export const PrintedImageElement = ({
     zindex: element.zindex,
     mountType,
   })
+  const interactionsRef = useRef<HTMLElement>(null)
 
-  const updateInteractiveButtonsVisual = (): React.CSSProperties => {
+  const updateInteractiveButtonsVisualDirectly = (): React.CSSProperties => {
     const root = rootRef.current
     if (!root) return {}
     const rootRect = root.getBoundingClientRect()
@@ -71,7 +72,21 @@ export const PrintedImageElement = ({
       width: widthAfterScale,
       height: heightAfterScale,
     }
-    // requestAnimationFrame(updateInteractiveButtonsVisual)
+  }
+
+  const updateInteractiveButtonsVisual = () => {
+    const root = rootRef.current
+    if (!root) return
+    const rootRect = root.getBoundingClientRect()
+    const { left, top, height, width } = rootRect
+    const widthAfterScale = root.offsetWidth * scale * scaleFactor
+    const heightAfterScale = root.offsetHeight * scale * scaleFactor
+    const interactions = interactionsRef.current
+    if (!interactions) return
+    interactions.style.top = `${top + height / 2 - heightAfterScale / 2}px`
+    interactions.style.left = `${left + width / 2 - widthAfterScale / 2}px`
+    interactions.style.width = `${widthAfterScale}px`
+    interactions.style.height = `${heightAfterScale}px`
   }
 
   const pickElement = () => {
@@ -108,10 +123,12 @@ export const PrintedImageElement = ({
 
   useEffect(() => {
     window.addEventListener('resize', updateInteractiveButtonsVisual)
+    window.addEventListener('scroll', updateInteractiveButtonsVisual)
     return () => {
       window.removeEventListener('resize', updateInteractiveButtonsVisual)
+      window.removeEventListener('scroll', updateInteractiveButtonsVisual)
     }
-  }, [isSelected])
+  }, [isSelected, id, scaleFactor, scale])
 
   useEffect(() => {
     eventEmitter.on(EInternalEvents.SUBMIT_PRINTED_IMAGE_ELE_PROPS, listenSubmitEleProps)
@@ -185,11 +202,12 @@ export const PrintedImageElement = ({
         <div
           className="NAME-element-interactive-buttons hidden fixed z-99 bg-transparent shadow-[0_0_0_2px_#f54900] touch-none"
           style={{
-            ...updateInteractiveButtonsVisual(),
+            ...updateInteractiveButtonsVisualDirectly(),
             transform: `rotate(${angle}deg)`,
           }}
           ref={(node) => {
             dragButtonRef.current = node
+            interactionsRef.current = node
           }}
         >
           <div

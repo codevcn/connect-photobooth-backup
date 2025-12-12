@@ -81,45 +81,45 @@ export const useElementControl = (
 
   const edgesMargin: number = 10 // px
   const handleSetElementPosition = (posX: TPosition['x'], posY: TPosition['y']) => {
-    const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
-    const rootElement = elementRootRef.current
-    if (!containerForElementAbsoluteTo || !rootElement) return
+    // const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
+    // const rootElement = elementRootRef.current
+    // if (!containerForElementAbsoluteTo || !rootElement) return
 
-    if (posX < 0) return
-    if (posY < 0) return
-    const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
-    const rootElementRect = rootElement.getBoundingClientRect()
-    if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width - edgesMargin) return
-    if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height - edgesMargin)
-      return
+    // if (posX < 0) return
+    // if (posY < 0) return
+    // const containerForElementAbsoluteToRect = containerForElementAbsoluteTo.getBoundingClientRect()
+    // const rootElementRect = rootElement.getBoundingClientRect()
+    // if (posX > containerForElementAbsoluteToRect.width - rootElementRect.width - edgesMargin) return
+    // if (posY > containerForElementAbsoluteToRect.height - rootElementRect.height - edgesMargin)
+    //   return
     setPosition({ x: posX, y: posY })
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
-      const rootElement = elementRootRef.current
-      if (!containerForElementAbsoluteTo || !rootElement) return
-      const containerForElementAbsoluteToRect =
-        containerForElementAbsoluteTo.getBoundingClientRect()
-      const rootElementRect = rootElement.getBoundingClientRect()
-      if (
-        rootElementRect.left + rootElementRect.width >
-        containerForElementAbsoluteToRect.left + containerForElementAbsoluteToRect.width
-      ) {
-        setPosition((prev) => ({
-          ...prev,
-          x: containerForElementAbsoluteToRect.width - rootElementRect.width - edgesMargin,
-        }))
-      }
-      if (
-        rootElementRect.top + rootElementRect.height >
-        containerForElementAbsoluteToRect.top + containerForElementAbsoluteToRect.height
-      ) {
-        setPosition((prev) => ({
-          ...prev,
-          y: containerForElementAbsoluteToRect.height - rootElementRect.height - edgesMargin,
-        }))
-      }
-    }, 700)
+    // if (timerRef.current) clearTimeout(timerRef.current)
+    // timerRef.current = setTimeout(() => {
+    //   const containerForElementAbsoluteTo = containerForElementAbsoluteToRef.current
+    //   const rootElement = elementRootRef.current
+    //   if (!containerForElementAbsoluteTo || !rootElement) return
+    //   const containerForElementAbsoluteToRect =
+    //     containerForElementAbsoluteTo.getBoundingClientRect()
+    //   const rootElementRect = rootElement.getBoundingClientRect()
+    //   if (
+    //     rootElementRect.left + rootElementRect.width >
+    //     containerForElementAbsoluteToRect.left + containerForElementAbsoluteToRect.width
+    //   ) {
+    //     setPosition((prev) => ({
+    //       ...prev,
+    //       x: containerForElementAbsoluteToRect.width - rootElementRect.width - edgesMargin,
+    //     }))
+    //   }
+    //   if (
+    //     rootElementRect.top + rootElementRect.height >
+    //     containerForElementAbsoluteToRect.top + containerForElementAbsoluteToRect.height
+    //   ) {
+    //     setPosition((prev) => ({
+    //       ...prev,
+    //       y: containerForElementAbsoluteToRect.height - rootElementRect.height - edgesMargin,
+    //     }))
+    //   }
+    // }, 700)
   }
 
   const handleSetSinglePosition = (posX?: TPosition['x'], posY?: TPosition['y']) => {
