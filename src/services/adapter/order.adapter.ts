@@ -1,3 +1,4 @@
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { TCreateOrderReq, TOrderResponse, TOrderStatusRes, TOrderStatus } from '@/utils/types/api'
 import {
@@ -26,32 +27,78 @@ export class OrderAdapter {
       throw new Error('Thiếu dữ liệu để thực hiện thanh toán')
     }
     // Validate cart items
+    // const items: TCreateOrderReq['items'] = []
+    // for (const item of cartItems) {
+    //   for (const variant of item.productVariants) {
+    //     const mockups: TCreateOrderReq['items'][number]['surfaces'] = []
+    //     for (const mockup of variant.mockupDataList) {
+    //       const preSentImageSize = mockup.imageData.size
+    //       for (let i = 0; i < mockup.quantity; i++) {
+    //         if (!mockup.preSentImageLink) {
+    //           throw new Error('Thiếu đường dẫn hình ảnh đã gửi trước cho dữ liệu mockup')
+    //         }
+    //         mockups.push({
+    //           surface_id: mockup.surfaceInfo.id,
+    //           editor_state_json: mockup.elementsVisualState,
+    //           file_url: mockup.preSentImageLink,
+    //           width_px: preSentImageSize.width,
+    //           height_px: preSentImageSize.height,
+    //         })
+    //       }
+    //     }
+    //     items.push({
+    //       variant_id: variant.variantId,
+    //       quantity: 1,
+    //       surfaces: mockups,
+    //     })
+    //   }
+    // }
+
+    const convertElementsVisualState = (
+      elementsVisualState: TPaymentProductItem['elementsVisualState']
+    ): TPaymentProductItem['elementsVisualState'] => {
+      const getBase64 = useCommonDataStore.getState().getBase64ByURL
+      return {
+        printedImages:
+          elementsVisualState.printedImages?.map((img) => ({
+            ...img,
+            data_base64: getBase64(img.path),
+          })) || [],
+        stickers:
+          elementsVisualState.stickers?.map((sticker) => ({
+            ...sticker,
+            data_base64: getBase64(sticker.path),
+          })) || [],
+        texts: elementsVisualState.texts || [],
+        storedTemplates: elementsVisualState.storedTemplates,
+      }
+    }
+
     const items: TCreateOrderReq['items'] = []
     for (const item of cartItems) {
       for (const variant of item.productVariants) {
         const mockups: TCreateOrderReq['items'][number]['surfaces'] = []
         for (const mockup of variant.mockupDataList) {
           const preSentImageSize = mockup.imageData.size
-          for (let i = 0; i < mockup.quantity; i++) {
-            if (!mockup.preSentImageLink) {
-              throw new Error('Thiếu đường dẫn hình ảnh đã gửi trước cho dữ liệu mockup')
-            }
-            mockups.push({
-              surface_id: mockup.surfaceInfo.id,
-              editor_state_json: mockup.elementsVisualState,
-              file_url: mockup.preSentImageLink,
-              width_px: preSentImageSize.width,
-              height_px: preSentImageSize.height,
-            })
+          if (!mockup.preSentImageLink) {
+            throw new Error('Thiếu đường dẫn hình ảnh đã gửi trước cho dữ liệu mockup')
           }
+          mockups.push({
+            surface_id: mockup.surfaceInfo.id,
+            editor_state_json: convertElementsVisualState(mockup.elementsVisualState),
+            file_url: mockup.preSentImageLink,
+            width_px: preSentImageSize.width,
+            height_px: preSentImageSize.height,
+          })
         }
         items.push({
           variant_id: variant.variantId,
-          quantity: 1,
+          quantity: mockups.length,
           surfaces: mockups,
         })
       }
     }
+
     return {
       device_id: ptbid,
       customer: {

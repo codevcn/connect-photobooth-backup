@@ -10,6 +10,7 @@ import { generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
 import { useFastBoxes } from '@/hooks/use-fast-boxes'
 import { qrGetter } from '@/configs/brands/photoism/qr-getter-Dev'
+import { base64WorkerHelper } from '@/workers/base64.worker-helper'
 
 const LayoutDev = () => {
   const [error, setError] = useState<string | null>(null)
@@ -61,12 +62,14 @@ const LayoutDev = () => {
           }
           if (images) {
             console.log('>>> [qr] images extracted:', images)
-            onScanSuccess(
-              images.map((img) => ({
+            const userInputImages: TUserInputImage[] = []
+            for (const img of images) {
+              userInputImages.push({
                 ...img,
                 url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
-              }))
-            )
+              })
+            }
+            onScanSuccess(userInputImages)
           }
         })
         .catch((err) => {

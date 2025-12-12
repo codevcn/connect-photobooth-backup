@@ -12,6 +12,7 @@ import { getEditedElementByElementId } from '@/utils/helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { createInitialConstants } from '@/utils/contants'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
+import { base64WorkerHelper } from '@/workers/base64.worker-helper'
 
 type CropElementModalProps = {
   imageUrl: string

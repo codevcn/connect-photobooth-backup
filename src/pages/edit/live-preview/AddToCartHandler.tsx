@@ -17,6 +17,7 @@ import {
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { cleanPrintAreaOnExtractMockupImage } from '../helpers'
+import { base64WorkerHelper } from '@/workers/base64.worker-helper'
 
 type TAddToCartHandlerProps = {
   printAreaContainerRef: React.RefObject<HTMLDivElement | null>
@@ -87,6 +88,7 @@ export const AddToCartHandler = ({
       8,
       imgMimeType,
       (fullContainerImageData, allowedPrintAreaImageData, allowedPrintAreaCanvas) => {
+        const dataURL = URL.createObjectURL(fullContainerImageData)
         const mockupId = LocalStorageHelper.saveMockupImageAtLocal(
           sessionId,
           {
@@ -101,7 +103,7 @@ export const AddToCartHandler = ({
             type: pickedSurface.surfaceType,
           },
           {
-            dataUrl: URL.createObjectURL(fullContainerImageData),
+            dataUrl: dataURL,
             size: {
               width: -1,
               height: -1,

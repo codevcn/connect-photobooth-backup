@@ -1,4 +1,4 @@
-import { formatNumberWithCommas, friendlyCurrency } from '@/utils/helpers'
+import { checkIfMobileScreen, formatNumberWithCommas, friendlyCurrency } from '@/utils/helpers'
 import { TBaseProduct, TClientProductVariant } from '@/utils/types/global'
 import { VariantInfo } from './VariantInfo'
 
@@ -27,7 +27,13 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
         </span>
       </div>
 
-      <VariantInfo pickedProduct={pickedProduct} pickedVariant={pickedVariant} />
+      {!checkIfMobileScreen() && (
+        <VariantInfo
+          pickedProduct={pickedProduct}
+          pickedVariant={pickedVariant}
+          type="display-in-product-details"
+        />
+      )}
     </div>
   )
 }

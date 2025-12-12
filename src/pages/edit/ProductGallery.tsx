@@ -103,15 +103,19 @@ const Product = ({
       <div
         className={`${
           isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
-        } NAME-gallery-child-to-render smd:hidden block w-full z-10 h-fit px-2 pt-1 rounded-b-lg whitespace-nowrap truncate absolute top-[96%] left-0 text-[12px] bg-gray-200`}
+        } NAME-gallery-child-to-render smd:hidden block w-full z-10 h-fit px-2 pt-1.5 rounded-b-lg whitespace-nowrap truncate absolute top-[97%] left-0 text-[12px] text-black`}
+        style={{
+          backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%)`,
+        }}
       >
         {product.name}
       </div>
+      <div className="spmd:hidden block h-1 w-full z-30 absolute top-[99%] left-0 bg-white"></div>
       <div className="NAME-gallery-child-to-rounded smd:rounded-xl w-full h-full bg-white border border-gray-200 relative rounded-t-lg z-20">
         <img
           src={firstPrintAreaInProduct.imageUrl || '/images/placeholder.svg'}
           alt={product.name}
-          className="NAME-product-image absolute z-30 top-0 left-0 min-h-full max-h-full w-full h-full object-contain rounded-xl"
+          className="NAME-product-image absolute top-0 left-0 min-h-full max-h-full w-full h-full object-contain rounded-xl"
         />
       </div>
       <PrintAreaOverlayPreview

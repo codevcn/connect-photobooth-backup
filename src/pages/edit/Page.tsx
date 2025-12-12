@@ -27,6 +27,7 @@ import { cancelSelectingZoomingImages } from './helpers'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { formatNumberWithCommas, friendlyCurrency } from '@/utils/helpers'
+import { MiddleInfoSection } from './MiddleInfoSection'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -264,26 +265,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       <AddingToCartLoadingModal />
       <ProductGallery products={products} printedImages={printedImages} />
       {pickedProduct && pickedVariant && (
-        <div className="smd:hidden flex flex-col items-center p-1 py-2 pl-2 border-t border-gray-200">
-          <div className="mb-1">
-            <h1 className="leading-tight text-[1em] text-center text-slate-900">
-              {pickedProduct.name}
-            </h1>
-          </div>
-
-          <div className="flex flex-col items-center relative">
-            <span className="absolute top-1/2 -translate-y-1/2 right-[calc(100%+5px)] h-0.5 w-5 bg-main-cl"></span>
-            <span className="text-base text-orange-600">
-              <span className="font-bold">
-                {formatNumberWithCommas(pickedVariant.priceAmountOneSide)}
-              </span>
-              <span className="text-base font-medium ml-1">
-                {friendlyCurrency(pickedVariant.currency)}
-              </span>
-            </span>
-            <span className="absolute top-1/2 -translate-y-1/2 left-[calc(100%+5px)] h-0.5 w-5 bg-main-cl"></span>
-          </div>
-        </div>
+        <MiddleInfoSection pickedProduct={pickedProduct} pickedVariant={pickedVariant} />
       )}
       <div className="NAME-main-parent xl:gap-4 spmd:h-screen spmd:min-h-auto md:grid-cols-[3fr_2fr] smd:grid-cols-[3fr_2.5fr] smd:min-h-0 smd:w-auto w-full grid-cols-1 grid gap-2">
         {pickedProduct && pickedVariant && pickedSurface ? (

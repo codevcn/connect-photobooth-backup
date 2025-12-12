@@ -1,9 +1,10 @@
 import { useCallback } from 'react'
 import { TElementsVisualState } from '@/utils/types/global'
 import { useTemplateStore } from '@/stores/ui/template.store'
+import { base64WorkerHelper } from '@/workers/base64.worker-helper'
 
 type TUseVisualStatesCollectorReturn = {
-  collectMockupVisualStates: (mockupmockupContainerRef?: HTMLElement) => TElementsVisualState
+  collectMockupVisualStates: (mockupContainerRef?: HTMLElement) => TElementsVisualState
 }
 
 /**
@@ -85,6 +86,14 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
       if (elementsVisualState.stickers?.length === 0) delete elementsVisualState.stickers
       if (elementsVisualState.storedTemplates?.length === 0)
         delete elementsVisualState.storedTemplates
+
+      // tạo base64 cho dữ liệu
+      for (const sticker of elementsVisualState.stickers || []) {
+        base64WorkerHelper.createBase64FromURL({ url: sticker.path })
+      }
+      for (const printedImage of elementsVisualState.printedImages || []) {
+        base64WorkerHelper.createBase64FromURL({ url: printedImage.path })
+      }
 
       console.log('>>> [reto] element visual state oiiiiiiiiiiiii:', elementsVisualState)
       return elementsVisualState

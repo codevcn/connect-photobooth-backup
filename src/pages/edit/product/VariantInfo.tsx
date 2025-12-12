@@ -105,12 +105,51 @@ const findVariantByAttributes = (
   }, 0)
 }
 
+type TSizesComponentProps = {
+  sortedSizes: string[]
+  selectedAttributes: Record<string, string>
+  mergedAttributes: TBaseProduct['mergedAttributes']
+  pickSize: (isDisabled: boolean, size: string) => void
+}
+
+const SizesComponent = ({
+  sortedSizes,
+  selectedAttributes,
+  mergedAttributes,
+  pickSize,
+}: TSizesComponentProps) => {
+  return sortedSizes.map((size) => {
+    const isSelected = selectedAttributes.size?.toUpperCase() === size.toUpperCase()
+    const isScopeDisabled = !mergedAttributes.groups?.[selectedAttributes.material ?? 'null']?.[
+      selectedAttributes.scent ?? 'null'
+    ]?.[selectedAttributes.color ?? 'null']?.sizes?.some((s) => s === size)
+    const isDisabled = isScopeDisabled
+    return (
+      <button
+        key={size}
+        onClick={() => pickSize(isDisabled, size)}
+        disabled={isDisabled}
+        className={`5xl:py-2 px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
+          isDisabled
+            ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed`
+            : isSelected
+            ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
+            : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
+        }`}
+      >
+        {size}
+      </button>
+    )
+  })
+}
+
 type TVariantInfoProps = {
   pickedProduct: TBaseProduct
   pickedVariant: TBaseProduct['variants'][0]
+  type: 'display-in-product-details' | 'display-in-middle-info-section'
 }
 
-export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps) => {
+export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfoProps) => {
   const [showSizeChart, setShowSizeChart] = useState(false)
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
   const [selectedImageToPreview, setSelectedImageToPreview] = useState<string>()
@@ -214,7 +253,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
   const colorsCount = Object.keys(mergedAttributes.uniqueColors).length
 
   return (
-    <div className="smd:order-4 mt-1 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3">
+    <div className="smd:order-4 mt-1 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3 w-full">
       {/* <div className="smd:block hidden mb-4">
         <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">
           Danh mục hình ảnh sản phẩm
@@ -310,7 +349,8 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
       {colorsCount > 0 && Object.keys(mergedAttributes.uniqueColors)[0] !== 'null' && (
         <div className="mb-4">
           <h3 className="5xl:text-[0.5em] text-sm text-slate-800 font-bold mb-2">
-            {mergedAttributes.uniqueColorTitles[0]}
+            <span>{mergedAttributes.uniqueColorTitles[0]}</span>
+            <span className="5xl:text-[0.4em] text-xs"> ({selectedAttributes.color})</span>
           </h3>
           <CustomScrollbar
             showScrollbar={colorsCount > 0}
@@ -368,7 +408,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
                         </div>
                       )}
                     </div>
-                    <div
+                    {/* <div
                       className={`rounded-md py-0.5 px-1.5 mt-2 inline-block w-max ${
                         isDisabled ? 'grayscale' : ''
                       }`}
@@ -378,7 +418,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
                       }}
                     >
                       {color}
-                    </div>
+                    </div> */}
                   </button>
                 )
               } else {
@@ -421,33 +461,31 @@ export const VariantInfo = ({ pickedProduct, pickedVariant }: TVariantInfoProps)
               </button>
             )}
           </div>
-          <div className="5xl:text-[0.4em] text-base flex flex-wrap gap-2">
-            {sortedSizes.map((size) => {
-              const isSelected = selectedAttributes.size?.toUpperCase() === size.toUpperCase()
-              const isScopeDisabled = !mergedAttributes.groups?.[
-                selectedAttributes.material ?? 'null'
-              ]?.[selectedAttributes.scent ?? 'null']?.[
-                selectedAttributes.color ?? 'null'
-              ]?.sizes?.some((s) => s === size)
-              const isDisabled = isScopeDisabled
-              return (
-                <button
-                  key={size}
-                  onClick={() => pickSize(isDisabled, size)}
-                  disabled={isDisabled}
-                  className={`5xl:py-2 px-5 py-1 font-bold rounded-lg transition-all mobile-touch ${
-                    isDisabled
-                      ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed`
-                      : isSelected
-                      ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
-                      : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
-                  }`}
-                >
-                  {size}
-                </button>
-              )
-            })}
-          </div>
+
+          {type === 'display-in-middle-info-section' ? (
+            <CustomScrollbar
+              classNames={{
+                container: 'flex flex-nowrap gap-2 w-full',
+                content: '5xl:text-[0.4em] text-base flex flex-nowrap pb-3 gap-2',
+              }}
+            >
+              <SizesComponent
+                mergedAttributes={mergedAttributes}
+                pickSize={pickSize}
+                selectedAttributes={selectedAttributes}
+                sortedSizes={sortedSizes}
+              />
+            </CustomScrollbar>
+          ) : (
+            <div className="5xl:text-[0.4em] text-base flex flex-wrap gap-2">
+              <SizesComponent
+                mergedAttributes={mergedAttributes}
+                pickSize={pickSize}
+                selectedAttributes={selectedAttributes}
+                sortedSizes={sortedSizes}
+              />
+            </div>
+          )}
         </div>
       )}
 
