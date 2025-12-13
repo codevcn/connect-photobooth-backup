@@ -34,15 +34,29 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
   const zoomButtonRef = useRef<HTMLButtonElement>(null)
   const containerRef = useRef<T>(null)
   const isZoomingRef = useRef(false)
-  const startXRef = useRef(0)
+  const startDistanceRef = useRef(0)
   const startScaleRef = useRef(1)
 
   // State
   const [isZooming, setIsZooming] = useState<boolean>(false)
 
+  // Hàm tính khoảng cách từ vị trí pointer đến tâm element
+  const getDistanceFromCenter = useCallback((clientX: number, clientY: number): number => {
+    if (!containerRef.current) return 0
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+
+    // Tính khoảng cách Euclidean
+    const deltaX = clientX - centerX
+    const deltaY = clientY - centerY
+    return Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+  }, [])
+
   // Xử lý khi bắt đầu nhấn vào nút zoom
   const handleStart = useCallback(
-    (e: MouseEvent | TouchEvent) => {
+    (e: PointerEvent) => {
       e.preventDefault()
       e.stopPropagation()
 
@@ -52,44 +66,34 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
       // Gọi callback để thông báo đang zoom
       onZoomStart?.()
 
-      // Lấy vị trí X ban đầu
-      if (e instanceof MouseEvent) {
-        startXRef.current = e.clientX
-      } else {
-        startXRef.current = e.touches[0].clientX
-      }
-
+      // Lấy khoảng cách ban đầu từ pointer đến tâm element
+      startDistanceRef.current = getDistanceFromCenter(e.clientX, e.clientY)
       startScaleRef.current = currentZoom
 
-      document.body.style.cursor = 'ew-resize'
+      document.body.style.cursor = 'grab'
       document.body.style.userSelect = 'none'
     },
-    [currentZoom, onZoomStart]
+    [currentZoom, onZoomStart, getDistanceFromCenter]
   )
 
   // Xử lý khi di chuyển
   const handleMove = useCallback(
-    (e: MouseEvent | TouchEvent) => {
+    (e: PointerEvent) => {
       if (!isZoomingRef.current) return
 
       e.preventDefault()
       e.stopPropagation()
 
-      // Lấy vị trí X hiện tại
-      let currentX: number
-      if (e instanceof MouseEvent) {
-        currentX = e.clientX
-      } else {
-        currentX = e.touches[0].clientX
-      }
+      // Tính khoảng cách hiện tại từ pointer đến tâm element
+      const currentDistance = getDistanceFromCenter(e.clientX, e.clientY)
 
-      // Tính độ chênh lệch theo trục X
-      const deltaX = currentX - startXRef.current
+      // Tính độ thay đổi khoảng cách:
+      // - Khoảng cách tăng (+deltaDistance) = kéo ra xa tâm = zoom in (phóng to)
+      // - Khoảng cách giảm (-deltaDistance) = kéo về tâm = zoom out (thu nhỏ)
+      const deltaDistance = currentDistance - startDistanceRef.current
 
-      // Tính scale mới:
-      // - Kéo sang phải (+deltaX) = zoom in (phóng to)
-      // - Kéo sang trái (-deltaX) = zoom out (thu nhỏ)
-      const newScale = startScaleRef.current + deltaX * sensitivity
+      // Tính scale mới
+      const newScale = startScaleRef.current + deltaDistance * sensitivity
 
       // Giới hạn scale trong khoảng min/max và cập nhật
       let adjustedScale = newScale
@@ -101,7 +105,7 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
       }
       setCurrentZoom(adjustedScale)
     },
-    [sensitivity, minZoom, maxZoom, setCurrentZoom]
+    [sensitivity, minZoom, maxZoom, setCurrentZoom, getDistanceFromCenter]
   )
 
   // Xử lý khi thả chuột/tay
@@ -125,27 +129,21 @@ export const useZoomElement = <T extends HTMLElement = HTMLElement>(
     const button = zoomButtonRef.current
     if (!button) return
 
-    // Đăng ký sự kiện chỉ trên nút zoom
-    button.addEventListener('mousedown', handleStart)
-    button.addEventListener('touchstart', handleStart, { passive: false })
+    // Đăng ký sự kiện pointer chỉ trên nút zoom
+    button.addEventListener('pointerdown', handleStart)
 
     // Sự kiện move và end trên document để xử lý khi kéo ra ngoài
-    document.body.addEventListener('mousemove', handleMove)
-    document.body.addEventListener('touchmove', handleMove, { passive: false })
-
-    document.body.addEventListener('mouseup', handleEnd)
-    document.body.addEventListener('touchend', handleEnd)
+    document.body.addEventListener('pointermove', handleMove)
+    document.body.addEventListener('pointerup', handleEnd)
+    document.body.addEventListener('pointercancel', handleEnd)
 
     // Cleanup
     return () => {
-      button.removeEventListener('mousedown', handleStart)
-      button.removeEventListener('touchstart', handleStart)
+      button.removeEventListener('pointerdown', handleStart)
 
-      document.body.removeEventListener('mousemove', handleMove)
-      document.body.removeEventListener('touchmove', handleMove)
-
-      document.body.removeEventListener('mouseup', handleEnd)
-      document.body.removeEventListener('touchend', handleEnd)
+      document.body.removeEventListener('pointermove', handleMove)
+      document.body.removeEventListener('pointerup', handleEnd)
+      document.body.removeEventListener('pointercancel', handleEnd)
 
       document.body.style.cursor = 'default'
       document.body.style.userSelect = 'auto'

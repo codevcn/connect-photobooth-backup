@@ -184,7 +184,6 @@ export const useHtmlToCanvas = (): TUseHtlmToCanvasReturn => {
         quality: 1,
         type: desiredImgMimeType || 'image/webp',
       })
-
       // Lấy vị trí của container và element cần crop
       const containerRect = transparentPrintAreaContainer.getBoundingClientRect()
       const elementRect = transparentPrintAreaContainer

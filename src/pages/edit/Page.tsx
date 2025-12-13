@@ -26,7 +26,6 @@ import { PrintedImageElementMenu } from './elements/printed-image/Menu'
 import { cancelSelectingZoomingImages } from './helpers'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
-import { formatNumberWithCommas, friendlyCurrency } from '@/utils/helpers'
 import { MiddleInfoSection } from './MiddleInfoSection'
 
 const TemplateFrameMenuResponsive = () => {
@@ -261,7 +260,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   }, [])
 
   return (
-    <div className="NAME-edit-page-root spmd:grid-cols-[1fr_6fr] xl:gap-4 smd:grid-rows-[1fr_6fr] grid-cols-1 font-sans grid h-screen bg-white z-10 relative">
+    <div className="NAME-edit-page-root spmd:grid-cols-[1fr_6fr] xl:gap-4 smd:grid-rows-[1fr_6fr] grid-cols-1 font-sans grid h-screen z-10 relative">
       <AddingToCartLoadingModal />
       <ProductGallery products={products} printedImages={printedImages} />
       {pickedProduct && pickedVariant && (

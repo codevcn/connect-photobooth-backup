@@ -89,7 +89,7 @@ export function CustomScrollbar({
               left: thumbLeft,
               width: thumbWidth,
             }}
-            className="absolute bottom-0 h-full bg-gray-500 rounded-md"
+            className="absolute bottom-0 h-full bg-gray-400 rounded-md"
           />
         </div>
       )}

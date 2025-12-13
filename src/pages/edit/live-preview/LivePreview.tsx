@@ -273,27 +273,27 @@ export const LivePreview = ({
           classNames={{ shapesContainer: 'text-white', message: 'text-white' }}
         />
       </div>
-      <div
+      {/* <div
         style={{ display: isOutOfBounds ? 'block' : 'none' }}
         className="NAME-out-of-bounds-overlay-warning-top 5xl:text-2xl z-51 absolute top-0 left-0 text-sm text-white font-medium bg-red-600 px-3 py-1 rounded-br-md"
       >
         Ngoài phạm vi in cho phép
-      </div>
+      </div> */}
       <div
         ref={(node) => {
           printAreaContainerRef.current = node
           // refForDrag.current = node
         }}
-        className="NAME-print-area-container origin-center w-full h-full min-h-[150px] overflow-hidden bg-gray-100 border z-50 border-gray-400/30 relative"
+        className="NAME-print-area-container origin-center w-full h-full min-h-[150px] overflow-hidden border z-50 border-gray-400/30 relative"
         style={{
           backgroundColor: adjustNearF3F4F6(getFinalColorValue() || '#ffffff'),
           transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
         }}
       >
-        <div
+        {/* <div
           style={{ display: isOutOfBounds ? 'block' : 'none' }}
           className="NAME-out-of-bounds-overlay-warning absolute inset-0 bg-red-600/20 z-5"
-        ></div>
+        ></div> */}
         <img
           src={displayedImage.imageURL}
           alt={displayedImage.altText}

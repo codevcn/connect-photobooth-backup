@@ -108,9 +108,9 @@ const Product = ({
           backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%)`,
         }}
       >
+        <div className="w-full h-1.5 bg-white absolute top-0 left-0"></div>
         {product.name}
       </div>
-      <div className="spmd:hidden block h-1 w-full z-30 absolute top-[98.5%] left-0 bg-white"></div>
       <div className="NAME-gallery-child-to-rounded smd:rounded-xl w-full h-full bg-white border border-gray-200 relative rounded-t-lg z-20">
         <img
           src={firstPrintAreaInProduct.imageUrl || '/images/placeholder.svg'}
@@ -306,6 +306,56 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const findProductIndex = () => {
     return products.findIndex((p) => p.id === pickedProduct?.id) + 1
   }
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const [thumbWidth, setThumbWidth] = useState(0)
+  const [thumbLeft, setThumbLeft] = useState(0)
+  const [hasScroll, setHasScroll] = useState(false)
+
+  const update = () => {
+    const el = containerRef.current
+    if (!el) return
+
+    const totalWidth = el.scrollWidth
+    const visibleWidth = el.clientWidth
+
+    const canScroll = totalWidth > visibleWidth
+    setHasScroll(canScroll)
+
+    if (!canScroll) {
+      setThumbWidth(0)
+      setThumbLeft(0)
+      return
+    }
+
+    const ratio = visibleWidth / totalWidth
+    const thumbMinWidth = 20
+    const w = Math.max(visibleWidth * ratio, thumbMinWidth)
+
+    setThumbWidth(w)
+
+    const maxThumbLeft = visibleWidth - w
+    const scrollRatio = el.scrollLeft / (totalWidth - visibleWidth)
+    setThumbLeft(maxThumbLeft * scrollRatio)
+  }
+
+  useEffect(() => {
+    update()
+    const el = containerRef.current
+    if (!el) return
+
+    el.addEventListener('scroll', update)
+    window.addEventListener('resize', update)
+
+    return () => {
+      el.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  useEffect(() => {
+    update()
+  }, [products.length])
 
   useEffect(() => {
     initFirstProduct()
@@ -325,26 +375,23 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       }
       const galleryWrapper = galleryEle.closest<HTMLElement>('.NAME-products-gallery-wrapper')
       if (!galleryWrapper) return
+      const scrollableBox = galleryEle.querySelector<HTMLElement>('.NAME-scrollable-box')
+      if (!scrollableBox) return
+      const scrollbar = galleryEle.querySelector<HTMLElement>('.NAME-gallery-scrollbar')
+      if (!scrollbar) return
       if (window.scrollY > 170) {
-        galleryWrapper.style.height = `${initialGalleryHeight.current}px`
-        galleryWrapper.style.width = `${galleryEle.offsetWidth}px`
-        galleryEle.style.position = 'fixed'
-        galleryEle.style.width = '100vw'
-        galleryEle.style.zIndex = '999'
-        galleryEle.style.height = '70px'
-        galleryEle.style.padding = '8px 8px 8px'
-        galleryEle.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.2)'
-        galleryEle.classList.add('NAME-gallery-parent-to-hide')
+        galleryWrapper.style.cssText = `height: ${initialGalleryHeight.current}px; width: ${galleryEle.offsetWidth}px;`
+        galleryEle.style.cssText = 'position: fixed; width: 100vw; z-index: 999; height: 70px;'
+        scrollableBox.style.cssText =
+          'padding: 8px 8px 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);'
+        scrollableBox.classList.add('NAME-gallery-parent-to-hide', 'animate-pop-in')
+        scrollbar.classList.replace('hidden', 'block')
       } else {
-        galleryWrapper.style.height = `auto`
-        galleryWrapper.style.width = `auto`
-        galleryEle.style.position = 'relative'
-        galleryEle.style.width = '100%'
-        galleryEle.style.zIndex = '1'
-        galleryEle.style.height = '150px'
-        galleryEle.style.padding = '8px 12px 32px'
-        galleryEle.style.boxShadow = 'none'
-        galleryEle.classList.remove('NAME-gallery-parent-to-hide')
+        galleryWrapper.style.cssText = 'height: auto; width: auto;'
+        galleryEle.style.cssText = 'position: static; width: 100%; z-index: 1; height: 150px;'
+        scrollableBox.style.cssText = 'padding: 8px 12px 32px; box-shadow: none;'
+        scrollableBox.classList.remove('NAME-gallery-parent-to-hide', 'animate-pop-in')
+        scrollbar.classList.replace('block', 'hidden')
       }
     }
 
@@ -354,6 +401,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     }
   }, [])
 
+  const hasProducts = products && products.length > 0
+  console.log('>>> [has] has:', { hasProducts, hasScroll })
   return (
     <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base text-sm w-full h-fit flex flex-col bg-white border-r border-r-gray-200">
       <div className="bg-gray-100 z-40 rounded py-0.5 px-1 text-xs text-gray-600 absolute top-2 right-2.5 shadow-md">
@@ -402,27 +451,46 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       </h2>
       <div className="NAME-products-gallery-wrapper spmd:overflow-y-auto spmd:max-h-full">
         <div
-          ref={galleryRef}
-          className="NAME-products-gallery spmd:overflow-y-auto spmd:max-h-full spmd:flex-col smpd:px-1.5 spmd:h-fit h-[150px] bg-white top-0 left-0 px-3 pt-2 pb-8 smd:py-2 smd:pb-2 smd:pt-4 overflow-x-auto gallery-scroll w-full flex items-center gap-2"
+          ref={(node) => {
+            galleryRef.current = node
+          }}
+          className="NAME-products-gallery spmd:overflow-y-auto spmd:max-h-full spmd:flex-col spmd:h-fit h-[150px] w-full bg-white/80 top-0 left-0"
         >
-          {products &&
-            products.length > 0 &&
-            products.map((product, index) => {
-              const firstPrintArea = product.printAreaList[0]
-              return (
-                <Product
-                  key={product.id}
-                  product={product}
-                  firstPrintAreaInProduct={firstPrintArea}
-                  isPicked={product.id === pickedProduct?.id}
-                  onPickProduct={handlePickProduct}
-                  onInitFirstProduct={handleSetFirstProduct}
-                  printedImages={printedImages}
-                  productIndex={index + 1}
-                  productsCount={products.length}
-                />
-              )
-            })}
+          <div
+            ref={(node) => {
+              containerRef.current = node
+            }}
+            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 flex items-center gap-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-2 pb-8"
+          >
+            {hasProducts &&
+              products.map((product, index) => {
+                const firstPrintArea = product.printAreaList[0]
+                return (
+                  <Product
+                    key={product.id}
+                    product={product}
+                    firstPrintAreaInProduct={firstPrintArea}
+                    isPicked={product.id === pickedProduct?.id}
+                    onPickProduct={handlePickProduct}
+                    onInitFirstProduct={handleSetFirstProduct}
+                    printedImages={printedImages}
+                    productIndex={index + 1}
+                    productsCount={products.length}
+                  />
+                )
+              })}
+          </div>
+          {hasProducts && hasScroll && (
+            <div className="NAME-gallery-scrollbar pl-2 hidden relative bottom-0 left-0 w-full h-1 bg-black/10 rounded-md">
+              <div
+                style={{
+                  left: thumbLeft,
+                  width: thumbWidth,
+                }}
+                className="absolute bottom-0 h-full bg-gray-400 rounded-md"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
