@@ -5,6 +5,7 @@ import { useTextElementControl } from '@/hooks/element/use-text-element-control'
 import { typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+import { useEditedElementStore } from '@/stores/element/element.store'
 import { createPortal } from 'react-dom'
 import { persistElementPositionToPrintArea } from '../helpers'
 
@@ -39,6 +40,7 @@ export const TextElement = ({
   const { id, mountType } = element
   const rootRef = useRef<HTMLElement | null>(null)
   const scaleFactor = useEditAreaStore((state) => state.editAreaScaleValue)
+  const clipPolygon = useEditedElementStore((state) => state.clippedElements[id]?.polygon || null)
   const {
     // forPinch: { ref: refForPinch },
     forRotate: { ref: refForRotate, rotateButtonRef },
@@ -185,6 +187,7 @@ export const TextElement = ({
         top: position.y,
         transform: `rotate(${angle}deg)`,
         zIndex: zindex,
+        clipPath: clipPolygon || 'none',
       }}
       className={`NAME-root-element NAME-element-type-text absolute h-fit w-fit touch-none z-6`}
       onPointerDown={pickElement}

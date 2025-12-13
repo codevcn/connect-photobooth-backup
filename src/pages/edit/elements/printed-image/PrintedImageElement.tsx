@@ -1,20 +1,16 @@
 import { TElementMountType, TPrintedImageVisualState } from '@/utils/types/global'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useElementControl } from '@/hooks/element/use-element-control'
-import { checkIfMobileScreen, typeToObject } from '@/utils/helpers'
+import { typeToObject } from '@/utils/helpers'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+import { useEditedElementStore } from '@/stores/element/element.store'
 import { createPortal } from 'react-dom'
-import { DEFAULT_ELEMENT_DIMENSION_SIZE, persistElementPositionToPrintArea } from '../helpers'
+import { persistElementPositionToPrintArea } from '../helpers'
 
 const MAX_ZOOM: number = 12
 const MIN_ZOOM: number = 0.2
-
-type TInteractiveButtonsState = {
-  buttonsContainerStyle: { top: number; left: number; width: number; height: number }
-  isShown: boolean
-}
 
 type TPrintedImageElementProps = {
   element: TPrintedImageVisualState
@@ -40,6 +36,7 @@ export const PrintedImageElement = ({
     element
   const rootRef = useRef<HTMLElement | null>(null)
   const scaleFactor = useEditAreaStore((state) => state.editAreaScaleValue)
+  const clipPolygon = useEditedElementStore((state) => state.clippedElements[id]?.polygon || null)
   const {
     // forPinch: { ref: refForPinch },
     forRotate: { ref: refForRotate, rotateButtonRef },
@@ -154,6 +151,7 @@ export const PrintedImageElement = ({
         zIndex: zindex,
         height: `${height}px`,
         width: `${width}px`,
+        clipPath: clipPolygon || 'none',
       }}
       className={`NAME-root-element NAME-element-type-printed-image absolute h-fit w-fit touch-none z-6`}
       onPointerDown={pickElement}

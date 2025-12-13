@@ -1,6 +1,6 @@
 import { useZoomElement } from '@/hooks/element/use-zoom-element'
 import { useDragElement } from '@/hooks/element/use-drag-element'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { createInitialConstants } from '@/utils/contants'
 import {
   TElementMountType,
@@ -11,6 +11,8 @@ import {
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useSnapThresholdRotateElement } from './use-snap-threshold-rotate-element'
+import { calculateElementClipPolygon } from '@/pages/edit/elements/clip-element-helper'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TElementPreviousRelativeProps = {
   relativeOffsetLeft: number
@@ -376,6 +378,20 @@ export const useElementControl = (
   useEffect(() => {
     setupVisualData()
   }, [mountType, initialPosition?.x, initialPosition?.y, initialAngle, initialZoom, initialZindex])
+
+  // Update clip polygon when position or scale changes
+  const updateClipPolygon = useCallback(() => {
+    const element = elementRootRef.current
+    const allowedArea = printAreaAllowedRef.current
+    if (!element || !allowedArea) return
+
+    const polygon = calculateElementClipPolygon(element, allowedArea)
+    useEditedElementStore.getState().setElementInClipList(elementId, polygon)
+  }, [elementId, scale])
+
+  useEffect(() => {
+    updateClipPolygon()
+  }, [position.x, position.y, scale, angle, updateClipPolygon])
 
   return {
     // forPinch: {

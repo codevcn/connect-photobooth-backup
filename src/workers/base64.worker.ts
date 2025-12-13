@@ -20,25 +20,31 @@ const createWorkerOutput = (data: TBase64WorkerOutput): TBase64WorkerOutput => {
 
 self.onmessage = async (e) => {
   const data = e.data as TBase64WorkerInput
-  const blob = data.blob
-  if (!blob) return
+  const url = data.url
+  if (!url) return
 
-  const reader = new FileReader()
+  try {
+    const response = await fetch(url)
+    const blob = await response.blob()
+    const reader = new FileReader()
 
-  reader.onload = () => {
-    const arrayBuffer = reader.result as ArrayBuffer
-    const base64 = arrayBufferToBase64(arrayBuffer)
-    self.postMessage(
-      createWorkerOutput({
-        base64FromURL: base64,
-        originalURL: data.url,
-      })
-    )
+    reader.onload = () => {
+      const arrayBuffer = reader.result as ArrayBuffer
+      const base64 = arrayBufferToBase64(arrayBuffer)
+      self.postMessage(
+        createWorkerOutput({
+          base64FromURL: base64,
+          originalURL: url,
+        })
+      )
+    }
+
+    reader.onerror = () => {
+      self.postMessage(createWorkerOutput({ errorMessage: 'Lỗi đọc Blob để chuyển sang Base64' }))
+    }
+
+    reader.readAsArrayBuffer(blob)
+  } catch (error) {
+    self.postMessage(createWorkerOutput({ errorMessage: 'Lỗi fetch URL để chuyển sang Base64' }))
   }
-
-  reader.onerror = (err) => {
-    self.postMessage(createWorkerOutput({ errorMessage: 'Lỗi đọc Blob để chuyển sang Base64' }))
-  }
-
-  reader.readAsArrayBuffer(blob)
 }

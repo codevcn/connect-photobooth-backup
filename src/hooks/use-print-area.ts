@@ -253,7 +253,7 @@ export const usePrintArea = (
     }
 
     const checkBoundsIntervalId = setInterval(() => {
-      checkBounds()
+      // checkBounds()
     }, 170)
 
     // const debouncedCheck = () => {
@@ -266,7 +266,7 @@ export const usePrintArea = (
     // document.addEventListener('touchmove', debouncedCheck, { passive: true })
 
     // Check ban đầu
-    checkBounds()
+    // checkBounds()
 
     return () => {
       clearInterval(checkBoundsIntervalId)

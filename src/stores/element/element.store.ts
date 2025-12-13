@@ -15,6 +15,12 @@ type TSavedElementVisualState = Partial<TElementsVisualState> & {
   productId: TBaseProduct['id']
 }
 
+type TClippedElements = {
+  [elementId: string]: {
+    polygon: string | null
+  }
+}
+
 type TUseElementStore = {
   selectedElement: TSelectedElement | null
   stickerElements: TStickerVisualState[]
@@ -22,8 +28,11 @@ type TUseElementStore = {
   printedImages: TPrintedImageVisualState[]
   printedImagesBuildId: string | null
   savedElementsVisualStates: TSavedElementVisualState[]
+  clippedElements: TClippedElements
 
   // Actions
+  setElementInClipList: (elementId: string, polygon: string | null) => void
+  unselectElement: () => void
   updatePrintedImageElement: (printedImage: Partial<TPrintedImageVisualState>) => void
   updateStickerElement: (sticker: Partial<TStickerVisualState>) => void
   selectElement: (elementId: string, elementType: TElementType, elementURL?: string) => void
@@ -54,7 +63,17 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
   printedImages: [],
   printedImagesBuildId: null,
   savedElementsVisualStates: [],
+  clippedElements: {},
 
+  setElementInClipList: (elementId, polygon) => {
+    const { clippedElements } = get()
+    set({
+      clippedElements: {
+        ...clippedElements,
+        [elementId]: { polygon },
+      },
+    })
+  },
   unselectElement: () => {
     set({ selectedElement: null })
   },

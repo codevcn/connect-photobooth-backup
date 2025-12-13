@@ -1,9 +1,11 @@
 import { useElementControl } from '@/hooks/element/use-element-control'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { roundZooming } from '@/utils/helpers'
 import { createInitialConstants } from '@/utils/contants'
 import { TElementMountType, TTextVisualState } from '@/utils/types/global'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+import { calculateElementClipPolygon } from '@/pages/edit/elements/clip-element-helper'
+import { useEditedElementStore } from '@/stores/element/element.store'
 
 type TInitialTextParams = Partial<
   TTextVisualState & {
@@ -209,6 +211,27 @@ export const useTextElementControl = (
   useEffect(() => {
     setupVisualData()
   }, [initialFontSize, initialColor, initialContent, initialFontFamily, initialFontWeight])
+
+  // Update clip polygon when position, angle, or fontSize changes
+  const updateClipPolygon = useCallback(() => {
+    const element = elementRootRef.current
+    const allowedArea = printAreaAllowedRef.current
+    if (!element || !allowedArea) return
+
+    const polygon = calculateElementClipPolygon(element, allowedArea)
+    if (polygon) useEditedElementStore.getState().setElementInClipList(elementId, polygon)
+  }, [elementId])
+
+  useEffect(() => {
+    updateClipPolygon()
+  }, [
+    baseState.position.x,
+    baseState.position.y,
+    baseState.angle,
+    fontSize,
+    content,
+    updateClipPolygon,
+  ])
 
   return {
     // forPinch,
