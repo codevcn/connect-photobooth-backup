@@ -34,12 +34,19 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
         try {
           const data = await addressService.fetchProvinces()
           data.sort((a, b) => a.name.localeCompare(b.name))
-          const HaNoi = data.findIndex((province) => province.name === 'Hà Nội')
-          if (HaNoi > -1) {
-            const [haNoiProvince] = data.splice(HaNoi, 1)
-            data.unshift(haNoiProvince)
-          }
-          setProvinces(data)
+          const priorityCities = ['Hà Nội', 'Đà Nẵng', 'Hồ Chí Minh']
+          const priorityProvinces: typeof data = []
+          const otherProvinces: typeof data = []
+          data.forEach((province) => {
+            if (priorityCities.includes(province.name)) {
+              priorityProvinces.push(province)
+            } else {
+              otherProvinces.push(province)
+            }
+          })
+          priorityProvinces.sort((a, b) => priorityCities.indexOf(a.name) - priorityCities.indexOf(b.name))
+          const sortedData = [...priorityProvinces, ...otherProvinces]
+          setProvinces(sortedData)
         } catch (error) {
           console.error('Failed to fetch provinces:', error)
         } finally {

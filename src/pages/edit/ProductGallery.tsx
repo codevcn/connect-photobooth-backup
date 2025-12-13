@@ -382,19 +382,23 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       if (window.scrollY > 170) {
         galleryWrapper.style.cssText = `height: ${initialGalleryHeight.current}px; width: ${galleryEle.offsetWidth}px;`
         galleryEle.style.cssText = 'position: fixed; width: 100vw; z-index: 999; height: 70px;'
-        scrollableBox.style.cssText =
-          'padding: 8px 8px 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);'
+        scrollableBox.style.cssText = 'padding: 8px 8px 8px;'
         scrollableBox.classList.add('NAME-gallery-parent-to-hide', 'animate-pop-in')
         scrollbar.classList.replace('hidden', 'block')
+        galleryEle
+          .querySelector<HTMLElement>('.NAME-floating-gallery-title')
+          ?.classList.remove('hidden')
       } else {
         galleryWrapper.style.cssText = 'height: auto; width: auto;'
         galleryEle.style.cssText = 'position: static; width: 100%; z-index: 1; height: 150px;'
-        scrollableBox.style.cssText = 'padding: 8px 12px 32px; box-shadow: none;'
+        scrollableBox.style.cssText = 'padding: 8px 12px 32px;'
         scrollableBox.classList.remove('NAME-gallery-parent-to-hide', 'animate-pop-in')
         scrollbar.classList.replace('block', 'hidden')
+        galleryEle
+          .querySelector<HTMLElement>('.NAME-floating-gallery-title')
+          ?.classList.add('hidden')
       }
     }
-
     window.addEventListener('scroll', stayGalleryOnTopPage)
     return () => {
       window.removeEventListener('scroll', stayGalleryOnTopPage)
@@ -402,7 +406,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   }, [])
 
   const hasProducts = products && products.length > 0
-  console.log('>>> [has] has:', { hasProducts, hasScroll })
+
   return (
     <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base text-sm w-full h-fit flex flex-col bg-white border-r border-r-gray-200">
       <div className="bg-gray-100 z-40 rounded py-0.5 px-1 text-xs text-gray-600 absolute top-2 right-2.5 shadow-md">
@@ -456,11 +460,14 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
           }}
           className="NAME-products-gallery spmd:overflow-y-auto spmd:max-h-full spmd:flex-col spmd:h-fit no-scrollbar h-[150px] w-full bg-white/80 top-0 left-0"
         >
+          <h2 className="NAME-floating-gallery-title smd:hidden hidden text-sm font-bold text-center pt-0.5">
+            Chọn sản phẩm
+          </h2>
           <div
             ref={(node) => {
               containerRef.current = node
             }}
-            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col flex items-center gap-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-2 pb-8"
+            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col flex items-center gap-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
           >
             {hasProducts &&
               products.map((product, index) => {

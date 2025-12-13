@@ -83,7 +83,7 @@ export function CustomScrollbar({
 
       {/* Scrollbar Track (ẩn nếu không có scroll) */}
       {showScrollbar && hasScroll && (
-        <div className="absolute bottom-0 left-0 w-full h-1.5 bg-black/10 rounded-md">
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-black/10 rounded-md">
           <div
             style={{
               left: thumbLeft,
