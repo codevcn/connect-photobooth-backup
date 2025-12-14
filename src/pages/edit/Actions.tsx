@@ -9,6 +9,7 @@ import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
 import { fillQueryStringToURL } from '@/utils/helpers'
 import { StickerPicker } from './elements/sticker-element/StickerPicker'
 import { TextEditor } from './elements/text-element/TextEditor'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
@@ -66,12 +67,21 @@ export const Actions = () => {
   }
 
   const handleShowMockupPreview = () => {
-    if (
-      document.body.querySelector<HTMLElement>(
-        '.NAME-print-area-container .NAME-print-area-allowed[data-is-out-of-bounds="true"]'
-      )
-    ) {
-      return toast.error('Chỉnh sửa vượt ra ngoài vùng in cho phép. Vui lòng điều chỉnh lại.')
+    // if (
+    //   document.body.querySelector<HTMLElement>(
+    //     '.NAME-print-area-container .NAME-print-area-allowed[data-is-out-of-bounds="true"]'
+    //   )
+    // ) {
+    //   return toast.error('Chỉnh sửa vượt ra ngoài vùng in cho phép. Vui lòng điều chỉnh lại.')
+    // }
+    const layoutId = useLayoutStore.getState().pickedLayout?.id
+    const layout = useLayoutStore.getState().layoutMode
+    if (layout === 'with-layout') {
+      if (!layoutId) return toast.error('Không tìm thấy khu vực in trên sản phẩm')
+      if (useLayoutStore.getState().checkIfAnySlotIsEmpty(layoutId)) {
+        toast.error('Vui lòng điền đầy đủ ảnh vào các vị trí in trước khi xem trước mockup.')
+        return
+      }
     }
     setShowMockupPreview(true)
   }

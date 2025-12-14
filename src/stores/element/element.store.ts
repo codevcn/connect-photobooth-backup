@@ -50,10 +50,13 @@ type TUseElementStore = {
   removePrintedImageElement: (printedImageId: string) => void
   initBuiltPrintedImageElements: (printedImages: TPrintedImageVisualState[]) => void
   resetPrintedImagesBuildId: () => void
-  addSavedElementVisualState: (elementVisualState: TSavedElementVisualState) => void
   recoverSavedElementsVisualStates: (productId: TBaseProduct['id']) => void
   checkSavedElementsVisualStateExists: (productId: TBaseProduct['id']) => boolean
   getSavedElementsVisualState: (productId: TBaseProduct['id']) => TSavedElementVisualState | null
+  addSavedElementVisualState: (
+    productId: TBaseProduct['id'],
+    elementVisualState: Omit<TSavedElementVisualState, 'productId'>
+  ) => void
 }
 
 export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
@@ -105,18 +108,21 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
     const { savedElementsVisualStates } = get()
     return savedElementsVisualStates.some((evs) => evs.productId === productId)
   },
-  addSavedElementVisualState: (elementVisualState) => {
-    if (!elementVisualState.productId) return
+  addSavedElementVisualState: (productId, elementVisualState) => {
+    if (Object.keys(elementVisualState).length === 0) return
     const savedElementsVisualStates = get().savedElementsVisualStates
-    if (savedElementsVisualStates.some((evs) => evs.productId === elementVisualState.productId)) {
+    if (savedElementsVisualStates.some((evs) => evs.productId === productId)) {
       set({
         savedElementsVisualStates: savedElementsVisualStates.map((evs) =>
-          evs.productId === elementVisualState.productId ? { ...evs, ...elementVisualState } : evs
+          evs.productId === productId ? { ...evs, ...elementVisualState } : evs
         ),
       })
     } else {
       set({
-        savedElementsVisualStates: [...savedElementsVisualStates, elementVisualState],
+        savedElementsVisualStates: [
+          ...savedElementsVisualStates,
+          { productId, ...elementVisualState },
+        ],
       })
     }
   },

@@ -5,6 +5,7 @@ import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { checkIfMobileScreen } from '@/utils/helpers'
 import { SlotsDisplayer } from '../customize/print-layout/SlotDisplayer'
 import { TLayoutSlotConfig } from '@/utils/types/print-layout'
+import { useQueryFilter } from '@/hooks/extensions'
 
 type TPrintAreaOverlayPreviewProps = {
   registerPrintAreaRef: (node: HTMLDivElement | null) => void
@@ -61,6 +62,7 @@ export const PrintAreaOverlay = ({
   registerRef,
 }: TPrintAreaOverlayProps) => {
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
+  const queryFilter = useQueryFilter()
 
   const handleClickFrame = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -93,16 +95,18 @@ export const PrintAreaOverlay = ({
       }}
       data-is-out-of-bounds={isOutOfBounds}
     >
-      {pickedLayout && pickedLayout.mountType === 'picked' && (
-        <SlotsDisplayer
-          layout={pickedLayout}
-          frameClassNames={{
-            container: 'cursor-pointer',
-          }}
-          scrollable={false}
-          onClickFrame={handleClickFrame}
-        />
-      )}
+      {(queryFilter.funId || queryFilter.dev) &&
+        pickedLayout &&
+        pickedLayout.mountType === 'picked' && (
+          <SlotsDisplayer
+            layout={pickedLayout}
+            frameClassNames={{
+              container: 'cursor-pointer',
+            }}
+            scrollable={false}
+            onClickFrame={handleClickFrame}
+          />
+        )}
     </div>
   )
 }

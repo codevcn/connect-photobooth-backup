@@ -21,6 +21,9 @@ type TLayoutStore = {
     printedImage: TPrintedImage
   ) => void
   addPlacedImageToLayout: (layoutId: string, slotId: string, placedImage: TPrintedImage) => void
+  checkIfAnySlotIsEmpty: (layoutId: string) => boolean
+  checkIfAnySlotFilled: (layoutId: string) => boolean
+  checkIfNoSlotFilled: (layoutId: string) => boolean
 }
 
 export const useLayoutStore = create<TLayoutStore>((set, get) => ({
@@ -30,7 +33,25 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
     : [],
   layoutMode: 'with-layout',
 
-  updatePrintedImageInPickedLayout: (layoutId, slotId, printedImage) => {
+  checkIfNoSlotFilled: (layoutId) => {
+    const { allLayouts } = get()
+    const layout = allLayouts.find((l) => l.id === layoutId)
+    if (!layout) return false
+    return layout.slotConfigs.every((slot) => !slot.placedImage)
+  },
+  checkIfAnySlotFilled: (layoutId) => {
+    const { allLayouts } = get()
+    const layout = allLayouts.find((l) => l.id === layoutId)
+    if (!layout) return false
+    return layout.slotConfigs.some((slot) => slot.placedImage)
+  },
+  checkIfAnySlotIsEmpty: (layoutId) => {
+    const { allLayouts } = get()
+    const layout = allLayouts.find((l) => l.id === layoutId)
+    if (!layout) return false
+    return layout.slotConfigs.some((slot) => !slot.placedImage)
+  },
+  updatePrintedImageInPickedLayout: (layoutId, slotId, placedImage) => {
     const pickedLayout = get().pickedLayout
     if (pickedLayout && pickedLayout.id === layoutId) {
       set({
@@ -41,10 +62,11 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
               return {
                 ...slot,
                 placedImage: {
-                  id: printedImage.id,
-                  url: printedImage.url,
-                  initialWidth: printedImage.width,
-                  initialHeight: printedImage.height,
+                  id: placedImage.id,
+                  url: placedImage.url,
+                  initialWidth: placedImage.width,
+                  initialHeight: placedImage.height,
+                  isOriginalFrameImage: placedImage.isOriginalImage,
                 },
               }
             }
@@ -71,6 +93,7 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
                 url: imageToAdd.url,
                 initialWidth: imageToAdd.width,
                 initialHeight: imageToAdd.height,
+                isOriginalFrameImage: placedImage.isOriginalImage,
               },
             }
           }
@@ -107,7 +130,7 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
       placedImage: undefined,
     }))
 
-    set({ pickedLayout: { ...pickedLayout, slotConfigs } })
+    set({ pickedLayout: { ...pickedLayout, slotConfigs }, layoutMode: 'with-layout' })
   },
   setAllLayouts: (layouts) => set({ allLayouts: layouts }),
   updateLayoutElements: (layoutId, elements) => {

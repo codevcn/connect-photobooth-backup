@@ -84,6 +84,7 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
       // Clean up empty arrays
       if (elementsVisualState.texts?.length === 0) delete elementsVisualState.texts
       if (elementsVisualState.stickers?.length === 0) delete elementsVisualState.stickers
+      if (elementsVisualState.printedImages?.length === 0) delete elementsVisualState.printedImages
       if (elementsVisualState.storedTemplates?.length === 0)
         delete elementsVisualState.storedTemplates
 

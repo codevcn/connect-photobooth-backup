@@ -259,8 +259,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       useEditedElementStore.getState()
     resetData()
     useElementLayerStore.getState().resetData()
-    addSavedElementVisualState({
-      productId: pickedProduct.id,
+    addSavedElementVisualState(pickedProduct.id, {
       ...elementsVisualState,
     })
     if (checkSavedElementsVisualStateExists(product.id)) {
@@ -307,14 +306,14 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const findProductIndex = () => {
     return products.findIndex((p) => p.id === pickedProduct?.id) + 1
   }
-  const containerRef = useRef<HTMLDivElement>(null)
+  const scrollableBox = useRef<HTMLDivElement>(null)
 
   const [thumbWidth, setThumbWidth] = useState(0)
   const [thumbLeft, setThumbLeft] = useState(0)
   const [hasScroll, setHasScroll] = useState(false)
 
   const update = () => {
-    const el = containerRef.current
+    const el = scrollableBox.current
     if (!el) return
 
     const totalWidth = el.scrollWidth
@@ -342,7 +341,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   useEffect(() => {
     update()
-    const el = containerRef.current
+    const el = scrollableBox.current
     if (!el) return
 
     el.addEventListener('scroll', update)
@@ -382,13 +381,14 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       if (!scrollbar) return
       if (window.scrollY > 170) {
         galleryWrapper.style.cssText = `height: ${initialGalleryHeight.current}px; width: ${galleryEle.offsetWidth}px;`
-        galleryEle.style.cssText = 'position: fixed; width: 100vw; z-index: 999; height: 70px;'
+        galleryEle.style.cssText = 'position: fixed; width: 100vw; z-index: 999; height: 96px;'
         scrollableBox.style.cssText = 'padding: 8px 8px 8px;'
         scrollableBox.classList.add('NAME-gallery-parent-to-hide', 'animate-pop-in')
         scrollbar.classList.replace('hidden', 'block')
         galleryEle
           .querySelector<HTMLElement>('.NAME-floating-gallery-title')
           ?.classList.remove('hidden')
+        scrollableBox.style.height = `${96 - 26}px`
       } else {
         galleryWrapper.style.cssText = 'height: auto; width: auto;'
         galleryEle.style.cssText = 'position: static; width: 100%; z-index: 1; height: 150px;'
@@ -398,6 +398,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         galleryEle
           .querySelector<HTMLElement>('.NAME-floating-gallery-title')
           ?.classList.add('hidden')
+        scrollableBox.style.height = '100%'
       }
     }
     window.addEventListener('scroll', stayGalleryOnTopPage)
@@ -466,7 +467,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
           </h2>
           <div
             ref={(node) => {
-              containerRef.current = node
+              scrollableBox.current = node
             }}
             className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col flex items-center gap-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
           >

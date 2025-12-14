@@ -10,6 +10,7 @@ import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { calculateInitialImageElementPosition } from '../elements/helpers'
 import { PrintedImagesModal } from '../customize/print-layout/PrintedImagesModal'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
 type ImageProps = {
   img: TPrintedImage
@@ -261,9 +262,11 @@ type TPrintedImagesPreviewProps = {
 }
 
 export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesPreviewProps) => {
+  const layoutMode = useLayoutStore((s) => s.layoutMode)
+
   return (
     <div className="col-span-2 mt-2 flex-1 flex gap-2 justify-between">
-      <PrintedImagesForTemplate printedImages={printedImages} />
+      {layoutMode === 'no-layout' && <PrintedImagesForTemplate printedImages={printedImages} />}
       <PrintedImagesModal printedImages={printedImages} />
     </div>
   )

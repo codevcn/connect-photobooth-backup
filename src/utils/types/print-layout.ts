@@ -20,6 +20,7 @@ export type TLayoutPlacedImage = {
   url: string
   initialWidth: number
   initialHeight: number
+  isOriginalFrameImage?: boolean
 }
 
 export type TLayoutSlotConfig = {

@@ -125,6 +125,7 @@ export const LivePreview = ({
   const prevProductIdRef = useRef<TBaseProduct['id'] | null>(null)
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
   const elementControlRef = useRef<{ todo: (param: any) => void }>({ todo: (param: any) => {} })
+  const layoutMode = useLayoutStore((s) => s.layoutMode)
 
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find(
@@ -278,6 +279,13 @@ export const LivePreview = ({
       >
         Ngoài phạm vi in cho phép
       </div> */}
+      {layoutMode === 'with-layout' &&
+        pickedLayout &&
+        useLayoutStore.getState().checkIfNoSlotFilled(pickedLayout.id) && (
+          <div className="absolute z-51 top-0.5 left-0.5 text-xs bg-white rounded-t-md px-3 py-1 rounded-br-md font-medium">
+            Chạm vào dấu + để thêm ảnh
+          </div>
+        )}
       <div
         ref={(node) => {
           printAreaContainerRef.current = node
