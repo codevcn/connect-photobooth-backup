@@ -149,7 +149,7 @@ function App() {
 }
 
 function AppWrapper() {
-  return <App />
+  return <MaintainPage />
 }
 
 export default AppWrapper
