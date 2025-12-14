@@ -1,5 +1,5 @@
 import { cn } from '@/configs/ui/tailwind-utils'
-import { TLayoutSlotConfig, TPrintLayout } from '@/utils/types/print-layout'
+import { TLayoutSlotConfig, TLayoutType, TPrintLayout } from '@/utils/types/print-layout'
 import { PlacedImage } from './PlacedImage'
 
 type TAddImageIconProps = {
@@ -53,15 +53,8 @@ type TemplateFrameProps = {
   layoutSlot: TLayoutSlotConfig
   layoutId: TPrintLayout['id']
   slotsCount: number
+  layoutType: TLayoutType
 } & Partial<{
-  styles: Partial<{
-    container: React.CSSProperties
-    plusIconWrapper: React.CSSProperties
-  }>
-  classNames: Partial<{
-    container: string
-    plusIconWrapper: string
-  }>
   onClickFrame: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     slotId: string,
@@ -74,22 +67,22 @@ type TemplateFrameProps = {
 export const LayoutSlot = ({
   layoutSlot,
   layoutId,
-  styles,
   slotsCount,
-  classNames,
   onClickFrame,
   scrollable = true,
   onImageLoad,
+  layoutType,
 }: TemplateFrameProps) => {
   return (
     <div
       style={{
-        ...styles?.container,
         ...layoutSlot.style,
+        ...(layoutType === 'full' && layoutSlot.placedImage?.isOriginalFrameImage
+          ? { aspectRatio: 'auto', height: '100%', width: '100%' }
+          : {}),
       }}
       className={cn(
-        'NAME-template-frame relative flex justify-center items-center overflow-hidden aspect-square border border-gray-600 border-dashed',
-        classNames?.container,
+        'NAME-layout-slot cursor-pointer relative flex justify-center items-center overflow-hidden aspect-square border border-gray-600 border-dashed',
         scrollable ? '' : 'touch-none'
       )}
       onClick={onClickFrame ? (e) => onClickFrame(e, layoutSlot.id, layoutId) : undefined}

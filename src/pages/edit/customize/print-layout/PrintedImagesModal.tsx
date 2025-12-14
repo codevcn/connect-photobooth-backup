@@ -19,19 +19,22 @@ const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
   }
 
   useEffect(() => {
-    getNaturalSizeOfImage(
-      url,
-      (width, height) => {
-        const imgEle = imgsContainerRef.current?.querySelector<HTMLDivElement>(
-          `.NAME-printed-image-box[data-img-box-id='${id}'] img`
-        )
-        if (imgEle) {
-          imgEle.style.cssText = `width: ${width}px; aspect-ratio: ${width} / ${height};`
-        }
-      },
-      (err) => {}
-    )
-  }, [url])
+    setTimeout(() => {
+      getNaturalSizeOfImage(
+        url,
+        (width, height) => {
+          const imgEle = imgsContainerRef.current?.querySelector<HTMLImageElement>(
+            `.NAME-printed-image-box[data-img-box-id='${id}'] img`
+          )
+          if (imgEle) {
+            imgEle.style.cssText = `width: ${width}px; aspect-ratio: ${width} / ${height};`
+            imgEle.src = url
+          }
+        },
+        (err) => {}
+      )
+    }, 0)
+  }, [url, id])
 
   return (
     <div
@@ -40,7 +43,7 @@ const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
       data-img-box-id={id}
     >
       <img
-        src={url || '/images/placeholder.svg'}
+        src={undefined}
         alt={`Printed Image`}
         className="max-w-full group-hover:scale-105 transition-transform duration-200 object-contain"
       />
@@ -96,10 +99,13 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
     }
   }, [])
 
-  if (!showPrintedImagesModal) return null
-
   return (
-    <div className="NAME-printed-images-modal 5xl:text-3xl fixed inset-0 z-999 flex items-center justify-center">
+    <div
+      style={{
+        display: showPrintedImagesModal ? 'flex' : 'none',
+      }}
+      className="NAME-printed-images-modal 5xl:text-3xl fixed inset-0 z-999 flex items-center justify-center"
+    >
       <div
         onClick={() => setShowPrintedImagesModal(false)}
         className="bg-black/70 absolute inset-0 z-10"

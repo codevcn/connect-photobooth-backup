@@ -5,21 +5,20 @@ import {
   TClientProductVariant,
   TMockupData,
   TPaymentProductItem,
-  TProductAttatchedData,
+  TMockupAttatchedData,
 } from '@/utils/types/global'
-import { toast } from 'react-toastify'
 import { useState } from 'react'
 
-type ProductNoteProps = {
-  productNote: TProductAttatchedData['productNote']
+type TProductNoteProps = {
+  mockupNote: TMockupAttatchedData['mockupNote']
 }
 
-const ProductNote = ({ productNote }: ProductNoteProps) => {
+const MockupNote = ({ mockupNote }: TProductNoteProps) => {
   return (
-    productNote && (
+    mockupNote && (
       <div className="mt-3 p-1 bg-gray-100 border-l-4 border-main-cl rounded-md">
         <span className="font-bold pl-1">Ghi chú đơn hàng:</span>
-        <span className="whitespace-pre-wrap ml-1">{productNote}</span>
+        <span className="whitespace-pre-wrap ml-1">{mockupNote}</span>
       </div>
     )
   )
@@ -114,7 +113,7 @@ export const ProductList: React.FC<ProductListProps> = ({
   onShowProductImage,
   onEditMockup,
 }) => {
-  const getProductAttachedData = useProductUIDataStore((s) => s.getProductAttachedData)
+  const getMockupAttachedData = useProductUIDataStore((s) => s.getMockupAttachedData)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<{
     productId: TBaseProduct['id']
@@ -336,7 +335,7 @@ export const ProductList: React.FC<ProductListProps> = ({
               </div>
             </div>
 
-            <ProductNote productNote={getProductAttachedData(productId)?.productNote} />
+            <MockupNote mockupNote={getMockupAttachedData(mockupData.id)?.mockupNote} />
           </div>
         )
       )}

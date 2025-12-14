@@ -480,9 +480,9 @@ export type TPlacedImageMetaData = {
   frameInitialSize: TSizeInfo
 }
 
-export type TProductAttatchedData = {
-  productId: TBaseProduct['id']
-  productNote?: string
+export type TMockupAttatchedData = {
+  mockupId: TMockupData['id']
+  mockupNote?: string
 }
 
 export type TPosition = {

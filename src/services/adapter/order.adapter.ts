@@ -65,7 +65,7 @@ export class OrderAdapter {
           }
           items.push({
             variant_id: variant.variantId,
-            quantity: mockups.length,
+            quantity: mockup.quantity,
             surfaces: [
               {
                 surface_id: mockup.surfaceInfo.id,

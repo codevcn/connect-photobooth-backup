@@ -1,3 +1,9 @@
+body,
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
 .animate-pop-in {
   animation: pop-in 0.2s ease-out;
 }
@@ -5,24 +11,6 @@
 /* Fixed Actions Bar - Match width with customization section */
 .NAME-actions-bar {
   width: calc((100vw - 2rem) * 0.4 - 1rem); /* Match right sidebar width */
-}
-
-@media (min-width: 724px) {
-  .NAME-actions-bar {
-    width: calc((100vw - 2rem) * 0.4 - 0.5rem);
-  }
-}
-
-@media (min-width: 878px) {
-  .NAME-actions-bar {
-    width: calc((100vw - 1rem - (100vw - 1rem) / 7) * 0.4 - 1rem);
-  }
-}
-
-@media (min-width: 1025px) {
-  .NAME-actions-bar {
-    width: calc((100vw - 2rem - (100vw - 2rem) / 7) * 0.4 - 1rem);
-  }
 }
 
 .STYLE-adjusting-element {

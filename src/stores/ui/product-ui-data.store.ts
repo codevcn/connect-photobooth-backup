@@ -1,12 +1,11 @@
 import {
   TBaseProduct,
   TClientProductVariant,
-  TPrintTemplate,
   TPrintAreaInfo,
-  TProductAttatchedData,
+  TMockupAttatchedData,
+  TMockupData,
 } from '@/utils/types/global'
 import { create } from 'zustand'
-import { useTemplateStore } from './template.store'
 import { useLayoutStore } from './print-layout.store'
 import { TPrintLayout } from '@/utils/types/print-layout'
 import { generateUniqueId } from '@/utils/helpers'
@@ -17,18 +16,21 @@ type TProductUIDataStore = {
   pickedSurface: TBaseProduct['printAreaList'][number] | null // print area info
   isAddingToCart: boolean
   cartCount: number
-  productsAttachedData: TProductAttatchedData[]
+  mockupsAttachedData: TMockupAttatchedData[]
   allowedPrintedAreaChangeId: string | null
+  lastestMockupId: TMockupData['id'] | null
 
   // Actions
+  setLastestMockupId: (mockupId: TMockupData['id']) => void
+  getLastestMockupId: () => TMockupData['id'] | null
   resetAllowedPrintedAreaChangeId: () => void
-  addProductAttachedData: (data: TProductAttatchedData) => void
-  updateProductAttachedData: (
-    productId: TBaseProduct['id'],
-    data: Partial<TProductAttatchedData>
+  addMockupAttachedData: (data: TMockupAttatchedData) => void
+  updateMockupAttachedData: (
+    mockupId: TMockupData['id'],
+    data: Partial<TMockupAttatchedData>
   ) => void
-  addProductNote: (productId: TBaseProduct['id'], note: string) => void
-  getProductAttachedData: (productId: TBaseProduct['id']) => TProductAttatchedData | undefined
+  addMockupNote: (mockupId: TMockupData['id'], note: string) => void
+  getMockupAttachedData: (mockupId: TMockupData['id']) => TMockupAttatchedData | undefined
   handlePickProduct: (
     prod: TBaseProduct,
     printArea: TPrintAreaInfo,
@@ -66,9 +68,16 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   pickedSurface: null, // dc khởi tạo từ products gallery, restore
   isAddingToCart: false,
   cartCount: 0,
-  productsAttachedData: [],
+  mockupsAttachedData: [],
   allowedPrintedAreaChangeId: null,
+  lastestMockupId: null,
 
+  getLastestMockupId: () => {
+    return get().lastestMockupId
+  },
+  setLastestMockupId: (mockupId) => {
+    set({ lastestMockupId: mockupId })
+  },
   resetAllowedPrintedAreaChangeId: () => {
     set({ allowedPrintedAreaChangeId: generateUniqueId() })
   },
@@ -80,7 +89,7 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
         pickedSurface: null,
         isAddingToCart: false,
         cartCount: 0,
-        productsAttachedData: [],
+        mockupsAttachedData: [],
       })
     } else {
       set({
@@ -93,22 +102,22 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     }
   },
 
-  getProductAttachedData: (productId) => {
-    return (get().productsAttachedData || []).find((data) => data.productId === productId)
+  getMockupAttachedData: (mockupId) => {
+    return (get().mockupsAttachedData || []).find((data) => data.mockupId === mockupId)
   },
 
-  addProductAttachedData: (data) => {
-    set({ productsAttachedData: [...get().productsAttachedData, data] })
+  addMockupAttachedData: (data) => {
+    set({ mockupsAttachedData: [...get().mockupsAttachedData, data] })
   },
 
-  updateProductAttachedData: (productId, data) => {
-    const existingData = [...(get().productsAttachedData || [])]
+  updateMockupAttachedData: (mockupId, data) => {
+    const existingData = [...(get().mockupsAttachedData || [])]
     if (existingData.length === 0) {
-      set({ productsAttachedData: [{ productId, ...data }] })
+      set({ mockupsAttachedData: [{ mockupId, ...data }] })
     } else {
       set({
-        productsAttachedData: existingData.map((prev) => {
-          if (prev.productId === productId) {
+        mockupsAttachedData: existingData.map((prev) => {
+          if (prev.mockupId === mockupId) {
             return { ...prev, ...data }
           }
           return prev
@@ -117,8 +126,8 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     }
   },
 
-  addProductNote: (productId, note) => {
-    get().updateProductAttachedData(productId, { productNote: note })
+  addMockupNote: (mockupId, note) => {
+    get().updateMockupAttachedData(mockupId, { mockupNote: note })
   },
 
   setIsAddingToCart: (isAdding: boolean) => {

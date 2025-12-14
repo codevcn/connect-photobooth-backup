@@ -12,11 +12,16 @@ import {
   TClientProductVariant,
   TElementsVisualState,
   TImgMimeType,
+  TMockupData,
   TPrintAreaInfo,
 } from '@/utils/types/global'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { checkIfValidToCart, cleanPrintAreaOnExtractMockupImage } from '../helpers'
+import {
+  checkIfValidToCart,
+  cleanPrintAreaOnExtractMockupImage,
+  recordMockupNote,
+} from '../helpers'
 import { base64WorkerHelper } from '@/workers/base64.worker-helper'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
@@ -56,7 +61,7 @@ export const AddToCartHandler = ({
 
   const handleAddToCart = async (
     elementsVisualState: TElementsVisualState,
-    onDoneAdd: () => void,
+    onDoneAdd: (mockupId: TMockupData['id']) => void,
     onError: (error: Error) => void
   ) => {
     console.log('>>> [add] handle add to cart:', { sessionId })
@@ -128,8 +133,6 @@ export const AddToCartHandler = ({
               {
                 width: allowedPrintAreaCanvas.width,
                 height: allowedPrintAreaCanvas.height,
-                // width: 111,
-                // height: 222,
               }
             )
             if (!result) {
@@ -142,7 +145,7 @@ export const AddToCartHandler = ({
           })
         toast.success('Đã thêm vào giỏ hàng')
         useProductUIDataStore.getState().setCartCount(LocalStorageHelper.countSavedMockupImages())
-        onDoneAdd()
+        onDoneAdd(mockupId)
       },
       (error) => {
         removeMockPrintArea()
@@ -160,8 +163,10 @@ export const AddToCartHandler = ({
     // Thu thập visual states của tất cả elements
     handleAddToCart(
       collectMockupVisualStates(printAreaContainerRef.current || undefined),
-      () => {
+      (mockupId) => {
         useProductUIDataStore.getState().setIsAddingToCart(false)
+        useProductUIDataStore.getState().setLastestMockupId(mockupId)
+        recordMockupNote()
       },
       (error) => {
         toast.error(error.message || 'Đã có lỗi xảy ra khi thêm vào giỏ hàng')

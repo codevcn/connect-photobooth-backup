@@ -4,20 +4,18 @@ import { useNavigate } from 'react-router-dom'
 import { MockupPreview } from './MockupPreview'
 import { useEffect, useRef, useState } from 'react'
 import { LocalStorageHelper } from '@/utils/localstorage'
-import { toast } from 'react-toastify'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
 import { fillQueryStringToURL } from '@/utils/helpers'
 import { StickerPicker } from './elements/sticker-element/StickerPicker'
 import { TextEditor } from './elements/text-element/TextEditor'
-import { useLayoutStore } from '@/stores/ui/print-layout.store'
-import { checkIfValidToCart } from './helpers'
+import { checkIfValidToCart, recordMockupNote } from './helpers'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
   const navigate = useNavigate()
   const [showMockupPreview, setShowMockupPreview] = useState(false)
   const pickedSurface = useProductUIDataStore((s) => s.pickedSurface)
-  const productNoteRef = useRef<HTMLTextAreaElement>(null)
+  const mockupNoteRef = useRef<HTMLTextAreaElement>(null)
 
   const addToCart = () => {
     eventEmitter.emit(EInternalEvents.ADD_TO_CART)
@@ -27,41 +25,23 @@ export const Actions = () => {
     useProductUIDataStore.getState().setCartCount(LocalStorageHelper.countSavedMockupImages())
   }
 
-  const recordProductNote = () => {
-    const pickedProduct = useProductUIDataStore.getState().pickedProduct
-    if (pickedProduct) {
-      const productNote = productNoteRef.current?.value
-      if (productNote) {
-        useProductUIDataStore.getState().addProductNote(pickedProduct.id, productNote)
-      } else {
-        useProductUIDataStore
-          .getState()
-          .updateProductAttachedData(pickedProduct.id, { productNote: '' })
-      }
-    }
-  }
-
   const beforeAddToCartHandler = () => {
-    recordProductNote()
     addToCart()
   }
 
   const beforeNavigateToPaymentHandler = () => {
-    recordProductNote()
+    recordMockupNote()
     navigate('/payment' + fillQueryStringToURL())
   }
 
   const initProductAttachedData = () => {
-    const pickedProduct = useProductUIDataStore.getState().pickedProduct
-    if (pickedProduct) {
-      const productAttachedData = useProductUIDataStore
-        .getState()
-        .getProductAttachedData(pickedProduct.id)
-      if (productAttachedData) {
-        if (productAttachedData.productNote) {
-          if (productNoteRef.current) {
-            productNoteRef.current.value = productAttachedData.productNote
-          }
+    const mockupAttachedData = useProductUIDataStore
+      .getState()
+      .getMockupAttachedData(useProductUIDataStore.getState().getLastestMockupId() || '')
+    if (mockupAttachedData) {
+      if (mockupAttachedData.mockupNote) {
+        if (mockupNoteRef.current) {
+          mockupNoteRef.current.value = mockupAttachedData.mockupNote
         }
       }
     }
@@ -94,9 +74,8 @@ export const Actions = () => {
           Ghi chú đơn hàng (tùy chọn)
         </label>
         <textarea
-          ref={productNoteRef}
-          name="product-note"
-          id="product-note-textfield"
+          name="mockup-note"
+          id="mockup-note-textfield"
           placeholder="Yêu cầu của bạn..."
           rows={2}
           className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[1.3em] text-sm w-full rounded-md border border-gray-300 p-1.5 outline-main-cl outline-0 focus:outline-2 focus:border-main-cl resize-none transition`}
@@ -198,9 +177,8 @@ export const Actions = () => {
               Ghi chú đơn hàng (tùy chọn)
             </label>
             <textarea
-              ref={productNoteRef}
-              name="product-note-mobile"
-              id="product-note-mobile"
+              name="mockup-note-mobile"
+              id="mockup-note-textfield-mobile"
               placeholder="Bạn có yêu cầu gì với đơn hàng của mình không?"
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} text-sm w-full rounded-md border-border p-2 outline-main-cl outline-0 focus:outline-2 resize-y`}
             ></textarea>

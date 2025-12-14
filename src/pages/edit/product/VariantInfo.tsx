@@ -118,7 +118,6 @@ const SizesComponent = ({
   mergedAttributes,
   pickSize,
 }: TSizesComponentProps) => {
-  console.log('>>> sort sizes:', { sortedSizes })
   return sortedSizes.map((size) => {
     const isSelected = selectedAttributes.size?.toUpperCase() === size.toUpperCase()
     const isScopeDisabled = !mergedAttributes.groups?.[selectedAttributes.material ?? 'null']?.[

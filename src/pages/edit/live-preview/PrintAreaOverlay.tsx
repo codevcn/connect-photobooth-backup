@@ -65,16 +65,6 @@ export const PrintAreaOverlay = ({
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
   const layoutMode = useLayoutStore((s) => s.layoutMode)
   const queryFilter = useQueryFilter()
-  console.log('>>> [ppp] puc:', pickedLayout)
-
-  const handleClickFrame = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    slotId: TLayoutSlotConfig['id'],
-    layoutId: TPrintTemplate['id']
-  ) => {
-    toast.info('KKK')
-    eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, slotId, layoutId)
-  }
 
   return (
     <div
@@ -100,14 +90,7 @@ export const PrintAreaOverlay = ({
       data-is-out-of-bounds={isOutOfBounds}
     >
       {(queryFilter.funId || queryFilter.dev) && layoutMode !== 'no-layout' && pickedLayout && (
-        <SlotsDisplayer
-          layout={pickedLayout}
-          frameClassNames={{
-            container: 'cursor-pointer',
-          }}
-          scrollable={false}
-          onClickFrame={handleClickFrame}
-        />
+        <SlotsDisplayer layout={pickedLayout} scrollable={false} />
       )}
     </div>
   )

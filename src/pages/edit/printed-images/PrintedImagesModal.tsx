@@ -13,25 +13,28 @@ type ImageProps = {
 
 const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
   const { url, id } = img
+  const renderedNaturalSizeRef = useRef<boolean>(false)
 
   const handleClickImage = () => {
     onClickImage({ ...img, id, url })
   }
 
   useEffect(() => {
-    getNaturalSizeOfImage(
-      url,
-      (width, height) => {
-        const imgEle = imgsContainerRef.current?.querySelector<HTMLDivElement>(
-          `.NAME-printed-image-box[data-img-box-id='${id}'] img`
-        )
-        if (imgEle) {
-          imgEle.style.cssText = `width: ${width}px; aspect-ratio: ${width} / ${height};`
-        }
-      },
-      (err) => {}
-    )
-  }, [url])
+    if (renderedNaturalSizeRef.current) return
+    renderedNaturalSizeRef.current = true
+    // getNaturalSizeOfImage(
+    //   url,
+    //   (width, height) => {
+    //     const imgEle = imgsContainerRef.current?.querySelector<HTMLDivElement>(
+    //       `.NAME-printed-image-box[data-img-box-id='${id}'] img`
+    //     )
+    //     if (imgEle) {
+    //       imgEle.style.cssText = `width: ${width}px; aspect-ratio: ${width} / ${height};`
+    //     }
+    //   },
+    //   (err) => {}
+    // )
+  }, [url, id])
 
   return (
     <div
@@ -39,11 +42,11 @@ const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
       className="NAME-printed-image-box cursor-pointer relative w-fit h-fit rounded-xl overflow-hidden border-2 border-border hover:border-primary transition-colors group"
       data-img-box-id={id}
     >
-      <img
+      {/* <img
         src={url || '/images/placeholder.svg'}
         alt={`Printed Image`}
         className="max-w-full group-hover:scale-105 transition-transform duration-200 object-contain"
-      />
+      /> */}
     </div>
   )
 }
@@ -97,10 +100,13 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
     }
   }, [])
 
-  if (!showPrintedImagesModal) return null
-
   return (
-    <div className="NAME-printed-images-modal 5xl:text-3xl fixed inset-0 z-999 flex items-center justify-center">
+    <div
+      style={{
+        display: showPrintedImagesModal ? 'flex' : 'none',
+      }}
+      className="NAME-printed-images-modal 5xl:text-3xl fixed inset-0 z-999 flex items-center justify-center"
+    >
       <div
         onClick={() => setShowPrintedImagesModal(false)}
         className="bg-black/70 absolute inset-0 z-10"

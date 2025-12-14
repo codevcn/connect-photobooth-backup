@@ -91,7 +91,7 @@ class EventEmitter<IEvents extends IInternalEvents> {
     ...args: IEvents[K] extends (...args: infer P) => any ? P : never
   ): void {
     for (const handler of this.listeners[name] ?? []) {
-      window.requestIdleCallback(() => {
+      queueMicrotask(() => {
         ;(handler as any)(...args)
       })
     }

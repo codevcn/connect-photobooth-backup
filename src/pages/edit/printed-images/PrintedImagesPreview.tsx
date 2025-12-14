@@ -206,7 +206,7 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
   }, [elementId, elementType, elementURL])
 
   return (
-    <div className="5xl:text-[1.5em] w-full text-[1em]">
+    <div className="5xl:text-[1.5em] w-full text-[1em] mt-2">
       <h3 className="5xl:text-[1em] smd:text-sm text-xs font-bold text-gray-800">
         Thêm ảnh vào vùng in
       </h3>
@@ -265,7 +265,7 @@ export const PrintedImagesPreview = ({ printedImages }: TPrintedImagesPreviewPro
   const layoutMode = useLayoutStore((s) => s.layoutMode)
 
   return (
-    <div className="col-span-2 mt-2 flex-1 flex gap-2 justify-between">
+    <div className="col-span-2 flex-1 flex gap-2 justify-between">
       {layoutMode === 'no-layout' && <PrintedImagesForTemplate printedImages={printedImages} />}
       <PrintedImagesModal printedImages={printedImages} />
     </div>

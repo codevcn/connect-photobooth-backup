@@ -1,6 +1,7 @@
 import { hardCodedPrintTemplates } from '@/configs/print-template/templates-data'
 import { createInitialConstants } from '@/utils/contants'
 import {
+  TMockupData,
   TPlacedImage,
   TPlacedImageMetaData,
   TPosition,
@@ -15,7 +16,7 @@ import {
   assignFrameSizeByTemplateType,
   stylePlacedImageByTemplateType,
 } from '@/configs/print-template/templates-helpers'
-import { generateUniqueId } from '@/utils/helpers'
+import { checkIfMobileScreen, generateUniqueId } from '@/utils/helpers'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { TPrintLayout } from '@/utils/types/print-layout'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
@@ -23,6 +24,7 @@ import { reAssignElementsByLayoutData } from './customize/print-layout/builder'
 import { DEFAULT_ELEMENT_DIMENSION_SIZE } from './elements/helpers'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { toast } from 'react-toastify'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 export const initFramePlacedImageByPrintedImage = (
   frameIndexProperty: TTemplateFrame['index'],
@@ -264,31 +266,28 @@ export const cleanPrintAreaOnExtractMockupImage = (
   clonedPrintAreaContainer
     .querySelector<HTMLElement>('.NAME-out-of-bounds-overlay-warning')
     ?.remove()
-  // clonedPrintAreaContainer
-  //   .querySelector<HTMLElement>('.NAME-zoom-placed-image-btn-wrapper')
-  //   ?.remove()
   const clonedAllowedPrintArea = clonedPrintAreaContainer.querySelector<HTMLDivElement>(
     '.NAME-print-area-allowed'
   )
   clonedAllowedPrintArea?.style.setProperty('border', 'none')
   clonedAllowedPrintArea?.style.setProperty('background-color', 'transparent')
-  // const clonedFramesDisplayer = clonedAllowedPrintArea?.querySelector<HTMLElement>(
-  //   '.NAME-frames-add-image-displayer'
-  // )
-  // clonedFramesDisplayer?.style.setProperty('background-color', 'transparent')
-  // clonedFramesDisplayer?.style.setProperty('border', 'none')
-  // for (const frame of clonedAllowedPrintArea?.querySelectorAll<HTMLElement>(
-  //   '.NAME-template-frame'
-  // ) || []) {
-  //   frame.style.setProperty('border', 'none')
-  //   frame.querySelector<HTMLElement>('.NAME-plus-icon-wrapper')?.remove()
-  // }
   const transparentPrintAreaContainer = clonedPrintAreaContainer.cloneNode(true) as HTMLDivElement
   transparentPrintAreaContainer.style.backgroundColor = 'transparent'
   document.body
     .querySelector<HTMLElement>('.NAME-app-temp-container')
     ?.appendChild(transparentPrintAreaContainer)
   transparentPrintAreaContainer.querySelector<HTMLElement>('.NAME-product-image')?.remove()
+  console.log(
+    '>>> [cle] slots:',
+    transparentPrintAreaContainer.querySelectorAll<HTMLElement>(
+      '.NAME-slots-displayer .NAME-layout-slot'
+    )
+  )
+  for (const slot of transparentPrintAreaContainer.querySelectorAll<HTMLElement>(
+    '.NAME-slots-displayer .NAME-layout-slot'
+  )) {
+    slot.style.border = 'none'
+  }
   return {
     printAreaContainer: clonedPrintAreaContainer,
     transparentPrintAreaContainer,
@@ -508,4 +507,19 @@ export const checkIfValidToCart = () => {
     }
   }
   return true
+}
+
+export const recordMockupNote = () => {
+  const mockupId = useProductUIDataStore.getState().getLastestMockupId()
+  if (!mockupId) return
+  const mockupNote = (
+    document.getElementById(
+      checkIfMobileScreen() ? 'mockup-note-textfield-mobile' : 'mockup-note-textfield'
+    ) as HTMLTextAreaElement | null
+  )?.value
+  if (mockupNote) {
+    useProductUIDataStore.getState().addMockupNote(mockupId, mockupNote)
+  } else {
+    useProductUIDataStore.getState().updateMockupAttachedData(mockupId, { mockupNote: '' })
+  }
 }
