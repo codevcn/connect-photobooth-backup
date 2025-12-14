@@ -157,6 +157,7 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   },
 
   handlePickProduct: (product, printArea, initialLayout) => {
+    console.log('>>> [ppp] start:', { product, printArea, initialLayout })
     set({
       pickedProduct: product,
       pickedVariant: product.variants[0],
@@ -169,7 +170,7 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
 
   handlePickFirstProduct: (product, initialLayout, printArea) => {
     useLayoutStore.getState().setLayoutForDefault(initialLayout)
-    get().handlePickProduct(product, printArea)
+    get().handlePickProduct(product, printArea, initialLayout)
   },
 
   handlePickVariant: (variant) => {

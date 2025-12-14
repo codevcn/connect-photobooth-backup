@@ -16,7 +16,7 @@ import {
 } from '@/utils/types/global'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
-import { cleanPrintAreaOnExtractMockupImage } from '../helpers'
+import { checkIfValidToCart, cleanPrintAreaOnExtractMockupImage } from '../helpers'
 import { base64WorkerHelper } from '@/workers/base64.worker-helper'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
@@ -61,25 +61,15 @@ export const AddToCartHandler = ({
   ) => {
     console.log('>>> [add] handle add to cart:', { sessionId })
     if (!sessionId) return
-    if (
-      printAreaContainerRef.current?.querySelector<HTMLElement>(
-        '.NAME-print-area-allowed[data-is-out-of-bounds="true"]'
-      )
-    ) {
-      return onError(
-        new Error('Vui lòng đảm bảo tất cả phần tử nằm trong vùng in trước khi thêm vào giỏ hàng')
-      )
-    }
-    const layoutId = useLayoutStore.getState().pickedLayout?.id
-    const layout = useLayoutStore.getState().layoutMode
-    if (layout === 'with-layout') {
-      if (!layoutId) return toast.error('Không tìm thấy khu vực in trên sản phẩm')
-      if (useLayoutStore.getState().checkIfAnySlotIsEmpty(layoutId)) {
-        return onError(
-          new Error('Vui lòng điền đầy đủ ảnh vào các vị trí in trước khi xem trước mockup')
-        )
-      }
-    }
+    // if (
+    //   printAreaContainerRef.current?.querySelector<HTMLElement>(
+    //     '.NAME-print-area-allowed[data-is-out-of-bounds="true"]'
+    //   )
+    // ) {
+    //   return onError(
+    //     new Error('Vui lòng đảm bảo tất cả phần tử nằm trong vùng in trước khi thêm vào giỏ hàng')
+    //   )
+    // }
     const [message, pickedVariant, pickedProduct, pickedSurface] = validateBeforeAddToCart()
     if (message) {
       return onError(new Error(message))
@@ -164,6 +154,7 @@ export const AddToCartHandler = ({
   }
 
   const listenAddToCart = () => {
+    if (!checkIfValidToCart()) return
     useProductUIDataStore.getState().setIsAddingToCart(true)
     useEditedElementStore.getState().cancelSelectingElement()
     // Thu thập visual states của tất cả elements

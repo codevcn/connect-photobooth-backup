@@ -6,6 +6,7 @@ import { checkIfMobileScreen } from '@/utils/helpers'
 import { SlotsDisplayer } from '../customize/print-layout/SlotDisplayer'
 import { TLayoutSlotConfig } from '@/utils/types/print-layout'
 import { useQueryFilter } from '@/hooks/extensions'
+import { toast } from 'react-toastify'
 
 type TPrintAreaOverlayPreviewProps = {
   registerPrintAreaRef: (node: HTMLDivElement | null) => void
@@ -64,12 +65,14 @@ export const PrintAreaOverlay = ({
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
   const layoutMode = useLayoutStore((s) => s.layoutMode)
   const queryFilter = useQueryFilter()
+  console.log('>>> [ppp] puc:', pickedLayout)
 
   const handleClickFrame = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     slotId: TLayoutSlotConfig['id'],
     layoutId: TPrintTemplate['id']
   ) => {
+    toast.info('KKK')
     eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, slotId, layoutId)
   }
 
@@ -96,19 +99,16 @@ export const PrintAreaOverlay = ({
       }}
       data-is-out-of-bounds={isOutOfBounds}
     >
-      {(queryFilter.funId || queryFilter.dev) &&
-        layoutMode !== 'no-layout' &&
-        pickedLayout &&
-        pickedLayout.mountType === 'picked' && (
-          <SlotsDisplayer
-            layout={pickedLayout}
-            frameClassNames={{
-              container: 'cursor-pointer',
-            }}
-            scrollable={false}
-            onClickFrame={handleClickFrame}
-          />
-        )}
+      {(queryFilter.funId || queryFilter.dev) && layoutMode !== 'no-layout' && pickedLayout && (
+        <SlotsDisplayer
+          layout={pickedLayout}
+          frameClassNames={{
+            container: 'cursor-pointer',
+          }}
+          scrollable={false}
+          onClickFrame={handleClickFrame}
+        />
+      )}
     </div>
   )
 }

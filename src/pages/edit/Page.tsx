@@ -27,6 +27,7 @@ import { cancelSelectingZoomingImages } from './helpers'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { MiddleInfoSection } from './MiddleInfoSection'
+import { toast } from 'react-toastify'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -195,10 +196,6 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
     const listenPointerDownOnPage = (e: PointerEvent) => {
       const target = e.target
       if (target instanceof Element) {
-        console.log('>>> [poi] pointer down on page:', {
-          target,
-          closest: target.closest('.NAME-menu-section'),
-        })
         if (
           !(
             target.closest('.NAME-root-element') ||

@@ -7,10 +7,10 @@ import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { buildDefaultLayout } from './customize/print-layout/builder'
 import { TPrintLayout } from '@/utils/types/print-layout'
-import { hardCodedLayoutData } from '@/configs/print-layout/print-layout-data-Ptm'
+import { hardCodedLayoutData as hardCodedLayoutDataPtm } from '@/configs/print-layout/print-layout-data-Ptm'
+import { hardCodedLayoutData as hardCodedLayoutDataFun } from '@/configs/print-layout/print-layout-data-Fun'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { PreviewImage } from './customize/print-layout/PreviewImage'
-import { createInitialConstants } from '@/utils/contants'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useVisualStatesCollector } from '@/hooks/use-visual-states-collector'
@@ -21,6 +21,7 @@ import { useProductStore } from '@/stores/product/product.store'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditModeStore } from '@/stores/ui/edit-mode.store'
 import { useElementStylingStore } from '@/stores/element/element-styling.store'
+import { useQueryFilter } from '@/hooks/extensions'
 
 type TProductProps = {
   product: TBaseProduct
@@ -48,31 +49,37 @@ const Product = ({
   onInitFirstProduct,
   firstPrintAreaInProduct,
   printedImages,
-  productIndex,
-  productsCount,
 }: TProductProps) => {
   const [initialLayout, setInitialLayout] = useState<TPrintLayout>()
-  // const previewPrintAreaRef = useRef<HTMLDivElement | null>(null)
-  // const previewPrintAreaContainerRef = useRef<HTMLDivElement | null>(null)
+  const queryFilter = useQueryFilter()
   const isMobileScreen = checkIfMobileScreen()
 
   const buildInitialLayout = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        if (!printAreaContainerRef.current || !printAreaRef.current) return
-        const { layout } = buildDefaultLayout(
-          printAreaContainerRef.current,
-          printAreaRef.current,
-          printedImages,
-          2
-        )
-        const initialLayout: TPrintLayout = {
-          ...hardCodedLayoutData(layout.type)[0],
-          printedImageElements: layout.elements,
-          mountType: 'suggested',
+        if (queryFilter.dev || queryFilter.funId) {
+          const initialLayout: TPrintLayout = {
+            ...hardCodedLayoutDataFun('full')[0],
+            printedImageElements: [],
+          }
+          setInitialLayout(initialLayout)
+          onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+        } else {
+          if (!printAreaContainerRef.current || !printAreaRef.current) return
+          const { layout } = buildDefaultLayout(
+            printAreaContainerRef.current,
+            printAreaRef.current,
+            printedImages,
+            2
+          )
+          const initialLayout: TPrintLayout = {
+            ...hardCodedLayoutDataPtm(layout.type)[0],
+            printedImageElements: layout.elements,
+            mountType: 'suggested',
+          }
+          setInitialLayout(initialLayout)
+          onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
         }
-        setInitialLayout(initialLayout)
-        onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
       })
     })
   }
@@ -266,9 +273,11 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       useLayoutStore.getState().setLayoutForDefault(null)
       useEditedElementStore.getState().recoverSavedElementsVisualStates(product.id)
     } else {
-      useLayoutStore.getState().setLayoutForDefault(initialLayout)
+      // useLayoutStore.getState().setLayoutForDefault(initialLayout)
     }
-    useProductUIDataStore.getState().handlePickProduct(product, firstPrintAreaInProduct)
+    useProductUIDataStore
+      .getState()
+      .handlePickProduct(product, firstPrintAreaInProduct, initialLayout)
   }
 
   const scrollToPickedProduct = () => {

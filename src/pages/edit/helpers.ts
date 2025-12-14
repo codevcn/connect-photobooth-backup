@@ -21,6 +21,8 @@ import { TPrintLayout } from '@/utils/types/print-layout'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { reAssignElementsByLayoutData } from './customize/print-layout/builder'
 import { DEFAULT_ELEMENT_DIMENSION_SIZE } from './elements/helpers'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
+import { toast } from 'react-toastify'
 
 export const initFramePlacedImageByPrintedImage = (
   frameIndexProperty: TTemplateFrame['index'],
@@ -491,4 +493,19 @@ export const handlePutPrintedImagesInLayout = (
       isLayoutImage: true,
     }))
   )
+}
+
+export const checkIfValidToCart = () => {
+  const layoutMode = useLayoutStore.getState().layoutMode
+  if (layoutMode === 'with-layout') {
+    if (
+      document.body.querySelector<HTMLElement>(
+        '.NAME-print-area-container .NAME-add-printed-image-to-slot'
+      )
+    ) {
+      toast.error('Vui lòng thêm hình vào tất cả các khung trước khi xem trước mockup.')
+      return false
+    }
+  }
+  return true
 }

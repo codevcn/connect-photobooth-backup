@@ -16,11 +16,11 @@ type TInstructionsModalProps = {
 
 const InstructionsModal = ({ onClose }: TInstructionsModalProps) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-99 p-2 animate-fade-in">
+    <div className="fixed inset-0 flex items-center justify-center z-99 p-6 animate-fade-in">
       <div onClick={onClose} className="bg-black/50 absolute inset-0 z-10"></div>
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative z-20 overflow-hidden">
+      <div className="smd:translate-y-0 translate-y-10 bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative z-20 overflow-hidden">
         {/* Header */}
-        <div className="bg-main-cl to-secondary-cl px-4 py-1 flex items-center justify-between">
+        <div className="bg-main-cl to-secondary-cl px-2 py-1 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -61,7 +61,7 @@ const InstructionsModal = ({ onClose }: TInstructionsModalProps) => {
         </div>
 
         {/* Content */}
-        <div className="5xl:text-[1.3em] px-4 py-2 max-h-[80vh] overflow-y-auto">
+        <div className="5xl:text-[1.3em] px-4 py-2 max-h-[60vh] overflow-y-auto">
           <div className="space-y-2 text-gray-700">
             {/* Step 1 */}
             <div className="flex gap-4">

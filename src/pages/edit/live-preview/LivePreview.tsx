@@ -168,7 +168,7 @@ export const LivePreview = ({
               mountType: layoutForDefault?.mountType,
             })
             if (layoutForDefault && layoutForDefault.mountType === 'suggested') {
-              handlePutPrintedImagesInLayout(layoutForDefault, allowedPrintAreaRef.current!)
+              // handlePutPrintedImagesInLayout(layoutForDefault, allowedPrintAreaRef.current!)
             }
             useProductUIDataStore.getState().resetAllowedPrintedAreaChangeId()
           })

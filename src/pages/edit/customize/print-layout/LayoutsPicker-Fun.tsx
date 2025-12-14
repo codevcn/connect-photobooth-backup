@@ -102,8 +102,7 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
         layout.layoutType === '2-horizontal-square' ||
         layout.layoutType === '2-vertical-square' ||
         layout.layoutType === '4-square' ||
-        layout.layoutType === '6-square' ||
-        layout.layoutType === 'frame-layout'
+        layout.layoutType === '6-square'
       )
     })
   }, [allLayouts])
@@ -176,53 +175,29 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
             </div>
           </div>
         </div>
-        {availableLayouts.map((layout) =>
-          layout.layoutType === 'frame-layout' ? (
+        {availableLayouts.map((layout) => (
+          <div
+            key={layout.id}
+            onClick={() => handlePickLayout(layout)}
+            className={`${
+              layoutMode !== 'no-layout' && pickedLayout?.id === layout.id ? 'border-main-cl' : ''
+            } flex justify-center items-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
+          >
             <div
-              key={layout.id}
-              onClick={handlePickFrameLayout}
-              className={`flex items-center justify-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition ${
-                layoutMode === 'frame-layout' ? 'border-main-cl' : ''
-              }`}
+              style={layout.layoutContainerConfigs?.style}
+              className="NAME-slots-displayer flex items-center justify-center p-0.5 h-full w-full"
             >
-              <div className="NAME-slots-displayer p-0.5 h-full w-full">
-                <div
-                  className={`relative flex justify-center items-center overflow-hidden h-full w-full aspect-square border border-gray-600 border-dashed ${
-                    layoutMode === 'frame-layout' ? 'border-main-cl text-main-cl' : 'text-gray-500'
-                  }`}
-                >
-                  <img
-                    src={originalFrameImage.url}
-                    alt=""
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
+              {layout.slotConfigs.map((slot) => (
+                <Slot
+                  key={slot.id}
+                  slotConfig={slot}
+                  isLayoutPicked={layoutMode !== 'no-layout' && pickedLayout?.id === layout.id}
+                  layoutType={layout.layoutType}
+                />
+              ))}
             </div>
-          ) : (
-            <div
-              key={layout.id}
-              onClick={() => handlePickLayout(layout)}
-              className={`${
-                layoutMode !== 'no-layout' && pickedLayout?.id === layout.id ? 'border-main-cl' : ''
-              } flex justify-center items-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
-            >
-              <div
-                style={layout.layoutContainerConfigs?.style}
-                className="NAME-slots-displayer flex items-center justify-center p-0.5 h-full w-full"
-              >
-                {layout.slotConfigs.map((slot) => (
-                  <Slot
-                    key={slot.id}
-                    slotConfig={slot}
-                    isLayoutPicked={layoutMode !== 'no-layout' && pickedLayout?.id === layout.id}
-                    layoutType={layout.layoutType}
-                  />
-                ))}
-              </div>
-            </div>
-          )
-        )}
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -17,7 +17,7 @@ export const AddImageIcon = ({ styles, classNames }: TAddImageIconProps) => {
     <div
       style={styles?.plusIconWrapper}
       className={cn(
-        'NAME-plus-icon-wrapper flex items-center justify-center text-white h-full w-full bg-gray-400/90',
+        'NAME-add-printed-image-to-slot flex items-center justify-center text-white h-full w-full bg-gray-400/90',
         classNames?.plusIconWrapper
       )}
     >

@@ -23,9 +23,6 @@ type TLayoutStore = {
     printedImage: TPrintedImage
   ) => void
   addPlacedImageToLayout: (layoutId: string, slotId: string, placedImage: TPrintedImage) => void
-  checkIfAnySlotIsEmpty: (layoutId: string) => boolean
-  checkIfAnySlotFilled: (layoutId: string) => boolean
-  checkIfNoSlotFilled: (layoutId: string) => boolean
   getLayoutByLayoutType: (layoutType: TLayoutType) => TPrintLayout | null
   setLayoutForDefault: (layout: TPrintLayout | null) => void
 }
@@ -78,24 +75,6 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
         }),
       },
     })
-  },
-  checkIfNoSlotFilled: (layoutId) => {
-    const { allLayouts } = get()
-    const layout = allLayouts.find((l) => l.id === layoutId)
-    if (!layout) return false
-    return layout.slotConfigs.every((slot) => !slot.placedImage)
-  },
-  checkIfAnySlotFilled: (layoutId) => {
-    const { allLayouts } = get()
-    const layout = allLayouts.find((l) => l.id === layoutId)
-    if (!layout) return false
-    return layout.slotConfigs.some((slot) => slot.placedImage)
-  },
-  checkIfAnySlotIsEmpty: (layoutId) => {
-    const { allLayouts } = get()
-    const layout = allLayouts.find((l) => l.id === layoutId)
-    if (!layout) return false
-    return layout.slotConfigs.some((slot) => !slot.placedImage)
   },
   updatePrintedImageInPickedLayout: (layoutId, slotId, placedImage) => {
     const pickedLayout = get().pickedLayout

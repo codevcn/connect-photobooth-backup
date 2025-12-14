@@ -151,7 +151,6 @@ export const PrintedImageElement = ({
         zIndex: zindex,
         height: `${height}px`,
         width: `${width}px`,
-        clipPath: clipPolygon || 'none',
       }}
       className={`NAME-root-element NAME-element-type-printed-image absolute h-fit w-fit touch-none z-6`}
       onPointerDown={pickElement}
@@ -178,7 +177,12 @@ export const PrintedImageElement = ({
       onDrop={(e) => e.preventDefault()}
       onDragOver={(e) => e.preventDefault()}
     >
-      <div className={`NAME-element-main-box select-none relative origin-center h-full w-full`}>
+      <div
+        style={{
+          clipPath: clipPolygon || 'none',
+        }}
+        className={`NAME-element-main-box select-none relative origin-center h-full w-full`}
+      >
         <div
           className="NAME-element-display-wrapper h-full w-full"
           style={{

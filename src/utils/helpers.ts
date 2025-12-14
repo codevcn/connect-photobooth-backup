@@ -570,3 +570,23 @@ export const getEditedElementByElementId = (elementId: string): HTMLElement | nu
     `.NAME-print-area-container .NAME-root-element[data-root-element-id="${elementId}"]`
   )
 }
+
+export function countFramesInOneSecond(): Promise<number> {
+  return new Promise((resolve) => {
+    let frameCount = 0
+    const startTime = performance.now()
+
+    function loop(now: number) {
+      frameCount++
+
+      if (now - startTime >= 1000) {
+        resolve(frameCount)
+        return
+      }
+
+      requestAnimationFrame(loop)
+    }
+
+    requestAnimationFrame(loop)
+  })
+}

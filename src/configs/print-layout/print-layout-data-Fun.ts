@@ -262,8 +262,6 @@ export function hardCodedLayoutData(layoutType?: TLayoutType): TPrintLayout[] {
         return [template10]
       case '6-square':
         return [template11]
-      case 'frame-layout':
-        return [template12]
       default:
         return [template1]
     }

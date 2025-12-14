@@ -307,7 +307,7 @@ export const calculateInitialImageElementPosition = (
   const imgRatio = imageNaturalSize.width / imageNaturalSize.height
   let imgHeight: number
   let imgWidth: number
-  const margin = elementType === 'sticker' ? 16 : 8
+  const margin = elementType === 'sticker' ? 32 : 12
   if (imgRatio > allowedPrintAreaRect.width / allowedPrintAreaRect.height) {
     imgWidth = allowedPrintAreaRect.width - margin
     imgHeight = imgWidth / imgRatio
@@ -316,8 +316,8 @@ export const calculateInitialImageElementPosition = (
     imgWidth = imgHeight * imgRatio
   }
   return {
-    height: imgHeight,
-    width: imgWidth,
+    height: imgHeight / scaleFactor,
+    width: imgWidth / scaleFactor,
     x:
       (allowedPrintAreaRect.left +
         (allowedPrintAreaRect.width - imgWidth) / 2 -
