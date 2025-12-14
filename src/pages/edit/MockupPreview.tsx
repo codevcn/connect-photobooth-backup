@@ -22,6 +22,7 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
   const generatePreview = () => {
     const container = document.body.querySelector<HTMLDivElement>('.NAME-print-area-container')
     if (!container) {
+      console.log('>>> run this')
       return setError('Không tìm thấy khu vực chỉnh sửa')
     }
     if (
