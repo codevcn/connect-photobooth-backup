@@ -15,6 +15,7 @@ import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { reAssignElementsByLayoutData } from '../customize/print-layout/builder'
 import { TPrintLayout } from '@/utils/types/print-layout'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type TZoomButtonsProps = {
   scale: number
@@ -162,15 +163,18 @@ export const LivePreview = ({
           requestAnimationFrame(() => {
             // Lấy giá trị mới nhất từ store
             const layoutForDefault = useLayoutStore.getState().layoutForDefault
-            console.log('>>> [16] curr:', layoutForDefault)
+            console.log('>>> [hhh] curr:', {
+              layoutForDefault,
+              mountType: layoutForDefault?.mountType,
+            })
             if (layoutForDefault && layoutForDefault.mountType === 'suggested') {
               handlePutPrintedImagesInLayout(layoutForDefault, allowedPrintAreaRef.current!)
             }
-            eventEmitter.emit(EInternalEvents.EDITED_PRINT_AREA_CHANGED)
+            useProductUIDataStore.getState().resetAllowedPrintedAreaChangeId()
           })
         })
       } else {
-        eventEmitter.emit(EInternalEvents.EDITED_PRINT_AREA_CHANGED)
+        useProductUIDataStore.getState().resetAllowedPrintedAreaChangeId()
       }
     }, 100)
   }

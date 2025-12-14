@@ -9,6 +9,7 @@ import { create } from 'zustand'
 import { useTemplateStore } from './template.store'
 import { useLayoutStore } from './print-layout.store'
 import { TPrintLayout } from '@/utils/types/print-layout'
+import { generateUniqueId } from '@/utils/helpers'
 
 type TProductUIDataStore = {
   pickedProduct: TBaseProduct | null
@@ -17,8 +18,10 @@ type TProductUIDataStore = {
   isAddingToCart: boolean
   cartCount: number
   productsAttachedData: TProductAttatchedData[]
+  allowedPrintedAreaChangeId: string | null
 
   // Actions
+  resetAllowedPrintedAreaChangeId: () => void
   addProductAttachedData: (data: TProductAttatchedData) => void
   updateProductAttachedData: (
     productId: TBaseProduct['id'],
@@ -64,7 +67,11 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   isAddingToCart: false,
   cartCount: 0,
   productsAttachedData: [],
+  allowedPrintedAreaChangeId: null,
 
+  resetAllowedPrintedAreaChangeId: () => {
+    set({ allowedPrintedAreaChangeId: generateUniqueId() })
+  },
   resetData: (resetAll = false) => {
     if (resetAll) {
       set({

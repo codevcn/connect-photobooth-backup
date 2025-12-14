@@ -263,9 +263,11 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       ...elementsVisualState,
     })
     if (checkSavedElementsVisualStateExists(product.id)) {
+      useLayoutStore.getState().setLayoutForDefault(null)
       useEditedElementStore.getState().recoverSavedElementsVisualStates(product.id)
+    } else {
+      useLayoutStore.getState().setLayoutForDefault(initialLayout)
     }
-    useLayoutStore.getState().setLayoutForDefault(initialLayout)
     useProductUIDataStore.getState().handlePickProduct(product, firstPrintAreaInProduct)
   }
 

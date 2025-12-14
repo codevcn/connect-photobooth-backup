@@ -179,6 +179,7 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
         {availableLayouts.map((layout) =>
           layout.layoutType === 'frame-layout' ? (
             <div
+              key={layout.id}
               onClick={handlePickFrameLayout}
               className={`flex items-center justify-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition ${
                 layoutMode === 'frame-layout' ? 'border-main-cl' : ''

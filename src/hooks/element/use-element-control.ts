@@ -13,6 +13,7 @@ import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useSnapThresholdRotateElement } from './use-snap-threshold-rotate-element'
 import { calculateElementClipPolygon } from '@/pages/edit/elements/clip-element-helper'
 import { useEditedElementStore } from '@/stores/element/element.store'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type TElementPreviousRelativeProps = {
   relativeOffsetLeft: number
@@ -155,6 +156,7 @@ export const useElementControl = (
   const [angle, setAngle] = useState<TElementVisualBaseState['angle']>(initialAngle)
   const [zindex, setZindex] = useState<TElementVisualBaseState['zindex']>(initialZindex)
   const scaleFactor = useEditAreaStore((s) => s.editAreaScaleValue)
+  const allowedPrintedAreaChangeId = useProductUIDataStore((s) => s.allowedPrintedAreaChangeId)
   // Ref to store previous offset values before visual state changes
   const elementPreviousRelativeProps = useRef<TElementPreviousRelativeProps | null>(null)
   // const { ref: refForPinch } = usePinchElement({
@@ -346,16 +348,6 @@ export const useElementControl = (
   }, [position.x, position.y, angle, scale, zindex])
 
   useEffect(() => {
-    // eventEmitter.on(EInternalEvents.EDITED_PRINT_AREA_CHANGED, stayElementVisualOnAllowedPrintArea)
-    // return () => {
-    //   eventEmitter.off(
-    //     EInternalEvents.EDITED_PRINT_AREA_CHANGED,
-    //     stayElementVisualOnAllowedPrintArea
-    //   )
-    // }
-  }, [])
-
-  useEffect(() => {
     // // Setup ResizeObserver to watch for print container size changes
     // const container = containerForElementAbsoluteToRef.current
     // if (!container) return
@@ -392,6 +384,17 @@ export const useElementControl = (
   useEffect(() => {
     updateClipPolygon()
   }, [position.x, position.y, scale, angle, elementId])
+
+  useEffect(() => {
+    // eventEmitter.on(EInternalEvents.EDITED_PRINT_AREA_CHANGED, stayElementVisualOnAllowedPrintArea)
+    // return () => {
+    //   eventEmitter.off(
+    //     EInternalEvents.EDITED_PRINT_AREA_CHANGED,
+    //     stayElementVisualOnAllowedPrintArea
+    //   )
+    // }
+    if (allowedPrintedAreaChangeId) updateClipPolygon()
+  }, [allowedPrintedAreaChangeId])
 
   return {
     // forPinch: {
