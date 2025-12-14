@@ -263,13 +263,10 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       ...elementsVisualState,
     })
     if (checkSavedElementsVisualStateExists(product.id)) {
-      useProductUIDataStore.getState().handlePickProduct(product, firstPrintAreaInProduct)
       useEditedElementStore.getState().recoverSavedElementsVisualStates(product.id)
-    } else {
-      useProductUIDataStore
-        .getState()
-        .handlePickProduct(product, firstPrintAreaInProduct, initialLayout)
     }
+    useLayoutStore.getState().setLayoutForDefault(initialLayout)
+    useProductUIDataStore.getState().handlePickProduct(product, firstPrintAreaInProduct)
   }
 
   const scrollToPickedProduct = () => {

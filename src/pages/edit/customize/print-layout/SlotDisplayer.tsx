@@ -31,7 +31,7 @@ export const SlotsDisplayer = ({
   const { slotConfigs, layoutContainerConfigs } = layout
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="flex justify-center items-center relative w-full h-full overflow-hidden">
       <div
         style={{ ...(layoutContainerConfigs.style || {}) }}
         className={`NAME-slots-displayer absolute p-0.5 h-full w-full`}

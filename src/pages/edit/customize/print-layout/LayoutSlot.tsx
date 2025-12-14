@@ -74,9 +74,10 @@ export const LayoutSlot = ({
     <div
       style={{
         ...styles?.container,
+        ...layoutSlot.style,
       }}
       className={cn(
-        'NAME-template-frame relative flex justify-center items-center overflow-hidden h-full w-full border border-gray-600 border-dashed',
+        'NAME-template-frame relative flex justify-center items-center overflow-hidden aspect-square border border-gray-600 border-dashed',
         classNames?.container,
         scrollable ? '' : 'touch-none'
       )}

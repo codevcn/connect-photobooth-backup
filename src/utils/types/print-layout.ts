@@ -1,6 +1,7 @@
 import { TPrintedImageVisualState } from './global'
 
 export type TLayoutType =
+  | 'frame-layout'
   | 'full'
   | 'half-width'
   | 'half-height'

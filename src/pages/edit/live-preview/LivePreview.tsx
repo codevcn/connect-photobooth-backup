@@ -161,9 +161,10 @@ export const LivePreview = ({
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             // Lấy giá trị mới nhất từ store
-            const currentLayout = useLayoutStore.getState().pickedLayout
-            if (currentLayout && currentLayout.mountType === 'suggested') {
-              handlePutPrintedImagesInLayout(currentLayout, allowedPrintAreaRef.current!)
+            const layoutForDefault = useLayoutStore.getState().layoutForDefault
+            console.log('>>> [16] curr:', layoutForDefault)
+            if (layoutForDefault && layoutForDefault.mountType === 'suggested') {
+              handlePutPrintedImagesInLayout(layoutForDefault, allowedPrintAreaRef.current!)
             }
             eventEmitter.emit(EInternalEvents.EDITED_PRINT_AREA_CHANGED)
           })
@@ -279,13 +280,6 @@ export const LivePreview = ({
       >
         Ngoài phạm vi in cho phép
       </div> */}
-      {layoutMode === 'with-layout' &&
-        pickedLayout &&
-        useLayoutStore.getState().checkIfNoSlotFilled(pickedLayout.id) && (
-          <div className="absolute z-51 top-0.5 left-0.5 text-xs bg-white rounded-t-md px-3 py-1 rounded-br-md font-medium">
-            Chạm vào dấu + để thêm ảnh
-          </div>
-        )}
       <div
         ref={(node) => {
           printAreaContainerRef.current = node

@@ -1,14 +1,16 @@
 import { hardCodedLayoutData } from '@/configs/print-layout/print-layout-data-Fun'
 import { generateUniqueId } from '@/utils/helpers'
 import { TPrintedImage, TPrintedImageVisualState } from '@/utils/types/global'
-import { TPrintLayout } from '@/utils/types/print-layout'
+import { TLayoutType, TPrintLayout } from '@/utils/types/print-layout'
 import { create } from 'zustand'
 
 type TLayoutStore = {
   pickedLayout: TPrintLayout | null
   allLayouts: TPrintLayout[]
-  layoutMode: 'with-layout' | 'no-layout'
+  layoutMode: 'with-layout' | 'no-layout' | 'frame-layout'
+  layoutForDefault: TPrintLayout | null
 
+  pickFrameLayout: (originalFrameImage: TPrintedImage) => void
   pickLayout: (layout: TPrintLayout) => void
   pickNoLayout: () => void
   unpickLayout: () => void
@@ -24,15 +26,59 @@ type TLayoutStore = {
   checkIfAnySlotIsEmpty: (layoutId: string) => boolean
   checkIfAnySlotFilled: (layoutId: string) => boolean
   checkIfNoSlotFilled: (layoutId: string) => boolean
+  getLayoutByLayoutType: (layoutType: TLayoutType) => TPrintLayout | null
+  setLayoutForDefault: (layout: TPrintLayout | null) => void
 }
 
 export const useLayoutStore = create<TLayoutStore>((set, get) => ({
   pickedLayout: null,
-  allLayouts: new URLSearchParams(window.location.search).get('funstudio')
-    ? hardCodedLayoutData()
-    : [],
+  allLayouts:
+    new URLSearchParams(window.location.search).get('funstudio') ||
+    new URLSearchParams(window.location.search).get('dev')
+      ? hardCodedLayoutData()
+      : [],
   layoutMode: 'with-layout',
+  layoutForDefault: null,
 
+  setLayoutForDefault: (layout) => set({ layoutForDefault: layout }),
+  getLayoutByLayoutType: (layoutType) => {
+    return get().allLayouts.find((layout) => layout.layoutType === layoutType) || null
+  },
+  pickNoLayout: () => {
+    set({ layoutMode: 'no-layout' })
+  },
+  unpickLayout: () => set({ pickedLayout: null }),
+  pickLayout: (layout) => {
+    const slotConfigs = layout.slotConfigs.map((slot) => ({
+      ...slot,
+      placedImage: undefined,
+    }))
+
+    set({ pickedLayout: { ...layout, slotConfigs }, layoutMode: 'with-layout' })
+  },
+  pickFrameLayout: (originalFrameImage) => {
+    console.log('>>> [ori] ooo:', originalFrameImage)
+    const frameLayout = hardCodedLayoutData('frame-layout')[0]
+    set({
+      layoutMode: 'frame-layout',
+      pickedLayout: {
+        ...frameLayout,
+        mountType: 'picked',
+        slotConfigs: frameLayout.slotConfigs.map((slot) => {
+          return {
+            ...slot,
+            placedImage: {
+              id: generateUniqueId(),
+              initialHeight: originalFrameImage.height,
+              initialWidth: originalFrameImage.width,
+              isOriginalFrameImage: true,
+              url: originalFrameImage.url,
+            },
+          }
+        }),
+      },
+    })
+  },
   checkIfNoSlotFilled: (layoutId) => {
     const { allLayouts } = get()
     const layout = allLayouts.find((l) => l.id === layoutId)
@@ -116,21 +162,6 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
       allLayouts: hardCodedLayoutData() || [],
       layoutMode: 'with-layout',
     })
-  },
-  pickNoLayout: () => {
-    set({ layoutMode: 'no-layout', pickedLayout: null })
-  },
-  unpickLayout: () => set({ pickedLayout: null }),
-  pickLayout: (layout) => {
-    set({ pickedLayout: layout })
-    const pickedLayout = get().pickedLayout
-    if (!pickedLayout) return
-    const slotConfigs = pickedLayout.slotConfigs.map((slot) => ({
-      ...slot,
-      placedImage: undefined,
-    }))
-
-    set({ pickedLayout: { ...pickedLayout, slotConfigs }, layoutMode: 'with-layout' })
   },
   setAllLayouts: (layouts) => set({ allLayouts: layouts }),
   updateLayoutElements: (layoutId, elements) => {

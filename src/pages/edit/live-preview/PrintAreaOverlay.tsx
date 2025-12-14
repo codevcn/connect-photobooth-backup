@@ -62,6 +62,7 @@ export const PrintAreaOverlay = ({
   registerRef,
 }: TPrintAreaOverlayProps) => {
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
+  const layoutMode = useLayoutStore((s) => s.layoutMode)
   const queryFilter = useQueryFilter()
 
   const handleClickFrame = (
@@ -96,6 +97,7 @@ export const PrintAreaOverlay = ({
       data-is-out-of-bounds={isOutOfBounds}
     >
       {(queryFilter.funId || queryFilter.dev) &&
+        layoutMode !== 'no-layout' &&
         pickedLayout &&
         pickedLayout.mountType === 'picked' && (
           <SlotsDisplayer

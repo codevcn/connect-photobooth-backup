@@ -157,11 +157,12 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     })
     // useTemplateStore.getState().pickTemplate(initialTemplate.id, printArea)
     if (initialLayout) useLayoutStore.getState().pickLayout(initialLayout)
-    else useLayoutStore.getState().unpickLayout()
+    else useLayoutStore.getState().pickNoLayout()
   },
 
   handlePickFirstProduct: (product, initialLayout, printArea) => {
-    get().handlePickProduct(product, printArea, initialLayout)
+    useLayoutStore.getState().setLayoutForDefault(initialLayout)
+    get().handlePickProduct(product, printArea)
   },
 
   handlePickVariant: (variant) => {
