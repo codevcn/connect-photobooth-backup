@@ -54,26 +54,6 @@ export class OrderAdapter {
     //   }
     // }
 
-    const convertElementsVisualState = (
-      elementsVisualState: TPaymentProductItem['elementsVisualState']
-    ): TPaymentProductItem['elementsVisualState'] => {
-      const getBase64 = useCommonDataStore.getState().getBase64ByURL
-      return {
-        printedImages:
-          elementsVisualState.printedImages?.map((img) => ({
-            ...img,
-            data_base64: getBase64(img.path),
-          })) || [],
-        stickers:
-          elementsVisualState.stickers?.map((sticker) => ({
-            ...sticker,
-            data_base64: getBase64(sticker.path),
-          })) || [],
-        texts: elementsVisualState.texts || [],
-        storedTemplates: elementsVisualState.storedTemplates,
-      }
-    }
-
     const items: TCreateOrderReq['items'] = []
     for (const item of cartItems) {
       for (const variant of item.productVariants) {
@@ -83,19 +63,20 @@ export class OrderAdapter {
           if (!mockup.preSentImageLink) {
             throw new Error('Thiếu đường dẫn hình ảnh đã gửi trước cho dữ liệu mockup')
           }
-          mockups.push({
-            surface_id: mockup.surfaceInfo.id,
-            editor_state_json: convertElementsVisualState(mockup.elementsVisualState),
-            file_url: mockup.preSentImageLink,
-            width_px: preSentImageSize.width,
-            height_px: preSentImageSize.height,
+          items.push({
+            variant_id: variant.variantId,
+            quantity: mockups.length,
+            surfaces: [
+              {
+                surface_id: mockup.surfaceInfo.id,
+                editor_state_json: mockup.elementsVisualState,
+                file_url: mockup.preSentImageLink,
+                width_px: preSentImageSize.width,
+                height_px: preSentImageSize.height,
+              },
+            ],
           })
         }
-        items.push({
-          variant_id: variant.variantId,
-          quantity: mockups.length,
-          surfaces: mockups,
-        })
       }
     }
 
