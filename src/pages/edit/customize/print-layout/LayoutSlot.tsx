@@ -88,7 +88,11 @@ export const LayoutSlot = ({
       onClick={onClickFrame ? (e) => onClickFrame(e, layoutSlot.id, layoutId) : undefined}
     >
       {layoutSlot.placedImage ? (
-        <PlacedImage placedImage={layoutSlot.placedImage} onImageLoad={onImageLoad} />
+        <PlacedImage
+          placedImage={layoutSlot.placedImage}
+          onImageLoad={onImageLoad}
+          layoutType={layoutType}
+        />
       ) : (
         <AddImageIcon slotsCount={slotsCount} />
       )}

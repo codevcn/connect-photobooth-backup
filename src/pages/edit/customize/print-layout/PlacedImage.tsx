@@ -1,11 +1,12 @@
-import { TLayoutPlacedImage } from '@/utils/types/print-layout'
+import { TLayoutPlacedImage, TLayoutType } from '@/utils/types/print-layout'
 
 type TPlacedImageProps = {
   placedImage: TLayoutPlacedImage
   onImageLoad?: () => void
+  layoutType: TLayoutType
 }
 
-export const PlacedImage = ({ placedImage, onImageLoad }: TPlacedImageProps) => {
+export const PlacedImage = ({ placedImage, onImageLoad, layoutType }: TPlacedImageProps) => {
   return (
     <img
       onDragStart={(e) => e.preventDefault()}
@@ -13,7 +14,7 @@ export const PlacedImage = ({ placedImage, onImageLoad }: TPlacedImageProps) => 
       alt="Ảnh in của bạn"
       className="NAME-frame-placed-image object-center h-full w-full absolute top-0 left-0 z-10 select-none"
       style={{
-        objectFit: placedImage.isOriginalFrameImage ? 'contain' : 'cover',
+        objectFit: layoutType === 'full' && placedImage.isOriginalFrameImage ? 'contain' : 'cover',
       }}
       onLoad={(e) => onImageLoad?.()}
     />
