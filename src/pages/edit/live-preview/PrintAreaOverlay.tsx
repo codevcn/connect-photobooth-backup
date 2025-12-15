@@ -65,6 +65,7 @@ export const PrintAreaOverlay = ({
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
   const layoutMode = useLayoutStore((s) => s.layoutMode)
   const queryFilter = useQueryFilter()
+  console.log('>>> [reto] overlay kk:', pickedLayout)
 
   return (
     <div

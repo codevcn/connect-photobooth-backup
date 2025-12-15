@@ -25,6 +25,7 @@ type TLayoutStore = {
   addPlacedImageToLayout: (layoutId: string, slotId: string, placedImage: TPrintedImage) => void
   getLayoutByLayoutType: (layoutType: TLayoutType) => TPrintLayout | null
   setLayoutForDefault: (layout: TPrintLayout | null) => void
+  restoreLayout: (layout: TPrintLayout) => void
 }
 
 export const useLayoutStore = create<TLayoutStore>((set, get) => ({
@@ -37,6 +38,9 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
   layoutMode: 'with-layout',
   layoutForDefault: null,
 
+  restoreLayout: (layout: TPrintLayout) => {
+    set({ pickedLayout: layout, layoutMode: 'with-layout' })
+  },
   setLayoutForDefault: (layout) => set({ layoutForDefault: layout }),
   getLayoutByLayoutType: (layoutType) => {
     return get().allLayouts.find((layout) => layout.layoutType === layoutType) || null

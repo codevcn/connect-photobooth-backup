@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { TElementsVisualState } from '@/utils/types/global'
 import { useTemplateStore } from '@/stores/ui/template.store'
 import { base64WorkerHelper } from '@/workers/base64.worker-helper'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
 type TUseVisualStatesCollectorReturn = {
   collectMockupVisualStates: (mockupContainerRef?: HTMLElement) => TElementsVisualState
@@ -19,6 +20,13 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
         stickers: [],
         printedImages: [],
         storedTemplates: [],
+        storedLayouts: [],
+      }
+
+      const pickedLayout = useLayoutStore.getState().pickedLayout
+      console.log('>>> [reto] picked Layout:', pickedLayout)
+      if (pickedLayout) {
+        elementsVisualState.storedLayouts = [pickedLayout]
       }
 
       for (const element of document.body.querySelectorAll<HTMLElement>(
@@ -85,16 +93,17 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
       if (elementsVisualState.texts?.length === 0) delete elementsVisualState.texts
       if (elementsVisualState.stickers?.length === 0) delete elementsVisualState.stickers
       if (elementsVisualState.printedImages?.length === 0) delete elementsVisualState.printedImages
+      if (elementsVisualState.storedLayouts?.length === 0) delete elementsVisualState.storedLayouts
       if (elementsVisualState.storedTemplates?.length === 0)
         delete elementsVisualState.storedTemplates
 
       // tạo base64 cho dữ liệu
-      for (const sticker of elementsVisualState.stickers || []) {
-        base64WorkerHelper.createBase64FromURL({ url: sticker.path })
-      }
-      for (const printedImage of elementsVisualState.printedImages || []) {
-        base64WorkerHelper.createBase64FromURL({ url: printedImage.path })
-      }
+      // for (const sticker of elementsVisualState.stickers || []) {
+      //   base64WorkerHelper.createBase64FromURL({ url: sticker.path })
+      // }
+      // for (const printedImage of elementsVisualState.printedImages || []) {
+      //   base64WorkerHelper.createBase64FromURL({ url: printedImage.path })
+      // }
 
       console.log('>>> [reto] element visual state oiiiiiiiiiiiii:', elementsVisualState)
       return elementsVisualState

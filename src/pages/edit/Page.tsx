@@ -107,8 +107,17 @@ const restoreMockupVisualStates = (mockupId: string) => {
   useEditedElementStore.getState().resetData()
 
   setTimeout(() => {
+    const elementsVisualState = foundMockup.elementsVisualState
+
+    // Restore layout
+    const restoredLayout = elementsVisualState.storedLayouts || []
+    console.log('>>> [reto] restoredLayout:', restoredLayout)
+    if (restoredLayout.length > 0) {
+      useLayoutStore.getState().restoreLayout(restoredLayout[0])
+    }
+
     // Restore text elements
-    const restoredTextElements = foundMockup.elementsVisualState.texts || []
+    const restoredTextElements = elementsVisualState.texts || []
     console.log('>>> [reto] texts:', restoredTextElements)
     if (restoredTextElements.length > 0) {
       useEditedElementStore
@@ -117,7 +126,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
     }
 
     // Restore printed image elements
-    const restoredPrintedImageElements = foundMockup.elementsVisualState.printedImages || []
+    const restoredPrintedImageElements = elementsVisualState.printedImages || []
     console.log('>>> [reto] printedImages:', restoredPrintedImageElements)
     if (restoredPrintedImageElements.length > 0) {
       useEditedElementStore.getState().setPrintedImageElements(
@@ -129,7 +138,7 @@ const restoreMockupVisualStates = (mockupId: string) => {
     }
 
     // Restore sticker elements
-    const restoredStickerElements = foundMockup.elementsVisualState.stickers || []
+    const restoredStickerElements = elementsVisualState.stickers || []
     console.log('>>> [reto] stickers:', restoredStickerElements)
     if (restoredStickerElements.length > 0) {
       useEditedElementStore

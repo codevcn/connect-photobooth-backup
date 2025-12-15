@@ -1,3 +1,5 @@
+import { TPrintLayout } from './print-layout'
+
 export type TIntersectSameFields<A, B> = {
   [K in keyof A & keyof B as A[K] extends B[K] ? (B[K] extends A[K] ? K : never) : never]: A[K]
 }
@@ -243,11 +245,14 @@ export type TPrintedImageVisualState = TStickerVisualState &
 
 export type TStoredTemplate = TPrintTemplate
 
+export type TPrintLayoutVisualState = TPrintLayout
+
 export type TElementsVisualState = Partial<{
   stickers: TStickerVisualState[]
   storedTemplates: TStoredTemplate[]
   texts: TTextVisualState[]
   printedImages: TPrintedImageVisualState[]
+  storedLayouts: TPrintLayoutVisualState[]
 }>
 
 export type TMockupImageData = {

@@ -110,7 +110,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
         onClick={() => setShowPrintedImagesModal(false)}
         className="bg-black/70 absolute inset-0 z-10"
       ></div>
-      <div className="relative z-20 bg-white w-full max-w-[90vw] rounded-lg max-h-[90vh] flex flex-col transition duration-300 ease-in-out">
+      <div className="relative z-20 bg-white w-full max-w-[90vw] rounded-lg max-h-[80vh] flex flex-col transition duration-300 ease-in-out">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-b-gray-200 shadow">
           <h2 className="5xl:text-[1em] text-lg font-bold">Chọn ảnh bạn đã chụp</h2>
