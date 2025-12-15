@@ -164,7 +164,6 @@ export const StickerElement = ({
         zIndex: zindex,
         height: `${height}px`,
         width: `${width}px`,
-        clipPath: clipPolygon || 'none',
       }}
       className={`NAME-root-element NAME-element-type-sticker absolute h-fit w-fit touch-none z-6`}
       onPointerDown={pickElement}
@@ -179,6 +178,7 @@ export const StickerElement = ({
           height,
           width,
           grayscale: grayscale || 0,
+          clippath: clipPolygon || undefined,
         })
       )}
       data-persist-position={JSON.stringify(
@@ -188,7 +188,12 @@ export const StickerElement = ({
       onDrop={(e) => e.preventDefault()}
       onDragOver={(e) => e.preventDefault()}
     >
-      <div className={`NAME-element-main-box select-none relative origin-center h-full w-full`}>
+      <div
+        style={{
+          clipPath: clipPolygon || 'none',
+        }}
+        className={`NAME-element-main-box select-none relative origin-center h-full w-full`}
+      >
         <div
           className="NAME-element-display-wrapper h-full w-full"
           style={{

@@ -129,7 +129,7 @@ const SizesComponent = ({
         key={size}
         onClick={() => pickSize(isDisabled, size)}
         disabled={isDisabled}
-        className={`5xl:py-2 px-2 min-w-max py-1 font-bold rounded-lg transition-all mobile-touch ${
+        className={`5xl:py-2 px-2.5 min-w-max py-1 font-bold rounded-lg mobile-touch ${
           isDisabled
             ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed`
             : isSelected

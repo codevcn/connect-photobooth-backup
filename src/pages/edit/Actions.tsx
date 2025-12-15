@@ -5,7 +5,7 @@ import { MockupPreview } from './MockupPreview'
 import { useEffect, useRef, useState } from 'react'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
-import { fillQueryStringToURL } from '@/utils/helpers'
+import { checkIfMobileScreen, fillQueryStringToURL } from '@/utils/helpers'
 import { StickerPicker } from './elements/sticker-element/StickerPicker'
 import { TextEditor } from './elements/text-element/TextEditor'
 import { checkIfValidToCart, recordMockupNote } from './helpers'
@@ -15,7 +15,7 @@ export const Actions = () => {
   const navigate = useNavigate()
   const [showMockupPreview, setShowMockupPreview] = useState(false)
   const pickedSurface = useProductUIDataStore((s) => s.pickedSurface)
-  const mockupNoteRef = useRef<HTMLTextAreaElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const addToCart = () => {
     eventEmitter.emit(EInternalEvents.ADD_TO_CART)
@@ -34,14 +34,21 @@ export const Actions = () => {
     navigate('/payment' + fillQueryStringToURL())
   }
 
-  const initProductAttachedData = () => {
+  const initMockupAttachedData = () => {
     const mockupAttachedData = useProductUIDataStore
       .getState()
       .getMockupAttachedData(useProductUIDataStore.getState().getLastestMockupId() || '')
+    console.log('>>> [note] get mockupAttachedData:', {
+      mockupAttachedData,
+      lastestMockupId: useProductUIDataStore.getState().getLastestMockupId(),
+    })
     if (mockupAttachedData) {
       if (mockupAttachedData.mockupNote) {
-        if (mockupNoteRef.current) {
-          mockupNoteRef.current.value = mockupAttachedData.mockupNote
+        const noteTextfield = document.getElementById(
+          checkIfMobileScreen() ? 'mockup-note-textfield-mobile' : 'mockup-note-textfield'
+        ) as HTMLTextAreaElement | null
+        if (noteTextfield) {
+          noteTextfield.value = mockupAttachedData.mockupNote
         }
       }
     }
@@ -61,7 +68,7 @@ export const Actions = () => {
 
   useEffect(() => {
     updateCartCount()
-    initProductAttachedData()
+    initMockupAttachedData()
   }, [])
 
   return (

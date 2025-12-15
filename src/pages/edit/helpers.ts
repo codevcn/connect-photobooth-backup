@@ -263,6 +263,11 @@ export const cleanPrintAreaOnExtractMockupImage = (
   document.body
     .querySelector<HTMLElement>('.NAME-app-temp-container')
     ?.appendChild(clonedPrintAreaContainer)
+  for (const slot of clonedPrintAreaContainer.querySelectorAll<HTMLElement>(
+    '.NAME-slots-displayer .NAME-layout-slot'
+  )) {
+    slot.style.border = 'none'
+  }
   clonedPrintAreaContainer
     .querySelector<HTMLElement>('.NAME-out-of-bounds-overlay-warning')
     ?.remove()
@@ -277,17 +282,6 @@ export const cleanPrintAreaOnExtractMockupImage = (
     .querySelector<HTMLElement>('.NAME-app-temp-container')
     ?.appendChild(transparentPrintAreaContainer)
   transparentPrintAreaContainer.querySelector<HTMLElement>('.NAME-product-image')?.remove()
-  console.log(
-    '>>> [cle] slots:',
-    transparentPrintAreaContainer.querySelectorAll<HTMLElement>(
-      '.NAME-slots-displayer .NAME-layout-slot'
-    )
-  )
-  for (const slot of transparentPrintAreaContainer.querySelectorAll<HTMLElement>(
-    '.NAME-slots-displayer .NAME-layout-slot'
-  )) {
-    slot.style.border = 'none'
-  }
   return {
     printAreaContainer: clonedPrintAreaContainer,
     transparentPrintAreaContainer,

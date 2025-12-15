@@ -87,7 +87,7 @@ export const MockupPreview = ({ onClose }: TMockupPreviewProps) => {
   }, [])
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-99 animate-pop-in p-2">
+    <div className="fixed inset-0 flex items-center justify-center z-1000 animate-pop-in p-2">
       <div onClick={onClose} className="bg-black/50 absolute inset-0 z-10"></div>
       <div className="relative z-20 flex flex-col bg-white rounded-lg shadow-2xl overflow-hidden animate-pop-in">
         {/* Header */}

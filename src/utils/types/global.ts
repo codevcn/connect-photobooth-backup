@@ -220,6 +220,7 @@ export type TTextVisualState = TElementVisualBaseState & {
   fontFamily: string
   fontWeight: number
   mountType?: TElementMountType
+  clippath?: string
 }
 
 export type TMatchOrientation = 'width' | 'height'
@@ -233,6 +234,7 @@ export type TStickerVisualState = TElementVisualBaseState & {
     width: number
     matchOrientation: TMatchOrientation
     grayscale: number // 0-100 percentage
+    clippath: string
   }>
 
 export type TPrintedImageVisualState = TStickerVisualState &

@@ -187,7 +187,6 @@ export const TextElement = ({
         top: position.y,
         transform: `rotate(${angle}deg)`,
         zIndex: zindex,
-        clipPath: clipPolygon || 'none',
       }}
       className={`NAME-root-element NAME-element-type-text absolute h-fit w-fit touch-none z-6`}
       onPointerDown={pickElement}
@@ -203,6 +202,7 @@ export const TextElement = ({
           fontFamily,
           fontWeight,
           scale,
+          clippath: clipPolygon || undefined,
         })
       )}
       data-persist-position={JSON.stringify(
@@ -212,7 +212,12 @@ export const TextElement = ({
       onDrop={(e) => e.preventDefault()}
       onDragOver={(e) => e.preventDefault()}
     >
-      <div className={`NAME-element-main-box relative origin-center text-inherit`}>
+      <div
+        style={{
+          clipPath: clipPolygon || 'none',
+        }}
+        className={`NAME-element-main-box relative origin-center text-inherit`}
+      >
         <div className="h-full w-full">
           <p
             style={{
