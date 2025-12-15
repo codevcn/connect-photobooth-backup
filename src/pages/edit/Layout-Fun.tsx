@@ -53,6 +53,7 @@ const LayoutFUN = () => {
                   img.isOriginalImage = true
                 }
               }
+              console.log('>>> img sss:', imagesToAdd)
               resolve(imagesToAdd)
             }
           }

@@ -1,5 +1,5 @@
 import { TPrintedImage } from '@/utils/types/global'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { TLayoutSlotConfig, TLayoutType, TPrintLayout } from '@/utils/types/print-layout'
@@ -94,6 +94,7 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
   const allLayouts = useLayoutStore((s) => s.allLayouts)
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
   const layoutMode = useLayoutStore((s) => s.layoutMode)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const availableLayouts = useMemo(() => {
     return allLayouts.filter((layout) => {
@@ -130,8 +131,17 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
     return index >= 0 ? index + 1 : 0
   }
 
+  useEffect(() => {
+    const layouts = containerRef.current?.querySelectorAll<HTMLDivElement>('.NAME-fix-aspect')
+    for (const layout of layouts || []) {
+      const layoutRect = layout.getBoundingClientRect()
+      layout.style.height = `${layoutRect.height}px`
+      layout.style.width = `${layoutRect.width}px`
+    }
+  }, [allLayouts])
+
   return (
-    <div className="w-full relative">
+    <div ref={containerRef} className="w-full relative">
       <div className="w-full flex justify-between pr-2">
         <h3 className="5xl:text-[1.5em] smd:text-base text-xs mb-1 font-bold text-gray-800">
           Chọn layout
@@ -145,13 +155,13 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
       <div className="smd:grid-cols-3 smd:overflow-x-hidden smd:grid-flow-row py-1 grid-rows-1 grid-flow-col overflow-x-auto grid-flow grid gap-2 w-full gallery-scroll">
         <div
           onClick={handlePickNoLayout}
-          className={`flex items-center justify-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition ${
+          className={`NAME-fix-aspect flex items-center justify-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition ${
             layoutMode === 'no-layout' ? 'border-main-cl' : ''
           }`}
         >
           <div className="NAME-slots-displayer p-0.5 h-full w-full">
             <div
-              className={`relative flex justify-center items-center overflow-hidden h-full w-full aspect-square border border-gray-600 border-dashed ${
+              className={`NAME-fix-aspect relative flex justify-center items-center overflow-hidden h-full w-full aspect-square border border-gray-600 border-dashed ${
                 layoutMode === 'no-layout' ? 'border-main-cl text-main-cl' : 'text-gray-500'
               }`}
             >
@@ -181,7 +191,7 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
             onClick={() => handlePickLayout(layout)}
             className={`${
               layoutMode !== 'no-layout' && pickedLayout?.id === layout.id ? 'border-main-cl' : ''
-            } flex justify-center items-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
+            } NAME-fix-aspect flex justify-center items-center aspect-square min-h-16 border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
           >
             <div
               style={layout.layoutContainerConfigs?.style}

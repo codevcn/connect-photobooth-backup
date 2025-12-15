@@ -77,9 +77,7 @@ export const LayoutSlot = ({
     <div
       style={{
         ...layoutSlot.style,
-        ...(layoutType === 'full' && layoutSlot.placedImage?.isOriginalFrameImage
-          ? { aspectRatio: 'auto', height: '100%', width: '100%' }
-          : {}),
+        ...(layoutType === 'full' ? { aspectRatio: 'auto', height: '100%', width: '100%' } : {}),
       }}
       className={cn(
         'NAME-layout-slot cursor-pointer relative flex justify-center items-center overflow-hidden aspect-square border border-gray-600 border-dashed',

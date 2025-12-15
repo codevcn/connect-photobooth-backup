@@ -25,7 +25,7 @@ export const SlotsDisplayer = ({ layout, scrollable = true }: TFramesDisplayerPr
       <div
         style={{
           ...(layoutContainerConfigs.style || {}),
-          ...(layout.layoutType === 'full' && slotConfigs[0].placedImage?.isOriginalFrameImage
+          ...(layout.layoutType === 'full'
             ? { aspectRatio: 'auto', height: '100%', width: '100%' }
             : {}),
         }}
