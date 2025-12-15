@@ -64,8 +64,6 @@ export const PrintAreaOverlay = ({
 }: TPrintAreaOverlayProps) => {
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
   const layoutMode = useLayoutStore((s) => s.layoutMode)
-  const queryFilter = useQueryFilter()
-  console.log('>>> [reto] overlay kk:', pickedLayout)
 
   return (
     <div
@@ -90,7 +88,7 @@ export const PrintAreaOverlay = ({
       }}
       data-is-out-of-bounds={isOutOfBounds}
     >
-      {(queryFilter.funId || queryFilter.dev) && layoutMode !== 'no-layout' && pickedLayout && (
+      {layoutMode !== 'no-layout' && pickedLayout && (
         <SlotsDisplayer layout={pickedLayout} scrollable={false} />
       )}
     </div>

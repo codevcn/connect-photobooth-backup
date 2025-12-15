@@ -166,6 +166,7 @@ export const AddToCartHandler = ({
       (mockupId) => {
         useProductUIDataStore.getState().setIsAddingToCart(false)
         useProductUIDataStore.getState().setLastestMockupId(mockupId)
+        console.log('>>> [note] mockup id after add to cart:', mockupId)
         recordMockupNote()
       },
       (error) => {

@@ -42,7 +42,7 @@ const SizeChartPreview = ({ setShowSizeChart, sizeChartImageURL }: TSizeChartPre
       classNames={{
         contentContainer: 'p-0 overflow-y-auto',
         titleContainer: '5xl:text-4xl text-xl bg-secondary-cl text-white py-2',
-        board: 'max-h-[98vh]',
+        board: 'max-h-[85vh]',
       }}
     >
       <div className="bg-white w-full rounded-xl shadow-2xl border border-gray-200 relative">
@@ -129,7 +129,7 @@ const SizesComponent = ({
         key={size}
         onClick={() => pickSize(isDisabled, size)}
         disabled={isDisabled}
-        className={`5xl:py-2 px-2.5 min-w-max py-1 font-bold rounded-lg mobile-touch ${
+        className={`5xl:py-2 5xl:px-4 px-3 min-w-max py-1 font-bold rounded-lg mobile-touch ${
           isDisabled
             ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed`
             : isSelected
@@ -350,7 +350,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
         <div className="mb-4">
           <h3 className="5xl:text-[0.5em] text-sm text-slate-800 font-bold mb-2">
             <span>{mergedAttributes.uniqueColorTitles[0]}</span>
-            <span className="5xl:text-[0.4em] text-xs"> ({selectedAttributes.color})</span>
+            <span className="5xl:text-[0.9em] text-xs"> ({selectedAttributes.color})</span>
           </h3>
           <CustomScrollbar
             showScrollbar={colorsCount > 0}
@@ -358,7 +358,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
             classNames={{
               container:
                 '5xl:text-[0.4em] smd:text-base text-sm font-bold py-2 w-full overflow-x-hidden',
-              content: 'flex flex-nowrap gap-3 overflow-x-auto no-scrollbar p-1 pb-2',
+              content: '5xl:gap-6 flex flex-nowrap gap-3 overflow-x-auto no-scrollbar p-1 pb-2',
             }}
           >
             {Object.keys(mergedAttributes.uniqueColors).map((color) => {
@@ -386,7 +386,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
                           : isSelected
                           ? 'ring-2 ring-main-cl ring-offset-2 shadow-lg'
                           : 'ring-1 ring-gray-300 ring-offset-2 hover:ring-secondary-cl hover:shadow-md'
-                      } h-10 w-10 rounded-full`}
+                      } 5xl:h-14 5xl:w-14 h-10 w-10 rounded-full`}
                     >
                       {isSelected && !isDisabled && (
                         <div className="w-full h-full rounded-full flex items-center justify-center">

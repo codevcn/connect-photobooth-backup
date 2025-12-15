@@ -111,12 +111,13 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   },
 
   updateMockupAttachedData: (mockupId, data) => {
-    const existingData = [...(get().mockupsAttachedData || [])]
-    if (existingData.length === 0) {
+    const attachedDataList = [...(get().mockupsAttachedData || [])]
+    console.log('>>> [note] existingData:', attachedDataList)
+    if (attachedDataList.length === 0) {
       set({ mockupsAttachedData: [{ mockupId, ...data }] })
     } else {
       set({
-        mockupsAttachedData: existingData.map((prev) => {
+        mockupsAttachedData: attachedDataList.map((prev) => {
           if (prev.mockupId === mockupId) {
             return { ...prev, ...data }
           }
@@ -127,7 +128,15 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   },
 
   addMockupNote: (mockupId, note) => {
-    get().updateMockupAttachedData(mockupId, { mockupNote: note })
+    const existingData = get().getMockupAttachedData(mockupId)
+    if (existingData) {
+      get().updateMockupAttachedData(mockupId, { mockupNote: note })
+    } else {
+      get().addMockupAttachedData({
+        mockupId,
+        mockupNote: note,
+      })
+    }
   },
 
   setIsAddingToCart: (isAdding: boolean) => {

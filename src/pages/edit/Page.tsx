@@ -63,7 +63,7 @@ const AddingToCartLoadingModal = () => {
     isLoading && (
       <div className="fixed inset-0 flex items-center justify-center z-9999 animate-pop-in p-4">
         <div className="bg-black/50 absolute inset-0 z-10"></div>
-        <video autoPlay loop muted playsInline className="z-20 relative">
+        <video autoPlay loop muted playsInline webkit-playsinline className="z-20 relative">
           <source src="/videos/add-to-cart-loading.webm" type="video/webm" />
         </video>
       </div>
@@ -284,7 +284,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
           <div></div>
         )}
         <TemplateFrameMenuResponsive />
-        <div className="xl:px-3 xl:pt-4 smd:gap-2 smd:pb-46 px-2 pt-1 pb-4 relative flex flex-col pl-2 h-full overflow-y-auto gallery-scroll border border-gray-400/30">
+        <div className="xl:px-3 xl:pt-4 smd:gap-2 smd:pb-46 5xl:pb-60 px-2 pt-1 pb-4 relative flex flex-col pl-2 h-full overflow-y-auto gallery-scroll border border-gray-400/30">
           {pickedProduct && pickedVariant ? (
             <>
               <ProductDetails pickedProduct={pickedProduct} pickedVariant={pickedVariant} />

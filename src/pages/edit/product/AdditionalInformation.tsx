@@ -194,9 +194,9 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
       </div>
 
       <div className="smd:order-3 order-4 smd:p-3 p-2 bg-white rounded-lg space-y-2 mt-2">
-        <div className="5xl:text-[0.5em] text-sm flex items-center justify-between gap-2">
+        <div className="5xl:text-[0.8em] text-sm flex items-center justify-between gap-2">
           <span className="text-gray-800 font-bold">Chăm sóc khách hàng</span>
-          <span className="font-semibold text-orange-600 text-end whitespace-nowrap">
+          <span className="font-semibold text-main-cl text-end whitespace-nowrap">
             090 136 6095
           </span>
         </div>

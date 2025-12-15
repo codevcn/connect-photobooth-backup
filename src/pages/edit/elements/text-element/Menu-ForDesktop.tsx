@@ -523,9 +523,6 @@ export const TextElementMenuForDesktop = ({ elementId, onClose }: TPrintedImageM
                 document.body
               )}
           </div>
-          <div className="NAME-form-group NAME-form-color flex flex-1 justify-center gap-1 rounded">
-            <CropImageElement />
-          </div>
         </div>
       </div>
     </div>,

@@ -9,110 +9,93 @@ export function hardCodedLayoutData(layoutType?: TLayoutType): TPrintLayout[] {
     layoutType: 'full',
     printedImageElements: [],
     slotConfigs: [
-      { containerWidth: 1, containerHeight: 1, id: 'slot-1', style: { gridColumn: 'span 1' } },
+      {
+        id: 'slot-1',
+        containerWidth: 1,
+        containerHeight: 1,
+        style: {
+          gridColumn: 'span 1',
+        },
+      },
     ],
-    layoutContainerConfigs: { style: {} },
+    layoutContainerConfigs: {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(1, 1fr)',
+        gridTemplateRows: 'repeat(1, 1fr)',
+        height: 'fit-content',
+        width: '100%',
+        aspectRatio: '1 / 1',
+      },
+    },
   }
   const template2: TPrintLayout = {
     id: 'template-2',
     name: 'Default Template 2',
-    layoutType: 'half-width',
+    layoutType: '2-horizontal-square',
     printedImageElements: [],
     slotConfigs: [
-      { containerWidth: 0.5, containerHeight: 1, id: 'slot-1', style: { gridColumn: 'span 1' } },
       {
-        containerWidth: 0.5,
-        containerHeight: 1,
         id: 'slot-2',
-        style: { gridColumn: 'span 1' },
+        containerWidth: 1,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
+      },
+      {
+        id: 'slot-3',
+        containerWidth: 1,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
       },
     ],
-    layoutContainerConfigs: { style: {} },
+    layoutContainerConfigs: {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(1, 1fr)',
+        gridTemplateRows: 'repeat(2, 1fr)',
+        placeItems: 'center',
+      },
+    },
   }
   const template3: TPrintLayout = {
     id: 'template-3',
     name: 'Default Template 3',
-    layoutType: 'half-height',
+    layoutType: '2-vertical-square',
     printedImageElements: [],
     slotConfigs: [
-      { containerWidth: 1, containerHeight: 0.5, id: 'slot-1', style: { gridColumn: 'span 1' } },
-      { containerWidth: 1, containerHeight: 0.5, id: 'slot-2', style: { gridColumn: 'span 1' } },
+      {
+        id: 'slot-4',
+        containerWidth: 0.5,
+        containerHeight: 1,
+        style: {
+          aspectRatio: '1 / 1',
+          width: '100%',
+        },
+      },
+      {
+        id: 'slot-5',
+        containerWidth: 0.5,
+        containerHeight: 1,
+        style: {
+          aspectRatio: '1 / 1',
+          width: '100%',
+        },
+      },
     ],
-    layoutContainerConfigs: { style: {} },
-  }
-  const template4: TPrintLayout = {
-    id: 'template-4',
-    name: 'Default Template 4',
-    layoutType: '3-left',
-    printedImageElements: [],
-    slotConfigs: [
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-1', style: { gridColumn: 'span 1' } }, // small top-left
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-2', style: { gridColumn: 'span 1' } }, // small bottom-left
-      { containerWidth: 0.5, containerHeight: 1, id: 'slot-3', style: { gridColumn: 'span 1' } }, // large right
-    ],
-    layoutContainerConfigs: { style: {} },
-  }
-  const template5: TPrintLayout = {
-    id: 'template-5',
-    name: 'Default Template 5',
-    layoutType: '3-right',
-    printedImageElements: [],
-    slotConfigs: [
-      { containerWidth: 0.5, containerHeight: 1, id: 'slot-1', style: { gridColumn: 'span 1' } }, // large left
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-2', style: { gridColumn: 'span 1' } }, // small top-right
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-3', style: { gridColumn: 'span 1' } }, // small bottom-right
-    ],
-    layoutContainerConfigs: { style: {} },
-  }
-  const template6: TPrintLayout = {
-    id: 'template-6',
-    name: 'Default Template 6',
-    layoutType: '3-top',
-    printedImageElements: [],
-    slotConfigs: [
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-1', style: { gridColumn: 'span 1' } }, // small top-left
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-2', style: { gridColumn: 'span 1' } }, // small top-right
-      { containerWidth: 1, containerHeight: 0.5, id: 'slot-3', style: { gridColumn: 'span 1' } }, // large bottom
-    ],
-    layoutContainerConfigs: { style: {} },
-  }
-  const template7: TPrintLayout = {
-    id: 'template-7',
-    name: 'Default Template 7',
-    layoutType: '3-bottom',
-    printedImageElements: [],
-    slotConfigs: [
-      { containerWidth: 1, containerHeight: 0.5, id: 'slot-1', style: { gridColumn: 'span 1' } }, // large top
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-2', style: { gridColumn: 'span 1' } }, // small bottom-left
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-3', style: { gridColumn: 'span 1' } }, // small bottom-right
-    ],
-    layoutContainerConfigs: { style: {} },
-  }
-  const template8: TPrintLayout = {
-    id: 'template-8',
-    name: 'Default Template 8',
-    layoutType: '4-horizon',
-    printedImageElements: [],
-    slotConfigs: [
-      { containerWidth: 1, containerHeight: 0.25, id: 'slot-1', style: { gridColumn: 'span 1' } },
-      { containerWidth: 1, containerHeight: 0.25, id: 'slot-2', style: { gridColumn: 'span 1' } },
-      { containerWidth: 1, containerHeight: 0.25, id: 'slot-3', style: { gridColumn: 'span 1' } },
-      { containerWidth: 1, containerHeight: 0.25, id: 'slot-4', style: { gridColumn: 'span 1' } },
-    ],
-    layoutContainerConfigs: { style: {} },
-  }
-  const template9: TPrintLayout = {
-    id: 'template-9',
-    name: 'Default Template 9',
-    layoutType: '4-vertical',
-    printedImageElements: [],
-    slotConfigs: [
-      { containerWidth: 0.25, containerHeight: 1, id: 'slot-1', style: { gridColumn: 'span 1' } },
-      { containerWidth: 0.25, containerHeight: 1, id: 'slot-2', style: { gridColumn: 'span 1' } },
-      { containerWidth: 0.25, containerHeight: 1, id: 'slot-3', style: { gridColumn: 'span 1' } },
-      { containerWidth: 0.25, containerHeight: 1, id: 'slot-4', style: { gridColumn: 'span 1' } },
-    ],
-    layoutContainerConfigs: { style: {} },
+    layoutContainerConfigs: {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gridTemplateRows: 'repeat(1, 1fr)',
+        placeItems: 'center',
+      },
+    },
   }
   const template10: TPrintLayout = {
     id: 'template-10',
@@ -120,77 +103,185 @@ export function hardCodedLayoutData(layoutType?: TLayoutType): TPrintLayout[] {
     layoutType: '4-square',
     printedImageElements: [],
     slotConfigs: [
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-1', style: { gridColumn: 'span 1' } },
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-2', style: { gridColumn: 'span 1' } },
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-3', style: { gridColumn: 'span 1' } },
-      { containerWidth: 0.5, containerHeight: 0.5, id: 'slot-4', style: { gridColumn: 'span 1' } },
+      {
+        id: 'slot-10-1',
+        containerWidth: 0.5,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          width: '100%',
+        },
+      },
+      {
+        id: 'slot-10-2',
+        containerWidth: 0.5,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          width: '100%',
+        },
+      },
+      {
+        id: 'slot-10-3',
+        containerWidth: 0.5,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          width: '100%',
+        },
+      },
+      {
+        id: 'slot-10-4',
+        containerWidth: 0.5,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          width: '100%',
+        },
+      },
     ],
-    layoutContainerConfigs: { style: {} },
+    layoutContainerConfigs: {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gridTemplateRows: 'repeat(2, 1fr)',
+        width: '100%',
+        maxHeight: '100%',
+        height: 'auto',
+        aspectRatio: '1 / 1',
+      },
+    },
+  }
+  const template11: TPrintLayout = {
+    id: 'template-11',
+    name: 'Default Template 11',
+    layoutType: '6-square',
+    printedImageElements: [],
+    slotConfigs: [
+      {
+        id: 'slot-11-1',
+        containerWidth: 0.333,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
+      },
+      {
+        id: 'slot-11-2',
+        containerWidth: 0.333,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
+      },
+      {
+        id: 'slot-11-3',
+        containerWidth: 0.333,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
+      },
+      {
+        id: 'slot-11-4',
+        containerWidth: 0.333,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
+      },
+      {
+        id: 'slot-11-5',
+        containerWidth: 0.333,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
+      },
+      {
+        id: 'slot-11-6',
+        containerWidth: 0.333,
+        containerHeight: 0.5,
+        style: {
+          aspectRatio: '1 / 1',
+          height: '100%',
+        },
+      },
+    ],
+    layoutContainerConfigs: {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(2, 1fr)', // 3 cột thay vì 2
+        gridTemplateRows: 'repeat(3, 1fr)', // 2 hàng thay vì 3
+        placeItems: 'center', // Căn giữa các items
+        width: 'fit-content',
+      },
+    },
+  }
+  const template12: TPrintLayout = {
+    id: 'template-12',
+    name: 'Default Template 12',
+    layoutType: 'frame-layout',
+    printedImageElements: [],
+    slotConfigs: [
+      {
+        id: 'slot-1',
+        containerWidth: 1,
+        containerHeight: 1,
+        style: {
+          gridColumn: 'span 1',
+        },
+      },
+    ],
+    layoutContainerConfigs: {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(1, 1fr)',
+        gridTemplateRows: 'repeat(1, 1fr)',
+        height: 'fit-content',
+        width: '100%',
+        aspectRatio: '1 / 1',
+      },
+    },
   }
 
   if (layoutType) {
     switch (layoutType) {
       case 'full':
         return [template1]
-      case 'half-width':
+      case '2-horizontal-square':
         return [template2]
-      case 'half-height':
+      case '2-vertical-square':
         return [template3]
-      case '3-left':
-        return [template4]
-      case '3-right':
-        return [template5]
-      case '3-top':
-        return [template6]
-      case '3-bottom':
-        return [template7]
-      case '4-horizon':
-        return [template8]
-      case '4-vertical':
-        return [template9]
       case '4-square':
         return [template10]
+      case '6-square':
+        return [template11]
       default:
         return [template1]
     }
   }
 
-  return [
-    template1,
-    template2,
-    template3,
-    template4,
-    template5,
-    template6,
-    template7,
-    template8,
-    template9,
-    template10,
-  ]
+  return [template12, template1, template2, template3, template10, template11]
 }
 
 export const getSlotConfigs = (layoutType: TLayoutType): TLayoutSlotConfig[] => {
   switch (layoutType) {
     case 'full':
       return hardCodedLayoutData('full')[0].slotConfigs
-    case 'half-width':
-      return hardCodedLayoutData('half-width')[0].slotConfigs
-    case 'half-height':
-      return hardCodedLayoutData('half-height')[0].slotConfigs
-    case '3-left':
-      return hardCodedLayoutData('3-left')[0].slotConfigs
-    case '3-right':
-      return hardCodedLayoutData('3-right')[0].slotConfigs
-    case '3-top':
-      return hardCodedLayoutData('3-top')[0].slotConfigs
-    case '3-bottom':
-      return hardCodedLayoutData('3-bottom')[0].slotConfigs
-    case '4-horizon':
-      return hardCodedLayoutData('4-horizon')[0].slotConfigs
-    case '4-vertical':
-      return hardCodedLayoutData('4-vertical')[0].slotConfigs
+    case '2-horizontal-square':
+      return hardCodedLayoutData('2-horizontal-square')[0].slotConfigs
+    case '2-vertical-square':
+      return hardCodedLayoutData('2-vertical-square')[0].slotConfigs
     case '4-square':
       return hardCodedLayoutData('4-square')[0].slotConfigs
+    case '6-square':
+      return hardCodedLayoutData('6-square')[0].slotConfigs
     default:
       return hardCodedLayoutData('full')[0].slotConfigs
   }

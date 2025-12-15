@@ -18,6 +18,10 @@ window.cancelIdleCallback =
     clearTimeout(id)
   }
 
+if (new URLSearchParams(window.location.search).get('q') === 'ptm') {
+  document.documentElement.style.setProperty('--vcn-main-cl', '#e60076')
+}
+
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import EditPagePTM from '@/pages/edit/Layout-Ptm'
 import EditPageFUN from '@/pages/edit/Layout-Fun'

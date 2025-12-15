@@ -57,29 +57,35 @@ const Product = ({
   const buildInitialLayout = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        if (queryFilter.dev || queryFilter.funId) {
-          const initialLayout: TPrintLayout = {
-            ...hardCodedLayoutDataFun('full')[0],
-            printedImageElements: [],
-          }
-          setInitialLayout(initialLayout)
-          onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
-        } else {
-          if (!printAreaContainerRef.current || !printAreaRef.current) return
-          const { layout } = buildDefaultLayout(
-            printAreaContainerRef.current,
-            printAreaRef.current,
-            printedImages,
-            2
-          )
-          const initialLayout: TPrintLayout = {
-            ...hardCodedLayoutDataPtm(layout.type)[0],
-            printedImageElements: layout.elements,
-            mountType: 'suggested',
-          }
-          setInitialLayout(initialLayout)
-          onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+        const initialLayout: TPrintLayout = {
+          ...hardCodedLayoutDataFun('full')[0],
+          printedImageElements: [],
         }
+        setInitialLayout(initialLayout)
+        onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+        // if (queryFilter.dev || queryFilter.funId) {
+        //   const initialLayout: TPrintLayout = {
+        //     ...hardCodedLayoutDataFun('full')[0],
+        //     printedImageElements: [],
+        //   }
+        //   setInitialLayout(initialLayout)
+        //   onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+        // } else {
+        //   if (!printAreaContainerRef.current || !printAreaRef.current) return
+        //   const { layout } = buildDefaultLayout(
+        //     printAreaContainerRef.current,
+        //     printAreaRef.current,
+        //     printedImages,
+        //     2
+        //   )
+        //   const initialLayout: TPrintLayout = {
+        //     ...hardCodedLayoutDataPtm(layout.type)[0],
+        //     printedImageElements: layout.elements,
+        //     mountType: 'suggested',
+        //   }
+        //   setInitialLayout(initialLayout)
+        //   onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+        // }
       })
     })
   }
@@ -148,7 +154,7 @@ const Product = ({
           className="NAME-product-image absolute top-0 left-0 min-h-full max-h-full w-full h-full object-contain rounded-xl"
         />
       </div>
-      <PrintAreaOverlayPreview
+      {/* <PrintAreaOverlayPreview
         registerPrintAreaRef={(node) => {
           printAreaRef.current = node
           // previewPrintAreaRef.current = node
@@ -161,7 +167,7 @@ const Product = ({
             key={printedImageVisualState.id}
             printedImageVisualState={printedImageVisualState}
           />
-        ))}
+        ))} */}
     </div>
   )
 }
@@ -482,7 +488,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         </svg>
         <span className="5xl:text-xl smd:text-lg">Quay về</span>
       </button>
-      <h2 className="5xl:text-[1.3em] text-[1em] pt-2 w-full text-center font-bold text-gray-800 flex items-center justify-center gap-2">
+      <h2 className="5xl:text-[1.3em] text-[1em] py-2 w-full text-center font-bold text-gray-800 flex items-center justify-center gap-2">
         Chọn sản phẩm
       </h2>
       <div className="NAME-products-gallery-wrapper spmd:overflow-y-auto spmd:max-h-full">

@@ -25,23 +25,25 @@ export const AddImageIcon = ({ styles, classNames, slotsCount }: TAddImageIconPr
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="lucide lucide-plus-icon lucide-plus"
+        className="lucide lucide-plus-icon lucide-plus w-6 h-6 5xl:w-12 5xl:h-12"
       >
         <path d="M5 12h14" />
         <path d="M12 5v14" />
       </svg>
       <span
-        style={{
-          fontSize: slotsCount < 3 ? (slotsCount < 2 ? '10px' : '8px') : '6px',
-        }}
+        className={`${
+          slotsCount < 3
+            ? slotsCount < 2
+              ? '5xl:text-lg text-[10px]'
+              : '5xl:text-base text-[8px]'
+            : '5xl:text-base text-[6px]'
+        }`}
       >
         Nhấn để chọn ảnh
       </span>

@@ -229,19 +229,20 @@ type TCustomizeProps = {
 }
 
 export const Customization = ({ printedImages }: TCustomizeProps) => {
-  const queryFilter = useQueryFilter()
+  // const queryFilter = useQueryFilter()
 
   return (
     <div className="NAME-start-of-customization smd:order-2 smd:mt-1 smd:px-3 px-2 py-3 mt-0 order-1 border-border rounded-lg bg-gray-100">
       <Instructions />
       <div className="smd:mt-2 mt-1 relative w-full">
-        {queryFilter.isPhotoism ? (
+        {/* {queryFilter.isPhotoism ? (
           <LayoutsPicker_Ptm printedImages={printedImages} />
         ) : (
           (queryFilter.funId || queryFilter.dev) && (
             <LayoutsPicker_Fun printedImages={printedImages} />
           )
-        )}
+        )} */}
+        <LayoutsPicker_Fun printedImages={printedImages} />
         <div className="gap-2 grid grid-cols-1 smd:grid-cols-2 flex-wrap">
           <PrintedImagesPreview printedImages={printedImages} />
           <div className="smd:hidden flex col-span-2 gap-2">

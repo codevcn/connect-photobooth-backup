@@ -17,7 +17,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
       </div>
 
       <div className="smd:flex smd:order-2 order-3 hidden items-center space-x-3 pl-1">
-        <span className="5xl:text-[0.8em] text-3xl text-orange-600">
+        <span className="5xl:text-[0.8em] text-3xl text-main-cl">
           <span className="font-bold">
             {formatNumberWithCommas(pickedVariant.priceAmountOneSide)}
           </span>

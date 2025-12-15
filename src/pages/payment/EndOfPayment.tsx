@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import QRCode from 'qrcode'
 import { createInitialConstants } from '@/utils/contants'
-import { formatNumberWithCommas, formatTime } from '@/utils/helpers'
+import { fillQueryStringToURL, formatNumberWithCommas, formatTime } from '@/utils/helpers'
 import { TEndOfPaymentData, TPaymentType } from '@/utils/types/global'
 import { paymentService } from '@/services/payment.service'
 import { TOrderStatusRes } from '@/utils/types/api'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 type TQRCanvasProps = {
   value: string
@@ -69,6 +70,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
   const { status, reason } = paymentStatus
   const [transactionCode, setTransactionCode] = useState<string>('')
   const [qrCanvas, setQrCanvas] = useState<HTMLCanvasElement | null>(null)
+  const navigate = useNavigate()
 
   const countdownHandler = () => {
     if (!containerRef.current) return
@@ -95,7 +97,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
   }
 
   const backToEditPage = () => {
-    window.location.href = '/edit'
+    navigate(`/edit${fillQueryStringToURL()}`)
   }
 
   const handlePaymentStatusUpdate = (statusData: TOrderStatusRes) => {
@@ -112,7 +114,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
 
   const handlePaymentStatusError = (error: Error) => {
     console.error('>>> Payment status error:', error)
-    toast.error('Có lỗi xảy ra khi kiểm tra trạng thái thanh toán')
+    // toast.error('Có lỗi xảy ra khi kiểm tra trạng thái thanh toán')
     // Optionally show error to user or retry
   }
 
@@ -201,11 +203,11 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data }) => {
                   </span>
                 </p>
                 <p>Cám ơn bạn đã sử dụng dịch vụ!</p>
-                {transactionCode && (
+                {/* {transactionCode && (
                   <p className="p-1 rounded-md bg-light-main-cl mt-1">
                     Mã giao dịch của bạn là <span className="font-bold">{transactionCode}</span>
                   </p>
-                )}
+                )} */}
                 {orderHashCode && (
                   <p className="p-1 rounded-md bg-superlight-main-cl mt-1">
                     Mã đơn hàng: <span className="font-bold">{orderHashCode}</span>
