@@ -1,8 +1,6 @@
-import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react'
+import { useEffect, useState, ChangeEvent, KeyboardEvent, useRef } from 'react'
 
-type AutosizeTextareaProps = {
-  textfieldRef: React.RefObject<HTMLTextAreaElement | null>
-} & Partial<{
+type AutosizeTextareaProps = {} & Partial<{
   value: string
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
   onEnter: (e: KeyboardEvent<HTMLTextAreaElement>) => void
@@ -13,6 +11,7 @@ type AutosizeTextareaProps = {
   minHeight: number
   maxHeight: number
   className: string
+  textfieldRef: React.RefObject<HTMLTextAreaElement | null>
 }>
 
 export const AutoSizeTextField = ({
@@ -29,10 +28,12 @@ export const AutoSizeTextField = ({
   textfieldRef,
 }: AutosizeTextareaProps) => {
   const [text, setText] = useState(value)
+  const textFieldInternalRef = useRef<HTMLTextAreaElement | null>(null)
+  const finalTextFieldRef = textfieldRef || textFieldInternalRef
 
   // Auto-resize textarea
   const adjustHeight = () => {
-    const textarea = textfieldRef.current
+    const textarea = finalTextFieldRef.current
     if (textarea) {
       textarea.style.height = 'auto'
       const newHeight = Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight)
@@ -71,7 +72,7 @@ export const AutoSizeTextField = ({
 
   return (
     <textarea
-      ref={textfieldRef}
+      ref={finalTextFieldRef}
       value={text}
       onChange={handleChange}
       onKeyDown={handleKeyDown}

@@ -99,17 +99,21 @@ const Product = ({
     } else if (productId === 29) {
       return 'Áo nỉ'
     } else if (productId === 27) {
-      return 'Bình - cốc'
+      return 'Bình'
     } else if (productId === 25) {
-      return 'Túi- vải'
+      return 'Túi vải'
     } else if (productId === 23) {
       return 'Khung tranh'
     } else if (productId === 21) {
       return 'Ốp điện thoại'
     } else if (productId === 19) {
       return 'Cốc nước'
+    } else if (productId === 17) {
+      return 'Cốc uống nước'
+    } else if (productId === 7) {
+      return 'Áo thun'
     }
-    return 'Áo thun'
+    return ''
   }
 
   const { printAreaRef, printAreaContainerRef } = usePrintArea(
@@ -447,7 +451,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   return (
     <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base text-sm w-full h-fit flex flex-col bg-white border-r border-r-gray-200">
-      <div className="bg-gray-100 z-40 rounded py-0.5 px-1 text-xs text-gray-600 absolute top-2 right-2.5 shadow-md">
+      <div className="smd:hidden bg-gray-100 z-40 rounded py-0.5 px-1 text-xs text-gray-600 absolute top-2 right-2.5 shadow-md">
         {findProductIndex()}
         <span>/</span>
         {products.length}

@@ -146,7 +146,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, ShippingInfoFormProp
 
     return (
       <form className="5xl:text-3xl md:text-base text-sm space-y-2" ref={ref}>
-        <h3 className="5xl:text-[0.8em] font-semibold text-gray-900 text-lg">
+        <h3 className="5xl:text-[0.8em] 5xl:pt-8 font-semibold text-gray-900 text-lg">
           Thông tin giao hàng
         </h3>
         <div className="space-y-3">

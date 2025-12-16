@@ -215,7 +215,7 @@ const Instructions = () => {
             <path d="M12 16v-4" />
             <path d="M12 8h.01" />
           </svg>
-          Hướng dẫn chọn ảnh in đẹp
+          Hướng dẫn tạo ảnh in đẹp
         </button>
       </div>
       {showModal &&

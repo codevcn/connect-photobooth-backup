@@ -1,11 +1,11 @@
-import { checkIfMobileScreen } from '@/utils/helpers'
 import { useRef, useState, useEffect, useCallback } from 'react'
 
 type UseElementZoomOptions = {
   minZoom?: number // Scale tối thiểu (mặc định 0.3)
   maxZoom?: number // Scale tối đa (mặc định 2)
-  sensitivityForDesktop?: number // Độ nhạy zoom (mặc định 0.01)
-  sensitivityForMobile?: number // Độ nhạy zoom (mặc định 0.005)
+  sensitivity?: number // Độ nhạy zoom (mặc định 0.01)
+  onZoomStart?: () => void // Callback khi bắt đầu zoom
+  onZoomEnd?: () => void // Callback khi kết thúc zoom
   currentZoom: number
   setCurrentZoom: React.Dispatch<React.SetStateAction<number>>
 }
@@ -20,8 +20,9 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
   const {
     minZoom = 0.2,
     maxZoom = 10,
-    sensitivityForDesktop = 0.005,
-    sensitivityForMobile = 0.01,
+    sensitivity = 0.003,
+    onZoomStart,
+    onZoomEnd,
     currentZoom,
     setCurrentZoom,
   } = options
@@ -31,10 +32,6 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
   const buttonRef = useRef<HTMLButtonElement>(null)
   const dragStartRef = useRef({ x: 0, y: 0, distance: 0 })
 
-  const getSensitivity = () => {
-    return checkIfMobileScreen() ? sensitivityForMobile : sensitivityForDesktop
-  }
-
   const getDistance = useCallback(
     (x: number, y: number, centerX: number, centerY: number): number => {
       return Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2))
@@ -43,12 +40,16 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
   )
 
   const handleMouseDown = useCallback(
-    (e: MouseEvent | TouchEvent) => {
+    (e: PointerEvent) => {
+      console.log('>>> [zzz] call:', isZooming)
       e.preventDefault()
       e.stopPropagation()
 
       isZoomingRef.current = true
       setIsZooming(true)
+
+      // Gọi callback khi bắt đầu zoom
+      onZoomStart?.()
 
       const divRect = containerRef.current?.getBoundingClientRect()
       if (!divRect) return
@@ -56,23 +57,18 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
       const centerY = divRect.top + divRect.height / 2
 
       dragStartRef.current = {
-        x: e instanceof MouseEvent ? e.clientX : e.touches[0].clientX,
-        y: e instanceof MouseEvent ? e.clientY : e.touches[0].clientY,
-        distance: getDistance(
-          e instanceof MouseEvent ? e.clientX : e.touches[0].clientX,
-          e instanceof MouseEvent ? e.clientY : e.touches[0].clientY,
-          centerX,
-          centerY
-        ),
+        x: e.clientX,
+        y: e.clientY,
+        distance: getDistance(e.clientX, e.clientY, centerX, centerY),
       }
 
       document.body.style.cursor = 'grabbing'
       document.body.style.userSelect = 'none'
     },
-    [getDistance]
+    [getDistance, onZoomStart]
   )
 
-  const handleStart = useCallback(
+  const handleMouseMove = useCallback(
     (e: PointerEvent) => {
       if (!isZoomingRef.current) return
       e.preventDefault()
@@ -89,43 +85,46 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
       // Tính toán scale: kéo xa center = zoom in, kéo gần center = zoom out
       const newScale = Math.max(
         minZoom,
-        Math.min(maxZoom, currentZoom + distanceDiff * getSensitivity())
+        Math.min(maxZoom, currentZoom + distanceDiff * sensitivity)
       )
 
       setCurrentZoom(newScale)
       dragStartRef.current.distance = currentDistance
     },
-    [getDistance, minZoom, maxZoom, currentZoom, sensitivityForDesktop, setCurrentZoom]
+    [getDistance, minZoom, maxZoom, currentZoom, sensitivity, setCurrentZoom]
   )
 
-  const handleUp = useCallback(() => {
+  const handleMouseUp = useCallback(() => {
     isZoomingRef.current = false
     setIsZooming(false)
     document.body.style.cursor = 'default'
     document.body.style.userSelect = 'auto'
-  }, [])
+
+    // Gọi callback khi kết thúc zoom
+    onZoomEnd?.()
+  }, [onZoomEnd])
 
   // Effect để add/remove listeners khi isZooming thay đổi
   useEffect(() => {
-    document.body.addEventListener('pointermove', handleStart)
-    document.body.addEventListener('pointerup', handleUp)
-    document.body.addEventListener('pointercancel', handleUp)
+    document.body.addEventListener('pointermove', handleMouseMove)
+    document.body.addEventListener('pointerup', handleMouseUp)
+    document.body.addEventListener('pointercancel', handleMouseUp)
     return () => {
-      document.body.removeEventListener('pointermove', handleStart)
-      document.body.removeEventListener('pointerup', handleUp)
-      document.body.removeEventListener('pointercancel', handleUp)
+      document.body.removeEventListener('pointermove', handleMouseMove)
+      document.body.removeEventListener('pointerup', handleMouseUp)
+      document.body.removeEventListener('pointercancel', handleMouseUp)
     }
-  }, [handleStart, handleUp])
+  }, [handleMouseMove, handleMouseUp])
 
   // Effect để add listener cho button
   useEffect(() => {
     const button = buttonRef.current
+    console.log('>>> [zzz] button:', button)
     if (!button) return
-    button.addEventListener('mousedown', handleMouseDown)
-    button.addEventListener('touchstart', handleMouseDown)
+    console.log('>>> [zzz] add listener')
+    button.addEventListener('pointerdown', handleMouseDown)
     return () => {
-      button.removeEventListener('mousedown', handleMouseDown)
-      button.removeEventListener('touchstart', handleMouseDown)
+      button.removeEventListener('pointerdown', handleMouseDown)
       document.body.style.cursor = 'default'
       document.body.style.userSelect = 'auto'
     }

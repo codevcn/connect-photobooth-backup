@@ -63,7 +63,7 @@ const AddingToCartLoadingModal = () => {
     isLoading && (
       <div className="fixed inset-0 flex items-center justify-center z-9999 animate-pop-in p-4">
         <div className="bg-black/50 absolute inset-0 z-10"></div>
-        <video autoPlay loop muted playsInline webkit-playsinline className="z-20 relative">
+        <video autoPlay loop muted playsInline className="z-20 relative">
           <source src="/videos/add-to-cart-loading.webm" type="video/webm" />
         </video>
       </div>

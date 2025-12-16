@@ -6,6 +6,8 @@ import '@/styles/virtual-keyboard.css'
 import { AutoSizeTextField } from '../AutoSizeTextField'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 
+type TLayoutName = 'default' | 'shift' | 'specialCharacters'
+
 type TVietnameseKeyboardProps = {
   textDisplayerRef: React.RefObject<HTMLTextAreaElement | null>
   currentInputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>
@@ -21,6 +23,7 @@ type TVietnameseKeyboardProps = {
   autoFocus: boolean
   keyboardRef: React.RefObject<any>
   keyboardName: string
+  isOpen: boolean
 }>
 
 export const VietnameseKeyboard = ({
@@ -37,16 +40,14 @@ export const VietnameseKeyboard = ({
   keyboardName = 'NAME-vietnamese-virtual-keyboard',
   textDisplayerRef,
   currentInputRef,
+  isOpen = false,
 }: TVietnameseKeyboardProps) => {
-  const [input, setInput] = useState(initialInputValue)
-  const [layoutName, setLayoutName] = useState('default')
+  const [input, setInput] = useState<string>(initialInputValue)
+  const [layoutName, setLayoutName] = useState<TLayoutName>('default')
   const internalKeyboardRef = useRef<any>(null)
   const keyboardRef = externalKeyboardRef || internalKeyboardRef
   // Track caret position
   const caretPositionRef = useRef<{ start: number; end: number }>({ start: 0, end: 0 })
-  // Track double tap for done and enter buttons
-  const lastTapTimeRef = useRef<{ done: number; enter: number }>({ done: 0, enter: 0 })
-  const DOUBLE_TAP_DELAY = 400 // milliseconds
   // Track enter key press state
   const enterKeyPressedRef = useRef<boolean>(false)
   const doneKeyPressedRef = useRef<boolean>(false)
@@ -121,8 +122,12 @@ export const VietnameseKeyboard = ({
   }
 
   const handleKeyPress = (button: string) => {
-    if (button === '{shift}' || button === '{lock}') {
-      setLayoutName(layoutName === 'default' ? 'shift' : 'default')
+    if (button === '{abc}') {
+      setLayoutName('default')
+    } else if (button === '{?123}') {
+      setLayoutName('specialCharacters')
+    } else if (button === '{shift}' || button === '{lock}') {
+      setLayoutName('shift')
     } else if (button === '{bksp}') {
       const newInput = deleteAtCaret()
       setInput(newInput)
@@ -230,26 +235,27 @@ export const VietnameseKeyboard = ({
       'q w e r t y u i o p [ ] \\',
       "a s d f g h j k l ; ' {enter}",
       '{shift} z x c v b n m , . / {shift}',
-      '{=\\<} @ {space} {done}',
+      '{?123} @ {space} .com {done}',
     ],
     shift: [
       '1 2 3 4 5 6 7 8 9 0 _ + {bksp} {clear}',
       'Q W E R T Y U I O P { } |',
       'A S D F G H J K L : " {enter}',
       '{shift} Z X C V B N M < > ? {shift}',
-      '{=\\<} {space} {done}',
+      '{?123} {space} .com {done}',
     ],
     specialCharacters: [
       '1 2 3 4 5 6 7 8 9 0 _ + {bksp} {clear}',
       '~ ˋ | • √ π ÷ × ¶ Δ { } |',
       '@ # $ % & ( ) : " {enter}',
       '{shift} * " ! < > ? {shift}',
-      '{abc} @ {space} {done}',
+      '{abc} @ {space} .com {done}',
     ],
   }
 
   const display: Record<string, string> = {
-    '{=\\<}': '<span>=\\<</span>',
+    '{?123}': '<span>?123</span>',
+    '{abc}': '<span>ABC</span>',
     '{bksp}': `
       <svg
         xmlns="http://www.w3.org/2000/svg"

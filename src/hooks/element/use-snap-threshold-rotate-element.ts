@@ -2,33 +2,14 @@ import { createInitialConstants } from '@/utils/contants'
 import { useRef, useCallback, useState, useEffect } from 'react'
 
 // Hook useRotateElement
-interface UseElementRotationOptions {
+type UseElementRotationOptions = {
   currentRotation: number
   setCurrentRotation: React.Dispatch<React.SetStateAction<number>>
-  onRotationStart?: () => void
-  onRotationEnd?: () => void
   snapThreshold?: number
   snapBreakThreshold?: number
 }
 
-interface UseElementRotationReturn {
-  rotateButtonRef: React.RefObject<HTMLButtonElement | null>
-  containerRef: React.RefObject<HTMLElement | null>
-  resetRotation: () => void
-  isRotating: boolean
-}
-
-// Hook useRotateElement
-interface UseElementRotationOptions {
-  currentRotation: number
-  setCurrentRotation: React.Dispatch<React.SetStateAction<number>>
-  onRotationStart?: () => void
-  onRotationEnd?: () => void
-  snapThreshold?: number
-  snapBreakThreshold?: number
-}
-
-interface UseElementRotationReturn {
+type UseElementRotationReturn = {
   rotateButtonRef: React.RefObject<HTMLButtonElement | null>
   containerRef: React.RefObject<HTMLElement | null>
   resetRotation: () => void
@@ -41,8 +22,6 @@ export const useSnapThresholdRotateElement = (
   const {
     currentRotation,
     setCurrentRotation,
-    onRotationStart,
-    onRotationEnd,
     snapThreshold = createInitialConstants<number>('ELEMENT_ROTATION_SNAP_THRESHOLD'),
     snapBreakThreshold = createInitialConstants<number>('ELEMENT_ROTATION_SNAP_BREAK_THRESHOLD'),
   } = options
@@ -90,8 +69,6 @@ export const useSnapThresholdRotateElement = (
       setIsRotating(true)
       isSnappedRef.current = false
 
-      onRotationStart?.()
-
       const clientX = e.clientX
       const clientY = e.clientY
 
@@ -104,7 +81,7 @@ export const useSnapThresholdRotateElement = (
       document.body.style.cursor = 'grabbing'
       document.body.style.userSelect = 'none'
     },
-    [currentRotation]
+    [currentRotation, getAngleFromCenter]
   )
 
   const handleMove = useCallback(
@@ -161,7 +138,14 @@ export const useSnapThresholdRotateElement = (
         }
       }
     },
-    [snapThreshold, snapBreakThreshold]
+    [
+      getAngleFromCenter,
+      getDistanceToNearestRightAngle,
+      getNearestRightAngle,
+      snapThreshold,
+      snapBreakThreshold,
+      setCurrentRotation,
+    ]
   )
 
   const handleEnd = useCallback(() => {
@@ -170,13 +154,11 @@ export const useSnapThresholdRotateElement = (
     isSnappedRef.current = false
     document.body.style.cursor = 'default'
     document.body.style.userSelect = 'auto'
-
-    onRotationEnd?.()
   }, [])
 
   const resetRotation = useCallback(() => {
     setCurrentRotation(0)
-  }, [])
+  }, [setCurrentRotation])
 
   useEffect(() => {
     const button = rotateButtonRef.current
@@ -198,7 +180,7 @@ export const useSnapThresholdRotateElement = (
       document.body.style.cursor = 'default'
       document.body.style.userSelect = 'auto'
     }
-  }, [])
+  }, [handleStart, handleMove, handleEnd])
 
   return {
     rotateButtonRef,

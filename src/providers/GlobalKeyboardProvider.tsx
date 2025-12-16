@@ -19,14 +19,14 @@ export const GlobalKeyboardProvider = () => {
 
   const showKeyboard = useCallback((input: HTMLInputElement | HTMLTextAreaElement) => {
     if (input.classList.contains(ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD)) {
-      setIsVisible(true)
+      console.log('>>> [in] focus in nhaaa:', input)
       currentInputRef.current = input
+      setIsVisible(true)
     }
   }, [])
 
   const hideKeyboard = useCallback(() => {
     setIsVisible(false)
-    currentInputRef.current = null
   }, [])
 
   // Xử lý khi input được focus
@@ -95,12 +95,6 @@ export const GlobalKeyboardProvider = () => {
       window.removeEventListener('resize', hideKeyboardIfOnMobile)
     }
   }, [handleFocus])
-
-  useEffect(() => {
-    if (isVisible && textDisplayerRef.current) {
-      textDisplayerRef.current.focus()
-    }
-  }, [isVisible])
 
   // Xử lý khi bàn phím đang được nhập
   const handleKeyboardEditing = useCallback((inputValue: string) => {
@@ -175,12 +169,29 @@ export const GlobalKeyboardProvider = () => {
   //   hideKeyboard()
   // }, [hideKeyboard])
 
+  const styleToInputOnVisible = (currentInput: HTMLElement, isVisible: boolean) => {
+    console.log('>>> [in] curr:', { currentInput, isVisible })
+    currentInput.style.outline = isVisible ? '2px solid var(--vcn-main-cl)' : 'none'
+  }
+
   // Đồng bộ giá trị khi input thay đổi từ keyboard thật
   useEffect(() => {
+    console.log('>>> [in] on:', { isVisible, i_ref: currentInputRef.current })
     const currentInput = currentInputRef.current
     if (!currentInput) return
     const keyboard = keyboardRef.current
     if (!keyboard) return
+
+    if (isVisible && textDisplayerRef.current) {
+      textDisplayerRef.current.focus()
+    }
+
+    // Set giá trị ban đầu khi focus vào input có sẵn nội dung
+    if (currentInput && keyboardRef.current) {
+      keyboardRef.current.setInput(currentInput.value || '')
+    }
+
+    styleToInputOnVisible(currentInput, isVisible)
 
     const handleInputChange = () => {
       if (keyboard) {
@@ -188,18 +199,6 @@ export const GlobalKeyboardProvider = () => {
       }
     }
 
-    currentInput.addEventListener('input', handleInputChange)
-    return () => {
-      currentInput.removeEventListener('input', handleInputChange)
-    }
-  }, [isVisible])
-
-  // Set giá trị ban đầu khi focus vào input có sẵn nội dung
-  useEffect(() => {
-    const currentInput = currentInputRef.current
-    if (currentInput && keyboardRef.current) {
-      keyboardRef.current.setInput(currentInput.value || '')
-    }
     if (!isVisible) {
       // khi ẩn bàn phím thì set data attribute về false sau 2s (để tránh làm modal ở trang thanh toán bị ảnh hưởng)
       setTimeout(() => {
@@ -210,6 +209,13 @@ export const GlobalKeyboardProvider = () => {
           virtualKeyboardWrapper.setAttribute('data-virtual-keyboard-shown', 'false')
         }
       }, 1000)
+    }
+
+    if (!isVisible) currentInputRef.current = null
+
+    currentInput.addEventListener('input', handleInputChange)
+    return () => {
+      currentInput.removeEventListener('input', handleInputChange)
     }
   }, [isVisible])
 

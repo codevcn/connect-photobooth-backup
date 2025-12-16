@@ -127,20 +127,25 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
   }
 
   const findLayoutIndex = () => {
+    if (layoutMode === 'no-layout') return 1
     const index = availableLayouts.findIndex((layout) => layout.id === pickedLayout?.id)
-    return index >= 0 ? index + 1 : 0
+    return index >= 0 ? index + 2 : 0
   }
+
+  const [currentPickedIndex, totalIndex] = useMemo<[number, number]>(() => {
+    return [findLayoutIndex(), availableLayouts.length + 1]
+  }, [layoutMode, availableLayouts, pickedLayout])
 
   return (
     <div ref={containerRef} className="w-full relative">
       <div className="w-full flex justify-between pr-2">
-        <h3 className="5xl:text-[1.5em] smd:text-base text-xs mb-1 font-bold text-gray-800">
+        <h3 className="5xl:text-[1.5em] smd:text-base smd: text-xs mb-1 font-bold text-gray-800">
           Chọn layout
         </h3>
-        <div className="bg-white z-40 rounded py-0.5 px-1 text-xs text-gray-600 shadow-md -translate-y-1">
-          {findLayoutIndex()}
+        <div className="bg-white z-40 rounded py-0.5 px-1 h-fit text-xs text-gray-600 shadow-md -translate-y-1">
+          {currentPickedIndex}
           <span>/</span>
-          {availableLayouts.length}
+          {totalIndex}
         </div>
       </div>
       <div className="flex py-1 overflow-x-auto gap-2 w-full gallery-scroll">

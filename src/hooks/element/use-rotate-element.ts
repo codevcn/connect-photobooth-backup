@@ -10,19 +10,20 @@ type UseElementRotationOptions = {
 type UseElementRotationReturn = {
   rotateButtonRef: React.RefObject<HTMLButtonElement | null>
   containerRef: React.RefObject<HTMLElement | null>
-  resetRotation: () => void
   isRotating: boolean
+  startAngleRef: React.RefObject<number>
 }
 
 export const useRotateElement = (options: UseElementRotationOptions): UseElementRotationReturn => {
   const { currentRotation, setCurrentRotation, onRotationStart, onRotationEnd } = options
+  console.log('>>> [states] currentRotation:', currentRotation)
 
   // Refs
   const rotateButtonRef = useRef<HTMLButtonElement>(null)
   const containerRef = useRef<HTMLElement>(null)
   const isRotatingRef = useRef(false)
   const startAngleRef = useRef(0)
-  const startRotationRef = useRef(0)
+  const startRotationRef = useRef(currentRotation)
 
   // State
   const [isRotating, setIsRotating] = useState<boolean>(false)
@@ -68,30 +69,33 @@ export const useRotateElement = (options: UseElementRotationOptions): UseElement
   )
 
   // Xử lý khi di chuyển
-  const handleMove = useCallback((e: PointerEvent) => {
-    if (!isRotatingRef.current) return
+  const handleMove = useCallback(
+    (e: PointerEvent) => {
+      if (!isRotatingRef.current) return
 
-    e.preventDefault()
-    e.stopPropagation()
+      e.preventDefault()
+      e.stopPropagation()
 
-    // Lấy vị trí X và Y hiện tại
-    const currentX = e.clientX
-    const currentY = e.clientY
+      // Lấy vị trí X và Y hiện tại
+      const currentX = e.clientX
+      const currentY = e.clientY
 
-    // Tính góc hiện tại
-    const currentAngle = getAngleFromCenter(currentX, currentY)
+      // Tính góc hiện tại
+      const currentAngle = getAngleFromCenter(currentX, currentY)
 
-    // Tính độ chênh lệch góc
-    let angleDelta = currentAngle - startAngleRef.current
+      // Tính độ chênh lệch góc
+      let angleDelta = currentAngle - startAngleRef.current
 
-    // Xử lý trường hợp góc vượt qua -180/180 độ
-    if (angleDelta > 180) angleDelta -= 360
-    if (angleDelta < -180) angleDelta += 360
+      // Xử lý trường hợp góc vượt qua -180/180 độ
+      if (angleDelta > 180) angleDelta -= 360
+      if (angleDelta < -180) angleDelta += 360
 
-    // Cập nhật góc xoay mới
-    const newRotation = startRotationRef.current + angleDelta
-    setCurrentRotation(newRotation)
-  }, [getAngleFromCenter, setCurrentRotation])
+      // Cập nhật góc xoay mới
+      const newRotation = startRotationRef.current + angleDelta
+      setCurrentRotation(newRotation)
+    },
+    [getAngleFromCenter, setCurrentRotation]
+  )
 
   // Xử lý khi thả chuột/tay
   const handleEnd = useCallback(() => {
@@ -103,11 +107,6 @@ export const useRotateElement = (options: UseElementRotationOptions): UseElement
     // Gọi callback để thông báo kết thúc xoay
     onRotationEnd?.()
   }, [onRotationEnd])
-
-  // Reset góc xoay
-  const resetRotation = useCallback(() => {
-    setCurrentRotation(currentRotation)
-  }, [currentRotation])
 
   // Effect để đăng ký/hủy sự kiện
   useEffect(() => {
@@ -138,7 +137,7 @@ export const useRotateElement = (options: UseElementRotationOptions): UseElement
   return {
     rotateButtonRef,
     containerRef,
-    resetRotation,
     isRotating,
+    startAngleRef,
   }
 }
