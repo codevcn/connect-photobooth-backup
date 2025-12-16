@@ -34,7 +34,7 @@ export const PlacedImage = ({
 }: TPlacedImageProps) => {
   const { placementState, initialVisualState } = placedImage
   const [zoom, setZoom] = useState<number>(initialVisualState?.zoom || 1)
-  const { containerRef, zoomButtonRef } = useZoomElement<HTMLImageElement>({
+  const { containerRef, zoomButtonRef } = useZoomElement({
     currentZoom: zoom,
     setCurrentZoom: setZoom,
   })
