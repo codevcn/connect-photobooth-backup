@@ -167,7 +167,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
           setError('Không thể xử lý mã QR. Vui lòng thử lại.')
           toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
         })
-    }, 500)
+    }, 20000)
   }, [isReady])
 
   return (
