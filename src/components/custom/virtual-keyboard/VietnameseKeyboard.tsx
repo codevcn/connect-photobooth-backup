@@ -200,7 +200,7 @@ export const VietnameseKeyboard = ({
     } else if (button === '{done}' && doneKeyPressedRef.current) {
       doneKeyPressedRef.current = false
       submitInputValue()
-      eventEmitter.emit(EInternalEvents.ADD_TEXT_ON_DONE_KEYBOARD, input)
+      // eventEmitter.emit(EInternalEvents.ADD_TEXT_ON_DONE_KEYBOARD, input)
     }
   }
 

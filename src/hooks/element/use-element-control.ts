@@ -381,7 +381,10 @@ export const useElementControl = (
     if (!element || !allowedArea) return
     useEditedElementStore
       .getState()
-      .setElementInClipList(elementId, calculateElementClipPolygon(element, allowedArea))
+      .setElementInClipList(
+        elementId,
+        calculateElementClipPolygon(element, allowedArea, scaleFactor)
+      )
   }
 
   useEffect(() => {

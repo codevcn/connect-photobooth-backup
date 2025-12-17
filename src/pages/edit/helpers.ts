@@ -496,9 +496,7 @@ export const checkIfValidToCart = () => {
         '.NAME-print-area-container .NAME-add-printed-image-to-slot'
       )
     ) {
-      toast.error('Vui lòng thêm hình vào tất cả các khung trước khi xem trước mockup.', {
-        autoClose: 50000000,
-      })
+      toast.error('Vui lòng thêm hình vào tất cả các khung trước khi xem trước mockup.')
       return false
     }
   }

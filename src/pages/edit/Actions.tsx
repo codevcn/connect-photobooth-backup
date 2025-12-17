@@ -9,6 +9,7 @@ import { checkIfMobileScreen, fillQueryStringToURL } from '@/utils/helpers'
 import { StickerPicker } from './elements/sticker-element/StickerPicker'
 import { TextEditor } from './elements/text-element/TextEditor'
 import { checkIfValidToCart, recordMockupNote } from './helpers'
+import { toast } from 'react-toastify'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
@@ -124,7 +125,7 @@ export const Actions = () => {
               {/* Add to Cart Button */}
               <button
                 onClick={beforeAddToCartHandler}
-                className="5xl:text-[1.3em] flex-1 cursor-pointer bg-main-cl hover:bg-dark-main-cl active:scale-95 text-white font-bold py-2 px-2 rounded transition flex items-center justify-center gap-1.5 text-sm"
+                className="5xl:text-[1.3em] flex-1 cursor-pointer bg-main-cl active:scale-95 text-white font-bold py-2 px-2 rounded transition flex items-center justify-center gap-1.5 text-sm"
                 title="Thêm vào giỏ hàng"
               >
                 <svg

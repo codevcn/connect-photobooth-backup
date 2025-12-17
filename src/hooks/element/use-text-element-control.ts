@@ -213,14 +213,17 @@ export const useTextElementControl = (
   }, [initialFontSize, initialColor, initialContent, initialFontFamily, initialFontWeight])
 
   // Update clip polygon when position, angle, or fontSize changes
-  const updateClipPolygon = useCallback(() => {
+  const updateClipPolygon = () => {
     const element = elementRootRef.current
     const allowedArea = printAreaAllowedRef.current
     if (!element || !allowedArea) return
-
-    const polygon = calculateElementClipPolygon(element, allowedArea)
-    if (polygon) useEditedElementStore.getState().setElementInClipList(elementId, polygon)
-  }, [elementId])
+    useEditedElementStore
+      .getState()
+      .setElementInClipList(
+        elementId,
+        calculateElementClipPolygon(element, allowedArea, scaleFactor)
+      )
+  }
 
   useEffect(() => {
     updateClipPolygon()

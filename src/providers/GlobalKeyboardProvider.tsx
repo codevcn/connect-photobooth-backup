@@ -170,13 +170,11 @@ export const GlobalKeyboardProvider = () => {
   // }, [hideKeyboard])
 
   const styleToInputOnVisible = (currentInput: HTMLElement, isVisible: boolean) => {
-    console.log('>>> [in] curr:', { currentInput, isVisible })
     currentInput.style.outline = isVisible ? '2px solid var(--vcn-main-cl)' : 'none'
   }
 
   // Đồng bộ giá trị khi input thay đổi từ keyboard thật
   useEffect(() => {
-    console.log('>>> [in] on:', { isVisible, i_ref: currentInputRef.current })
     const currentInput = currentInputRef.current
     if (!currentInput) return
     const keyboard = keyboardRef.current
@@ -199,10 +197,25 @@ export const GlobalKeyboardProvider = () => {
       }
     }
 
-    if (!isVisible) {
+    if (isVisible) {
+      const virtualKeyboardWrapper = document.body.querySelector<HTMLElement>(
+        '.NAME-virtual-keyboard-wrapper'
+      )
+      if (virtualKeyboardWrapper) {
+        virtualKeyboardWrapper.style.setProperty('display', 'flex')
+      }
+    } else {
       // khi ẩn bàn phím thì set data attribute về false sau 2s (để tránh làm modal ở trang thanh toán bị ảnh hưởng)
       setTimeout(() => {
-        const virtualKeyboardWrapper = document.querySelector<HTMLElement>(
+        const virtualKeyboardWrapper = document.body.querySelector<HTMLElement>(
+          '.NAME-virtual-keyboard-wrapper'
+        )
+        if (virtualKeyboardWrapper) {
+          virtualKeyboardWrapper.style.setProperty('display', 'none')
+        }
+      }, 500)
+      setTimeout(() => {
+        const virtualKeyboardWrapper = document.body.querySelector<HTMLElement>(
           '.NAME-virtual-keyboard-wrapper'
         )
         if (virtualKeyboardWrapper) {
@@ -223,14 +236,12 @@ export const GlobalKeyboardProvider = () => {
     <>
       {createPortal(
         <div
-          style={{
-            display: isVisible ? 'block' : 'none',
-          }}
           data-virtual-keyboard-shown={isVisible ? 'true' : 'unknown'}
-          className="NAME-virtual-keyboard-wrapper animate-fade-in fixed left-0 bottom-0 w-full h-fit z-9999"
+          className="NAME-virtual-keyboard-wrapper hidden flex-col justify-between fixed inset-0 z-9999"
         >
+          <span></span>
           {isVisible && (
-            <div className="bg-white border-t border-gray-200 shadow-2xl">
+            <div className="bg-white border-t border-gray-200 shadow-2xl w-full h-fit">
               <VietnameseKeyboard
                 onChange={handleKeyboardEditing}
                 onSubmit={handleSubmitEditing}

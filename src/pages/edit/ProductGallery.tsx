@@ -14,7 +14,7 @@ import { PreviewImage } from './customize/print-layout/PreviewImage'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useVisualStatesCollector } from '@/hooks/use-visual-states-collector'
-import { checkIfMobileScreen, fillQueryStringToURL } from '@/utils/helpers'
+import { checkIfMobileScreen, fillQueryStringToURL, resetAllStores } from '@/utils/helpers'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { useProductStore } from '@/stores/product/product.store'
@@ -258,23 +258,6 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const galleryRef = useRef<HTMLDivElement | null>(null)
   const initialGalleryHeight = useRef<number>(0)
 
-  const resetAllStores = () => {
-    // Reset tất cả stores
-    useEditedElementStore.getState().resetData(true)
-    useElementLayerStore.getState().resetData()
-    useProductUIDataStore.getState().resetData(true)
-    useLayoutStore.getState().resetData()
-    useKeyboardStore.getState().resetData()
-    useProductStore.getState().resetData()
-    usePrintedImageStore.getState().resetData()
-    useEditAreaStore.getState().resetData()
-    useEditModeStore.getState().resetData()
-    useElementStylingStore.getState().resetData()
-
-    // Clear localStorage
-    LocalStorageHelper.clearAllMockupData()
-  }
-
   const handleConfirmExit = () => {
     resetAllStores()
     navigate('/qr' + fillQueryStringToURL())
@@ -465,7 +448,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       />
       <button
         onClick={handleBackButtonClick}
-        className="smd:flex smd:py-1 hidden gap-3 cursor-pointer mobile-touch items-center justify-center font-bold w-full py-2 px-1 border-b border-gray-300 bg-main-cl text-white"
+        className="smd:flex hidden gap-3 cursor-pointer mobile-touch items-center justify-center font-bold w-full py-3 px-1 border-b border-gray-300 bg-main-cl text-white"
       >
         {/* <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -492,7 +475,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         >
           <path d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z" />
         </svg>
-        <span className="5xl:inline 5xl:text-xl smd:text-lg">Quay về</span>
+        <span className="5xl:inline 5xl:text-2xl smd:text-lg">Quay về</span>
       </button>
       <h2 className="5xl:text-[1.3em] text-[1em] py-2 px-2 w-full text-center font-bold text-gray-800">
         Chọn sản phẩm

@@ -1,9 +1,11 @@
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { getNaturalSizeOfImage } from '@/utils/helpers'
+import { checkIfMobileScreen, getNaturalSizeOfImage } from '@/utils/helpers'
 import { TPrintedImage } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
+import { createPortal } from 'react-dom'
+import { CropImageElementModal } from '../../elements/CropImageElementModal'
 
 type ImageProps = {
   img: TPrintedImage
@@ -11,7 +13,7 @@ type ImageProps = {
   onClickImage: (printedImg: TPrintedImage) => void
 }
 
-const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
+const ImageSlot = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
   const { url, id } = img
 
   const handleClickImage = () => {
@@ -56,6 +58,11 @@ type TDataOnOpen = {
   layoutId?: string
 }
 
+type TCropImageModalData = {
+  printdImage?: TPrintedImage
+  showModal: boolean
+}
+
 type PrintedImagesProps = {
   printedImages: TPrintedImage[]
 }
@@ -67,14 +74,33 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
     layoutId: undefined,
   })
   const [showPrintedImagesModal, setShowPrintedImagesModal] = useState(false)
+  const [showCropImageModal, setShowCropImageModal] = useState<TCropImageModalData>({
+    printdImage: undefined,
+    showModal: false,
+  })
 
-  const handleAddPrintedImageToFrame = (printedImg: TPrintedImage) => {
+  const addPrintedImageToLayout = (printedImage: TPrintedImage) => {
     const pickedPrintSurface = useProductUIDataStore.getState().pickedSurface
     if (!pickedPrintSurface) return
     const { slotId, layoutId } = dataOnOpenRef.current
     if (!slotId || !layoutId) return
-    useLayoutStore.getState().addPlacedImageToLayout(layoutId, slotId, printedImg)
+    useLayoutStore.getState().addPlacedImageToLayout(layoutId, slotId, printedImage)
     setShowPrintedImagesModal(false)
+  }
+
+  const handleCropPrintedImageComplete = (imageBlob: Blob) => {
+    const printedImage = showCropImageModal.printdImage
+    if (!printedImage) return
+    const clonedImage = { ...printedImage }
+    clonedImage.url = URL.createObjectURL(imageBlob)
+    if (!clonedImage) return
+    addPrintedImageToLayout(clonedImage)
+  }
+
+  const handleNoCropPrintedImage = () => {
+    const printedImage = showCropImageModal.printdImage
+    if (!printedImage) return
+    addPrintedImageToLayout(printedImage)
   }
 
   const listenHideShowPrintedImagesModal = (show: boolean, slotId?: string, layoutId?: string) => {
@@ -83,7 +109,15 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
   }
 
   const handlePickPrintedImage = (printedImg: TPrintedImage) => {
-    handleAddPrintedImageToFrame(printedImg)
+    // handleCropPrintedImageComplete(printedImg)
+    handleShowCropImageModal(printedImg)
+  }
+
+  const handleShowCropImageModal = (printedImg: TPrintedImage) => {
+    setShowCropImageModal({ printdImage: printedImg, showModal: true })
+  }
+  const handleCloseCropImageModal = () => {
+    setShowCropImageModal({ printdImage: undefined, showModal: false })
   }
 
   useEffect(() => {
@@ -100,55 +134,72 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
   }, [])
 
   return (
-    <div
-      style={{
-        display: showPrintedImagesModal ? 'flex' : 'none',
-      }}
-      className="NAME-printed-images-modal 5xl:text-3xl fixed inset-0 z-999 flex items-center justify-center"
-    >
+    <>
       <div
-        onClick={() => setShowPrintedImagesModal(false)}
-        className="bg-black/70 absolute inset-0 z-10"
-      ></div>
-      <div className="relative z-20 bg-white w-full max-w-[90vw] rounded-lg max-h-[80vh] flex flex-col transition duration-300 ease-in-out">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-b-gray-200 shadow">
-          <h2 className="5xl:text-[1em] text-lg font-bold">Chọn ảnh bạn đã chụp</h2>
-          <button
-            onClick={() => setShowPrintedImagesModal(false)}
-            className="5xl:h-12 5xl:w-12 w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors cursor-pointer mobile-touch"
-            aria-label="Close"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-x-icon lucide-x 5xl:w-12 5xl:h-12"
+        style={{
+          display: showPrintedImagesModal ? 'flex' : 'none',
+        }}
+        className="NAME-printed-images-modal 5xl:text-3xl fixed inset-0 z-999 flex items-center justify-center"
+      >
+        <div
+          onClick={() => setShowPrintedImagesModal(false)}
+          className="bg-black/70 absolute inset-0 z-10"
+        ></div>
+        <div className="relative z-20 bg-white w-full max-w-[90vw] rounded-lg max-h-[80vh] flex flex-col transition duration-300 ease-in-out">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-b-gray-200 shadow">
+            <h2 className="5xl:text-[1em] text-lg font-bold">Chọn ảnh bạn đã chụp</h2>
+            <button
+              onClick={() => setShowPrintedImagesModal(false)}
+              className="5xl:h-12 5xl:w-12 w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors cursor-pointer mobile-touch"
+              aria-label="Close"
             >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-x-icon lucide-x 5xl:w-12 5xl:h-12"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
 
-        {/* Image Grid */}
-        <div className="flex-1 overflow-y-auto p-3">
-          <div className="grid-cols-1 smd:grid-cols-2 grid gap-2" ref={imgsContainerRef}>
-            {printedImages.map((img) => (
-              <Image
-                key={img.id}
-                img={img}
-                imgsContainerRef={imgsContainerRef}
-                onClickImage={handlePickPrintedImage}
-              />
-            ))}
+          {/* Image Grid */}
+          <div className="flex-1 overflow-y-auto p-3">
+            <div className="grid-cols-1 smd:grid-cols-2 grid gap-2" ref={imgsContainerRef}>
+              {printedImages.map((img) => (
+                <ImageSlot
+                  key={img.id}
+                  img={img}
+                  imgsContainerRef={imgsContainerRef}
+                  onClickImage={handlePickPrintedImage}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {!checkIfMobileScreen() &&
+        showCropImageModal.showModal &&
+        showCropImageModal.printdImage &&
+        createPortal(
+          <CropImageElementModal
+            elementId={showCropImageModal.printdImage.id}
+            imageUrl={showCropImageModal.printdImage.url}
+            onClose={handleCloseCropImageModal}
+            onCropComplete={handleCropPrintedImageComplete}
+            showNoCrop
+            onNoCrop={handleNoCropPrintedImage}
+          />,
+          document.body
+        )}
+    </>
   )
 }

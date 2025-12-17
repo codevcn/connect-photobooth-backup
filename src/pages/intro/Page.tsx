@@ -44,7 +44,7 @@ const IntroPage = () => {
             controlsList="nodownload"
           >
             <source
-              src="https://photobooth-public.s3.ap-southeast-1.amazonaws.com/dev+(9-12)(2)+(2).mov"
+              src="https://photobooth-public.s3.ap-southeast-1.amazonaws.com/ptb-intro-video.mov"
               type="video/mp4"
             />
           </video>

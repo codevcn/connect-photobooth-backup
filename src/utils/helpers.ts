@@ -7,6 +7,16 @@ import {
   TSurfaceType,
   TTextFont,
 } from './types/global'
+import { useEditedElementStore } from '@/stores/element/element.store'
+import { useElementLayerStore } from '@/stores/ui/element-layer.store'
+import { useLayoutStore } from '@/stores/ui/print-layout.store'
+import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
+import { useProductStore } from '@/stores/product/product.store'
+import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
+import { useEditAreaStore } from '@/stores/ui/edit-area.store'
+import { useEditModeStore } from '@/stores/ui/edit-mode.store'
+import { useElementStylingStore } from '@/stores/element/element-styling.store'
+import { LocalStorageHelper } from './localstorage'
 
 export const getNaturalSizeOfImage = (
   imgURL: string,
@@ -593,4 +603,21 @@ export function countFramesInOneSecond(): Promise<number> {
 
     requestAnimationFrame(loop)
   })
+}
+
+export const resetAllStores = () => {
+  // Reset tất cả stores
+  useEditedElementStore.getState().resetData(true)
+  useElementLayerStore.getState().resetData()
+  useProductUIDataStore.getState().resetData(true)
+  useLayoutStore.getState().resetData()
+  useKeyboardStore.getState().resetData()
+  useProductStore.getState().resetData()
+  usePrintedImageStore.getState().resetData()
+  useEditAreaStore.getState().resetData()
+  useEditModeStore.getState().resetData()
+  useElementStylingStore.getState().resetData()
+
+  // Clear localStorage
+  LocalStorageHelper.clearAllMockupData()
 }

@@ -34,7 +34,7 @@ export default function NotFound() {
                   className="group flex items-center justify-center gap-2 px-8 py-4 bg-white text-gray-800 font-bold rounded-xl shadow-lg hover:shadow-xl border-2 border-gray-200 hover:border-main-cl transform hover:scale-105 transition-all duration-200 active:scale-95"
                 >
                   <svg
-                    className="w-5 h-5 group-hover:-translate-x-1 transition-transform"
+                    className="5xl:w-8 5xl:h-8 w-5 h-5 group-hover:-translate-x-1 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -46,7 +46,7 @@ export default function NotFound() {
                       d="M10 19l-7-7m0 0l7-7m-7 7h18"
                     />
                   </svg>
-                  <span>Back</span>
+                  <span className="5xl:text-2xl">Back</span>
                 </button>
 
                 <Link
@@ -54,7 +54,7 @@ export default function NotFound() {
                   className="group flex items-center justify-center gap-2 px-8 py-4 bg-main-cl hover:bg-dark-main-cl text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 active:scale-95"
                 >
                   <svg
-                    className="w-5 h-5 group-hover:scale-110 transition-transform"
+                    className="5xl:w-8 5xl:h-8 w-5 h-5 group-hover:scale-110 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -66,7 +66,7 @@ export default function NotFound() {
                       d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                     />
                   </svg>
-                  <span>Home</span>
+                  <span className="5xl:text-2xl">Home</span>
                 </Link>
               </div>
             </div>

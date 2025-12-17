@@ -7,11 +7,11 @@ type Point = { x: number; y: number }
 /**
  * Lấy 4 góc của element sau khi transform (rotation + scale)
  */
-const getTransformedCorners = (element: HTMLElement): Point[] => {
+const getTransformedCorners = (element: HTMLElement, viewportScale: number): Point[] => {
   const rect = element.getBoundingClientRect()
   const style = window.getComputedStyle(element)
-  const matrix = new DOMMatrix(style.transform)
-console.log('>>> [kkk] matrix:', matrix)
+  const matrix =
+    style.transform && style.transform !== 'none' ? new DOMMatrix(style.transform) : new DOMMatrix()
   // Dimensions gốc (trước transform)
   const width = element.offsetWidth
   const height = element.offsetHeight
@@ -32,8 +32,11 @@ console.log('>>> [kkk] matrix:', matrix)
   return corners.map((corner) => {
     const transformed = matrix.transformPoint({ x: corner.x, y: corner.y, z: 0, w: 1 })
     return {
-      x: centerX + transformed.x,
-      y: centerY + transformed.y,
+      // rect.* đã là viewport coordinates (đã bao gồm scale của parent/container).
+      // style.transform chỉ là transform của riêng element, nên cần nhân thêm viewportScale
+      // để đưa offset về đúng đơn vị viewport.
+      x: centerX + transformed.x * viewportScale,
+      y: centerY + transformed.y * viewportScale,
     }
   })
 }
@@ -121,21 +124,23 @@ const isPointInRect = (
  */
 export const calculateElementClipPolygon = (
   element: HTMLElement | null,
-  allowedPrintArea: HTMLElement | null
+  allowedPrintArea: HTMLElement | null,
+  viewportScale: number = 1
 ): string | null => {
   if (!element || !allowedPrintArea) return null
 
+  // Guard: scaleFactor/viewportScale phải là số hợp lệ
+  const safeViewportScale = Number.isFinite(viewportScale) && viewportScale > 0 ? viewportScale : 1
+
   // Get allowed area bounds
   const allowedRect = allowedPrintArea.getBoundingClientRect()
-  console.log('>>> [kkk] allowedRect:', allowedRect)
   const allowedLeft = allowedRect.left
   const allowedTop = allowedRect.top
   const allowedRight = allowedRect.right
   const allowedBottom = allowedRect.bottom
 
   // Get transformed corners của element
-  const corners = getTransformedCorners(element)
-console.log('>>> [kkk] corners:', corners)
+  const corners = getTransformedCorners(element, safeViewportScale)
   // Tìm tất cả điểm cần giữ lại (trong allowed area hoặc intersection points)
   const clippedPoints: Point[] = []
 
@@ -217,7 +222,8 @@ console.log('>>> [kkk] corners:', corners)
 
   // Convert viewport coordinates về local coordinates của element (trước transform)
   const style = window.getComputedStyle(element)
-  const matrix = new DOMMatrix(style.transform)
+  const matrix =
+    style.transform && style.transform !== 'none' ? new DOMMatrix(style.transform) : new DOMMatrix()
   const inverseMatrix = matrix.inverse()
 
   const elementRect = element.getBoundingClientRect()
@@ -230,8 +236,10 @@ console.log('>>> [kkk] corners:', corners)
   const polygonPoints = clippedPoints
     .map((point) => {
       // Convert viewport point về local space (relative to element center)
-      const relativeX = point.x - elementCenterX
-      const relativeY = point.y - elementCenterY
+      // point.* và elementCenter* đang ở viewport coordinates (đã bị scale bởi container),
+      // nên cần chia lại cho safeViewportScale trước khi apply inverse transform.
+      const relativeX = (point.x - elementCenterX) / safeViewportScale
+      const relativeY = (point.y - elementCenterY) / safeViewportScale
 
       // Apply inverse transform
       const localPoint = inverseMatrix.transformPoint({ x: relativeX, y: relativeY, z: 0, w: 1 })

@@ -167,15 +167,15 @@ export const EditorModalWrapper = ({
   showEditorModal,
   setShowEditorModal,
 }: TEditorModalWrapperProps) => {
-  useEffect(() => {
-    const listenAddTextOnDoneKeyboard = (textContent: string) => {
-      document.body.querySelector<HTMLElement>('#NAME-add-text-element-confirm-button')?.click()
-    }
-    eventEmitter.on(EInternalEvents.ADD_TEXT_ON_DONE_KEYBOARD, listenAddTextOnDoneKeyboard)
-    return () => {
-      eventEmitter.off(EInternalEvents.ADD_TEXT_ON_DONE_KEYBOARD, listenAddTextOnDoneKeyboard)
-    }
-  }, [])
+  // useEffect(() => {
+  //   const listenAddTextOnDoneKeyboard = (textContent: string) => {
+  //     document.body.querySelector<HTMLElement>('#NAME-add-text-element-confirm-button')?.click()
+  //   }
+  //   eventEmitter.on(EInternalEvents.ADD_TEXT_ON_DONE_KEYBOARD, listenAddTextOnDoneKeyboard)
+  //   return () => {
+  //     eventEmitter.off(EInternalEvents.ADD_TEXT_ON_DONE_KEYBOARD, listenAddTextOnDoneKeyboard)
+  //   }
+  // }, [])
 
   return (
     <>
