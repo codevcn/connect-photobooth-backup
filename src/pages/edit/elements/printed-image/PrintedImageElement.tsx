@@ -241,7 +241,7 @@ export const PrintedImageElement = ({
               ref={(node) => {
                 zoomButtonRef.current = node
               }}
-              onPointerDownCapture={(e) => e.stopPropagation()}
+              // onPointerDownCapture={(e) => e.stopPropagation()}
               style={{ transform: `rotateY(180deg)` }}
               className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
             >

@@ -142,7 +142,7 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
         <h3 className="5xl:text-[1.5em] smd:text-base smd: text-xs mb-1 font-bold text-gray-800">
           Chọn layout
         </h3>
-        <div className="bg-white z-40 rounded py-0.5 px-1 h-fit text-xs text-gray-600 shadow-md -translate-y-1">
+        <div className="5xl:text-base 5xl:translate-y-0 -translate-y-1 bg-white z-40 rounded py-0.5 px-1 h-fit text-xs text-gray-600 shadow-md">
           {currentPickedIndex}
           <span>/</span>
           {totalIndex}

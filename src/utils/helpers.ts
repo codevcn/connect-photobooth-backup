@@ -546,6 +546,10 @@ export const checkIfMobileScreen = (): boolean => {
   return window.innerWidth < 662
 }
 
+export const checkIfLargeScreen = (): boolean => {
+  return window.innerWidth >= 1590
+}
+
 export const checkQueryString = () => {
   const params = new URLSearchParams(window.location.search)
   return {

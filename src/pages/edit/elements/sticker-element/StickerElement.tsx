@@ -209,6 +209,7 @@ export const StickerElement = ({
 
         {createPortal(
           <div
+            id="ID-interactive-buttons"
             className="NAME-element-interactive-buttons hidden fixed z-90 bg-transparent shadow-[0_0_0_2px_#f54900] touch-none"
             style={{
               ...updateInteractiveButtonsVisualDirectly(),
@@ -220,6 +221,7 @@ export const StickerElement = ({
             }}
           >
             <div
+              id="ID-rotate-box"
               className={`NAME-rotate-box origin-center absolute -top-7 -left-7 md:-top-8 md:-left-8 5xl:-top-10 5xl:-left-10`}
             >
               <button
@@ -227,7 +229,8 @@ export const StickerElement = ({
                   rotateButtonRef.current = node
                 }}
                 // onPointerDownCapture={(e) => e.stopPropagation()}
-                className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
+                id="ID-rotate-button"
+                className="NAME-rotate-button cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +240,8 @@ export const StickerElement = ({
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="lucide lucide-rotate-cw-icon lucide-rotate-cw h-[18px] w-[18px] md:w-5 md:h-5 5xl:w-8 5xl:h-8"
+                  className="NAME-svg lucide lucide-rotate-cw-icon lucide-rotate-cw h-[18px] w-[18px] md:w-5 md:h-5 5xl:w-8 5xl:h-8"
+                  id="ID-rotate-icon"
                 >
                   <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
                   <path d="M21 3v5h-5" />
@@ -245,17 +249,20 @@ export const StickerElement = ({
               </button>
             </div>
             <div
-              className={`NAME-remove-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8 5xl:-bottom-10 5xl:-right-10`}
+              id="ID-zoom-box"
+              className={`NAME-zoom-box absolute -bottom-7 -right-7 md:-bottom-8 md:-right-8 5xl:-bottom-10 5xl:-right-10`}
             >
               <button
                 ref={(node) => {
                   zoomButtonRef.current = node
                 }}
-                onPointerDownCapture={(e) => e.stopPropagation()}
+                // onPointerDownCapture={(e) => e.stopPropagation()}
                 style={{ transform: `rotateY(180deg)` }}
-                className="cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
+                id="ID-zoom-button"
+                className="NAME-zoom-button cursor-grab active:cursor-grabbing bg-main-cl text-white rounded-full p-1 active:scale-90 transition"
               >
                 <svg
+                  id="ID-zoom-icon"
                   xmlns="http://www.w3.org/2000/svg"
                   width="18"
                   height="18"
@@ -265,7 +272,7 @@ export const StickerElement = ({
                   strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="lucide lucide-scaling-icon lucide-scaling h-[18px] w-[18px] md:w-5 md:h-5 5xl:w-8 5xl:h-8"
+                  className="NAME-svg lucide lucide-scaling-icon lucide-scaling h-[18px] w-[18px] md:w-5 md:h-5 5xl:w-8 5xl:h-8"
                 >
                   <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                   <path d="M14 15H9v-5" />

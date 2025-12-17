@@ -28,6 +28,7 @@ import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { MiddleInfoSection } from './MiddleInfoSection'
 import { toast } from 'react-toastify'
+import { useQueryFilter } from '@/hooks/extensions'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -199,6 +200,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   const cancelSelectingElement = useEditedElementStore((s) => s.cancelSelectingElement)
   const { loadAllFonts } = useFontLoader()
   const mockupId = useSearchParams()[0].get('mockupId')
+  const queryFilter = useQueryFilter()
   const firstRenderRef = useRef(true)
 
   useEffect(() => {
@@ -266,7 +268,12 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   }, [])
 
   return (
-    <div className="NAME-edit-page-root spmd:grid-cols-[1fr_6fr] xl:gap-4 smd:grid-rows-[1fr_6fr] grid-cols-1 font-sans grid h-screen z-10 relative">
+    <div
+      style={{
+        userSelect: queryFilter.funId ? 'auto' : 'none',
+      }}
+      className="NAME-edit-page-root spmd:grid-cols-[1fr_6fr] xl:gap-4 smd:grid-rows-[1fr_6fr] grid-cols-1 font-sans grid h-screen z-10 relative"
+    >
       <AddingToCartLoadingModal />
       <ProductGallery products={products} printedImages={printedImages} />
       {pickedProduct && pickedVariant && (

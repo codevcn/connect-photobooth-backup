@@ -127,7 +127,8 @@ export const VietnameseKeyboard = ({
     } else if (button === '{?123}') {
       setLayoutName('specialCharacters')
     } else if (button === '{shift}' || button === '{lock}') {
-      setLayoutName('shift')
+      if (layoutName === 'shift') setLayoutName('default')
+      else setLayoutName('shift')
     } else if (button === '{bksp}') {
       const newInput = deleteAtCaret()
       setInput(newInput)
@@ -238,14 +239,14 @@ export const VietnameseKeyboard = ({
       '{?123} @ {space} .com {done}',
     ],
     shift: [
-      '1 2 3 4 5 6 7 8 9 0 _ + {bksp} {clear}',
+      '1 2 3 4 5 6 7 8 9 0 _ + {bksp}',
       'Q W E R T Y U I O P { } |',
       'A S D F G H J K L : " {enter}',
       '{shift} Z X C V B N M < > ? {shift}',
-      '{?123} {space} .com {done}',
+      '{?123} @ {space} .com {done}',
     ],
     specialCharacters: [
-      '1 2 3 4 5 6 7 8 9 0 _ + {bksp} {clear}',
+      '1 2 3 4 5 6 7 8 9 0 _ + {bksp}',
       '~ ˋ | • √ π ÷ × ¶ Δ { } |',
       '@ # $ % & ( ) : " {enter}',
       '{shift} * " ! < > ? {shift}',

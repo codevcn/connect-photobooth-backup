@@ -1,5 +1,6 @@
 import { createInitialConstants } from '@/utils/contants'
 import { useRef, useCallback, useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 
 // Hook useRotateElement
 type UseElementRotationOptions = {
@@ -149,6 +150,8 @@ export const useSnapThresholdRotateElement = (
   )
 
   const handleEnd = useCallback(() => {
+    if (!isRotatingRef.current) return
+
     isRotatingRef.current = false
     setIsRotating(false)
     isSnappedRef.current = false

@@ -1,5 +1,6 @@
 import { checkIfMobileScreen } from '@/utils/helpers'
 import { useRef, useState, useEffect, useCallback } from 'react'
+import { toast } from 'react-toastify'
 
 type UseElementZoomOptions = {
   minZoom?: number // Scale tối thiểu (mặc định 0.3)
@@ -99,6 +100,8 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
   )
 
   const handleUp = useCallback(() => {
+    if (!isZoomingRef.current) return
+
     isZoomingRef.current = false
     setIsZooming(false)
     document.body.style.cursor = 'default'
