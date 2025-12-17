@@ -49,6 +49,8 @@ const Product = ({
   onInitFirstProduct,
   firstPrintAreaInProduct,
   printedImages,
+  productIndex,
+  productsCount,
 }: TProductProps) => {
   const [initialLayout, setInitialLayout] = useState<TPrintLayout>()
   const queryFilter = useQueryFilter()
@@ -133,9 +135,9 @@ const Product = ({
       }}
       data-product-id={product.id}
       data-is-picked={isPicked}
-      className={`${
+      className={`${productIndex === productsCount ? 'mb-8' : ''} ${
         isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
-      } NAME-gallery-product spmd:w-full spmd:h-auto smd:rounded-lg h-full rounded-lg aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative`}
+      } NAME-gallery-product spmd:w-full spmd:h-auto smd:rounded-lg group h-full rounded-lg aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative`}
       onClick={() => {
         if (initialLayout) onPickProduct(product, initialLayout, firstPrintAreaInProduct)
       }}
@@ -143,15 +145,15 @@ const Product = ({
       <div
         className={`${
           isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
-        } NAME-gallery-child-to-render smd:hidden block w-full text-center z-10 h-fit px-2 pt-2.5 rounded-b-lg whitespace-nowrap truncate absolute top-[97%] left-0 text-[12px] text-black`}
+        } NAME-gallery-child-to-render smd:text-[20px] smd:font-bold w-full text-center z-10 h-fit px-2 pt-2.5 rounded-b-lg whitespace-nowrap group-hover:outline-2 group-hover:outline-main-cl truncate absolute top-[98%] left-0 text-[12px] text-black`}
         style={{
           backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%)`,
         }}
       >
-        <div className="w-full h-1.5 bg-white absolute top-0 left-0"></div>
+        <div className="smd:top-0.5 w-full h-1.5 bg-white absolute top-0 left-0"></div>
         {displayProductName(product)}
       </div>
-      <div className="NAME-gallery-child-to-rounded smd:rounded-xl w-full h-full bg-white border border-gray-200 relative rounded-t-lg z-20">
+      <div className="NAME-gallery-child-to-rounded w-full h-full bg-white border border-gray-200 relative rounded-t-lg z-20">
         <img
           src={firstPrintAreaInProduct.imageUrl || '/images/placeholder.svg'}
           alt={product.name}
@@ -450,8 +452,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const hasProducts = products && products.length > 0
 
   return (
-    <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base text-sm w-full h-fit flex flex-col bg-white border-r border-r-gray-200">
-      <div className="smd:hidden bg-gray-100 z-40 rounded py-0.5 px-1 text-xs text-gray-600 absolute top-2 right-2.5 shadow-md">
+    <div className="spmd:pb-3 spmd:h-screen spmd:w-auto md:text-base relative text-sm w-full h-fit flex flex-col bg-white border-r border-r-gray-200">
+      <div className="smd:hidden smd:text-[1.3rem] top-2 right-2.5 bg-gray-100 z-40 rounded py-0.5 px-1 text-xs text-gray-600 absolute shadow-md">
         {findProductIndex()}
         <span>/</span>
         {products.length}
@@ -471,7 +473,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          strokeLinecap="round"
+          strokeLinecap="round"5xl:text-[1.3em] text-[1em] py-2 w-full text-center font-bold text-gray-800 flex items-center justify-center gap-2
           strokeLinejoin="round"
           className="lucide lucide-move-left-icon lucide-move-left w-6 h-6 5xl:w-9 5xl:h-9 text-white"
         >
@@ -490,10 +492,19 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         >
           <path d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z" />
         </svg>
-        <span className="5xl:text-xl smd:text-lg">Quay về</span>
+        <span className="5xl:inline 5xl:text-xl smd:text-lg">Quay về</span>
       </button>
-      <h2 className="5xl:text-[1.3em] text-[1em] py-2 w-full text-center font-bold text-gray-800 flex items-center justify-center gap-2">
+      <h2 className="5xl:text-[1.3em] text-[1em] py-2 px-2 w-full text-center font-bold text-gray-800">
         Chọn sản phẩm
+        <span className="smd:inline hidden font-light">
+          <span> </span>(
+          <span>
+            <span>{findProductIndex()}</span>
+            <span>/</span>
+            <span>{products.length}</span>
+          </span>
+          <span>)</span>
+        </span>
       </h2>
       <div className="NAME-products-gallery-wrapper spmd:overflow-y-auto spmd:max-h-full">
         <div
@@ -509,7 +520,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
             ref={(node) => {
               scrollableBox.current = node
             }}
-            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col flex items-center gap-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
+            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col flex items-center gap-x-2 gap-y-12 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
           >
             {hasProducts &&
               products.map((product, index) => {

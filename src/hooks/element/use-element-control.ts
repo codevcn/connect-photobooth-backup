@@ -190,6 +190,7 @@ export const useElementControl = (
     minZoom: minZoom,
     currentZoom: scale,
     setCurrentZoom: setScale,
+    scaleFactor: scaleFactor,
   })
   const elementLayers = useElementLayerStore((s) => s.elementLayers)
 

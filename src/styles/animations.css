@@ -1,3 +1,21 @@
+@keyframes call-to-action-button {
+  0% {
+    transform: translateY(0px);
+  }
+  15% {
+    transform: translateY(-8px);
+  }
+  30% {
+    transform: translateY(0px);
+  }
+  45% {
+    transform: translateY(-16px);
+  }
+  60% {
+    transform: translateY(0px);
+  }
+}
+
 @keyframes app-loading-shapes {
   0% {
     background-position: 0 0, 100% 0, 100% 100%, 0 100%;

@@ -9,6 +9,7 @@ type UseElementZoomOptions = {
   sensitivityForMobile?: number // Độ nhạy zoom (mặc định 0.005)
   currentZoom: number
   setCurrentZoom: React.Dispatch<React.SetStateAction<number>>
+  scaleFactor: number // Hệ số nhân cho việc zoom (mặc định 1)
 }
 
 type UseElementZoomReturn = {
@@ -21,10 +22,11 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
   const {
     minZoom = 0.2,
     maxZoom = 10,
-    sensitivityForDesktop = 0.005,
+    sensitivityForDesktop = 0.01,
     sensitivityForMobile = 0.01,
     currentZoom,
     setCurrentZoom,
+    scaleFactor = 1,
   } = options
   const [isZooming, setIsZooming] = useState(false)
   const isZoomingRef = useRef(false)
@@ -87,16 +89,19 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
       const currentDistance = getDistance(e.clientX, e.clientY, centerX, centerY)
       const distanceDiff = currentDistance - dragStartRef.current.distance
 
+      // Chia distanceDiff cho scaleFactor để bù lại việc edit area đã được zoom
+      const adjustedDistanceDiff = distanceDiff / scaleFactor
+
       // Tính toán scale: kéo xa center = zoom in, kéo gần center = zoom out
       const newScale = Math.max(
         minZoom,
-        Math.min(maxZoom, currentZoom + distanceDiff * getSensitivity())
+        Math.min(maxZoom, currentZoom + adjustedDistanceDiff * getSensitivity())
       )
 
       setCurrentZoom(newScale)
       dragStartRef.current.distance = currentDistance
     },
-    [getDistance, minZoom, maxZoom, currentZoom, sensitivityForDesktop, setCurrentZoom]
+    [getDistance, minZoom, maxZoom, currentZoom, setCurrentZoom, scaleFactor]
   )
 
   const handleUp = useCallback(() => {
@@ -118,7 +123,7 @@ export const useZoomElement = (options: UseElementZoomOptions): UseElementZoomRe
       document.body.removeEventListener('pointerup', handleUp)
       document.body.removeEventListener('pointercancel', handleUp)
     }
-  }, [handleStart, handleUp])
+  }, [handleStart, handleUp, scaleFactor])
 
   // Effect để add listener cho button
   useEffect(() => {
