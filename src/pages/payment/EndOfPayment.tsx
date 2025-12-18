@@ -3,6 +3,7 @@ import QRCode from 'qrcode'
 import { createInitialConstants } from '@/utils/contants'
 import {
   checkIfLargeScreen,
+  checkQueryString,
   fillQueryStringToURL,
   formatNumberWithCommas,
   formatTime,
@@ -12,6 +13,7 @@ import { paymentService } from '@/services/payment.service'
 import { TOrderStatusRes } from '@/utils/types/api'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { AppNavigator } from '@/utils/navigator'
 
 type TQRCanvasProps = {
   value: string
@@ -103,7 +105,12 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
   }
 
   const backToEditPage = () => {
-    navigate(`/edit${fillQueryStringToURL()}`)
+    const queryFilter = checkQueryString()
+    if (queryFilter.isPhotoism) {
+      AppNavigator.navTo(navigate, '/edit')
+    } else {
+      AppNavigator.navTo(navigate, '/')
+    }
   }
 
   const handlePaymentStatusUpdate = (statusData: TOrderStatusRes) => {
@@ -184,7 +191,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
       <div className="relative bg-white rounded-xl shadow flex flex-col items-center w-full p-3 border border-gray-200 max-w-5xl">
         {method === 'momo' || method === 'zalopay' || method === 'bank-transfer' ? (
           status === 'completed' ? (
-            <div className="flex flex-col items-center py-3 px-3 w-full">
+            <div className="5xl:pt-8 flex flex-col items-center py-3 px-3 w-full">
               <div className="flex justify-center items-center h-20 w-20 rounded-full bg-green-600">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -201,7 +208,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
               </div>
-              <div className="5xl:pt-4 text-gray-800 mt-3 w-full text-center">
+              <div className="5xl:pt-4 5xl:mt-0 text-gray-800 mt-3 w-full text-center">
                 <p className="text-[1em]">
                   <span>Đã hoàn tất thanh toán với </span>
                   <span className="font-bold" style={{ color: colorByPaymentMethod }}>
@@ -478,7 +485,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
       {(method === 'cod' || status === 'completed' || status === 'failed') && (
         <button
           onClick={backToEditPage}
-          className="flex items-center gap-1.5 mt-3 text-sm text-main-cl font-bold active:underline"
+          className="flex items-center gap-1.5 mt-3 cursor-pointer text-sm text-main-cl font-bold active:underline"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

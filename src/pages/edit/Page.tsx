@@ -29,6 +29,7 @@ import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { MiddleInfoSection } from './MiddleInfoSection'
 import { toast } from 'react-toastify'
 import { useQueryFilter } from '@/hooks/extensions'
+import { useUserDataStore } from '@/stores/ui/user-data.store'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -203,6 +204,13 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   const queryFilter = useQueryFilter()
   const firstRenderRef = useRef(true)
 
+  const initDeviceId = () => {
+    const searchParams = new URLSearchParams(window.location.search)
+    const deviceId = searchParams.get('dvid')
+    if (!deviceId) return
+    useUserDataStore.getState().setDeviceId(deviceId)
+  }
+
   useEffect(() => {
     const listenPointerDownOnPage = (e: PointerEvent) => {
       const target = e.target
@@ -251,6 +259,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       firstRenderRef.current = false
     }
 
+    initDeviceId()
     loadAllFonts()
     document.body.addEventListener('pointerdown', listenPointerDownOnPage)
     window.addEventListener('resize', listenWindowResize)

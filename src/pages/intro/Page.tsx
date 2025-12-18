@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { fillQueryStringToURL } from '@/utils/helpers'
+import { AppNavigator } from '@/utils/navigator'
+import { useUserDataStore } from '@/stores/ui/user-data.store'
 
 const Star = () => {
   return (
@@ -58,7 +60,7 @@ const IntroPage = () => {
           <Star />
           <Star /> */}
           <button
-            onClick={() => navigate('/qr?q=ptm')}
+            onClick={() => AppNavigator.navTo(navigate, '/qr')}
             className="NAME-call-to-action-button animate-[call-to-action-button_1s_infinite] cursor-pointer relative flex items-center gap-3 bg-white text-main-cl font-bold px-12 py-5 rounded-full border-b-8 border-r-4 border-gray-200 hover:border-gray-300 active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 shadow-2xl transition-all duration-150 text-2xl uppercase tracking-widest"
           >
             <span>Thử ngay</span>

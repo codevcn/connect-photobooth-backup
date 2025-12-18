@@ -1,4 +1,6 @@
 import { useCommonDataStore } from '@/stores/ui/common-data.store'
+import { useUserDataStore } from '@/stores/ui/user-data.store'
+import { checkQueryString } from '@/utils/helpers'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { TCreateOrderReq, TOrderResponse, TOrderStatusRes, TOrderStatus } from '@/utils/types/api'
 import {
@@ -22,8 +24,13 @@ export class OrderAdapter {
     storeCode: string,
     voucherCode?: string
   ): TCreateOrderReq {
-    const ptbid = LocalStorageHelper.getPtbid()
-    if (!ptbid) {
+    let deviceId: string | null = null
+    if (checkQueryString().isPhotoism) {
+      deviceId = useUserDataStore.getState().deviceId
+    } else {
+      deviceId = LocalStorageHelper.getPtbid()
+    }
+    if (!deviceId) {
       throw new Error('Thiếu dữ liệu để thực hiện thanh toán')
     }
     // Validate cart items
@@ -81,7 +88,7 @@ export class OrderAdapter {
     }
 
     return {
-      device_id: ptbid,
+      device_id: deviceId,
       customer: {
         name: shippingInfo.name,
         email: shippingInfo.email,

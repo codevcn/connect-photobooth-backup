@@ -5,11 +5,12 @@ import { MockupPreview } from './MockupPreview'
 import { useEffect, useRef, useState } from 'react'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
-import { checkIfMobileScreen, fillQueryStringToURL } from '@/utils/helpers'
+import { checkIfMobileScreen } from '@/utils/helpers'
 import { StickerPicker } from './elements/sticker-element/StickerPicker'
 import { TextEditor } from './elements/text-element/TextEditor'
 import { checkIfValidToCart, recordMockupNote } from './helpers'
 import { toast } from 'react-toastify'
+import { AppNavigator } from '@/utils/navigator'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
@@ -32,7 +33,7 @@ export const Actions = () => {
 
   const beforeNavigateToPaymentHandler = () => {
     recordMockupNote()
-    navigate('/payment' + fillQueryStringToURL())
+    AppNavigator.navTo(navigate, '/payment')
   }
 
   const initMockupAttachedData = () => {

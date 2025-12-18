@@ -14,7 +14,7 @@ import { PreviewImage } from './customize/print-layout/PreviewImage'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useVisualStatesCollector } from '@/hooks/use-visual-states-collector'
-import { checkIfMobileScreen, fillQueryStringToURL, resetAllStores } from '@/utils/helpers'
+import { checkIfMobileScreen, resetAllStores } from '@/utils/helpers'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { useProductStore } from '@/stores/product/product.store'
@@ -22,6 +22,7 @@ import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditModeStore } from '@/stores/ui/edit-mode.store'
 import { useElementStylingStore } from '@/stores/element/element-styling.store'
 import { useQueryFilter } from '@/hooks/extensions'
+import { AppNavigator } from '@/utils/navigator'
 
 type TProductProps = {
   product: TBaseProduct
@@ -53,7 +54,6 @@ const Product = ({
   productsCount,
 }: TProductProps) => {
   const [initialLayout, setInitialLayout] = useState<TPrintLayout>()
-  const queryFilter = useQueryFilter()
   const isMobileScreen = checkIfMobileScreen()
 
   const buildInitialLayout = () => {
@@ -135,7 +135,7 @@ const Product = ({
       }}
       data-product-id={product.id}
       data-is-picked={isPicked}
-      className={`${productIndex === productsCount ? 'mb-8' : ''} ${
+      className={`${productIndex === productsCount && !isMobileScreen ? 'mb-8' : ''} ${
         isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
       } NAME-gallery-product spmd:w-full spmd:h-auto smd:rounded-lg group h-full rounded-lg aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative`}
       onClick={() => {
@@ -260,7 +260,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   const handleConfirmExit = () => {
     resetAllStores()
-    navigate('/qr' + fillQueryStringToURL())
+    AppNavigator.navTo(navigate, '/qr')
   }
 
   const handleCancelExit = () => {
@@ -450,19 +450,6 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         onClick={handleBackButtonClick}
         className="smd:flex hidden gap-3 cursor-pointer mobile-touch items-center justify-center font-bold w-full py-3 px-1 border-b border-gray-300 bg-main-cl text-white"
       >
-        {/* <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"5xl:text-[1.3em] text-[1em] py-2 w-full text-center font-bold text-gray-800 flex items-center justify-center gap-2
-          strokeLinejoin="round"
-          className="lucide lucide-move-left-icon lucide-move-left w-6 h-6 5xl:w-9 5xl:h-9 text-white"
-        >
-          <path d="M6 8L2 12L6 16" />
-          <path d="M2 12H22" />
-        </svg> */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

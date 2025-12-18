@@ -19,6 +19,8 @@ import { toast } from 'react-toastify'
 import { createInitialConstants } from '@/utils/contants'
 import { useQueryFilter } from '@/hooks/extensions'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
+import { useUserDataStore } from '@/stores/ui/user-data.store'
+import { AppNavigator } from '@/utils/navigator'
 
 interface IPaymentModalProps {
   imgSrc?: string
@@ -232,9 +234,9 @@ const PaymentPage = () => {
 
   const backToEditPage = () => {
     if (queryFilter.isPhotoism) {
-      navigate('/edit' + fillQueryStringToURL())
+      AppNavigator.navTo(navigate, '/edit')
     } else {
-      navigate('/' + fillQueryStringToURL())
+      AppNavigator.navTo(navigate, '/')
     }
   }
 
@@ -384,8 +386,6 @@ const PaymentPage = () => {
                   <div className="hidden md:block mt-3 md:mt-4">
                     <button
                       onClick={() => {
-                        // toast.info('Đang tạm khóa')
-                        console.log('>>> cart items (cart list):', cartItems)
                         setShowModal(true)
                       }}
                       className="5xl:text-[0.9em] 5xl:h-14 flex items-center justify-center gap-2 w-full mt-4 h-11 bg-main-cl hover:scale-95 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200"
@@ -417,7 +417,6 @@ const PaymentPage = () => {
             <div className="w-full mx-auto px-2 py-2">
               <button
                 onClick={() => {
-                  // toast.info('Đang tạm khóa')
                   setShowModal(true)
                 }}
                 className="sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full bg-main-cl text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
 import { fillQueryStringToURL, generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
+import { AppNavigator } from '@/utils/navigator'
 
 const ScanQRPage = () => {
   const setPrintedImages = usePrintedImageStore((s) => s.setPrintedImages)
@@ -25,7 +26,7 @@ const ScanQRPage = () => {
         if (imagesToAdd.length === imageDataList.length) {
           imagesToAdd.sort((a, b) => b.width * b.height - a.width * a.height) // ảnh có kích thước lớn nhất phải ở đầu tiên trong danh sách
           setPrintedImages(imagesToAdd)
-          navigate('/edit' + fillQueryStringToURL())
+          AppNavigator.navTo(navigate, '/edit')
         }
       }
       img.onerror = () => {
