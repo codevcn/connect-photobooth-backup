@@ -1,3 +1,5 @@
+import { createInitialConstants } from '@/utils/contants'
+import { roundZooming } from '@/utils/helpers'
 import { TElementType, TPosition, TRect, TSizeInfo } from '@/utils/types/global'
 
 export const snapshotPersistElementPosition = (printAreaContainer: HTMLElement) => {
@@ -388,4 +390,16 @@ export const calculateInitialTextElementPosition = (
         printAreaContainerRect.top) /
       scaleFactor,
   }
+}
+
+export const convertZoomValueToFontSize = (zoomValue: number): number => {
+  return roundZooming(zoomValue * createInitialConstants<number>('ELEMENT_TEXT_FONT_SIZE'))
+}
+
+export function convertFontSizeToZoomValue(fontSize: number): number {
+  return (
+    ((fontSize / createInitialConstants<number>('ELEMENT_TEXT_FONT_SIZE')).toFixed(
+      2
+    ) as unknown as number) * 1
+  )
 }

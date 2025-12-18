@@ -6,6 +6,7 @@ import { TElementMountType, TTextVisualState } from '@/utils/types/global'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { calculateElementClipPolygon } from '@/pages/edit/elements/clip-element-helper'
 import { useEditedElementStore } from '@/stores/element/element.store'
+import { useElementControlForText } from './use-element-control-for-text'
 
 type TInitialTextParams = Partial<
   TTextVisualState & {
@@ -83,7 +84,7 @@ export const useTextElementControl = (
     forZoom,
     state: baseState,
     handleSetElementState: baseHandleSetElementState,
-  } = useElementControl(
+  } = useElementControlForText(
     elementId,
     elementRootRef,
     printAreaAllowedRef,
@@ -100,7 +101,6 @@ export const useTextElementControl = (
 
   const [content, setContent] = useState<TTextVisualState['content']>(initialContent)
   const [fontSize, setFontSize] = useState<TTextVisualState['fontSize']>(initialFontSize)
-  console.log('>>> [uuu] fontSize:', fontSize)
   const [textColor, setTextColor] = useState<TTextVisualState['textColor']>(initialColor)
   const [fontFamily, setFontFamily] = useState<TTextVisualState['fontFamily']>(initialFontFamily)
   const [fontWeight, setFontWeight] = useState<TTextVisualState['fontWeight']>(initialFontWeight)
