@@ -17,6 +17,7 @@ export const SlotsDisplayer = ({ layout, scrollable = true }: TFramesDisplayerPr
     slotId: TLayoutSlotConfig['id'],
     layoutId: TPrintLayout['id']
   ) => {
+    console.log('>>> slotId:', slotId, ', layoutId:', layoutId)
     eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, slotId, layoutId)
   }
 
