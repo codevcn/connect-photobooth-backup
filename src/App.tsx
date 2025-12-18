@@ -44,8 +44,8 @@ import { useQueryFilter } from './hooks/extensions'
 import { UserIdleTracker } from './components/custom/IdleWarningModal'
 
 const IdleCountdown = () => {
-  // return <UserIdleTracker />
-  return <></>
+  return <UserIdleTracker idleTimeout={30} modalTimeout={10} />
+  // return <></>
 }
 
 // Component để quản lý routes dựa trên query string

@@ -143,6 +143,11 @@ const SizesComponent = ({
   })
 }
 
+type Item = {
+  id: number
+  name: string
+}
+
 type TVariantInfoProps = {
   pickedProduct: TBaseProduct
   pickedVariant: TBaseProduct['variants'][0]
@@ -175,52 +180,47 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
   const hintForSizeChart: string = 'none'
 
   const sortedSizes = useMemo<string[]>(() => {
-    function extractPrefix(productName: string) {
-      const trimmed = productName.trim()
+    function smartSort(arr: string[]) {
+      // Thứ tự size quần áo
+      const sizeOrder = [
+        'XXS',
+        'XS',
+        'S',
+        'M',
+        'L',
+        'XL',
+        '2XL',
+        '3XL',
+        '4XL',
+        '5XL',
+        'XXL',
+        'XXXL', // phòng trường hợp viết khác
+      ]
 
-      // Tách phần chữ đầu tiên (prefix) và phần còn lại (suffix)
-      // Tìm vị trí đầu tiên có số hoặc khoảng trắng sau chữ cái
-      const match = trimmed.match(/^([a-zA-Z]+)(.*)$/)
+      // Map size → index
+      const sizeMap = new Map(sizeOrder.map((size, index) => [size.toUpperCase(), index]))
 
-      if (match) {
-        return {
-          name: trimmed,
-          prefix: match[1].toLowerCase(),
-          suffix: match[2].trim(),
-        }
-      }
+      return [...arr].sort((a, b) => {
+        const A = a.toString().toUpperCase().trim()
+        const B = b.toString().toUpperCase().trim()
 
-      // Nếu không match được, coi toàn bộ là prefix
-      return {
-        name: trimmed,
-        prefix: trimmed.toLowerCase(),
-        suffix: '',
-      }
-    }
-    function sortProducts(products: string[]): string[] {
-      // Chuyển đổi các sản phẩm thành object với prefix và suffix
-      const productObjects = products.map((p) => extractPrefix(p))
+        const aIsSize = sizeMap.has(A)
+        const bIsSize = sizeMap.has(B)
 
-      // Sắp xếp theo prefix trước (thứ tự bảng chữ cái), sau đó theo suffix
-      productObjects.sort((a, b) => {
-        // So sánh prefix theo thứ tự bảng chữ cái
-        const prefixCompare = a.prefix.localeCompare(b.prefix)
-        if (prefixCompare !== 0) {
-          return prefixCompare
+        // Nếu cả 2 đều là size → sort theo size
+        if (aIsSize && bIsSize) {
+          return sizeMap.get(A)! - sizeMap.get(B)!
         }
 
-        // Nếu cùng prefix, so sánh suffix
-        return a.suffix.localeCompare(b.suffix, undefined, {
-          numeric: true,
-          sensitivity: 'base',
-        })
+        // Nếu chỉ 1 cái là size → size đứng trước
+        if (aIsSize) return -1
+        if (bIsSize) return 1
+
+        // Không phải size → sort text bình thường
+        return A.localeCompare(B, 'vi')
       })
-
-      // Trả về danh sách tên sản phẩm đã sắp xếp
-      return productObjects.map((p) => p.name)
     }
-
-    return sortProducts(mergedAttributes.uniqueSizes)
+    return smartSort(mergedAttributes.uniqueSizes)
   }, [mergedAttributes])
 
   const pickMaterial = (material: string) => {

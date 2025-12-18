@@ -25,7 +25,9 @@ export class OrderAdapter {
     voucherCode?: string
   ): TCreateOrderReq {
     let deviceId: string | null = null
-    if (checkQueryString().isPhotoism) {
+    console.log('>>> check query string:', checkQueryString())
+    const checkedQuery = checkQueryString()
+    if (checkedQuery.isPhotoism || checkedQuery.dev) {
       deviceId = useUserDataStore.getState().deviceId
     } else {
       deviceId = LocalStorageHelper.getPtbid()

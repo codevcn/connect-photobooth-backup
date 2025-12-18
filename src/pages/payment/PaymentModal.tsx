@@ -9,6 +9,7 @@ import { ShippingInfoForm, TFormErrors } from './ShippingInfo'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { SectionLoading } from '@/components/custom/Loading'
 import { EndOfPayment } from './EndOfPayment'
+import { TermConditions } from './TermConditions'
 
 interface PaymentModalProps {
   paymentInfo: {
@@ -26,6 +27,8 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
   const [endOfPayment, setEndOfPayment] = useState<TEndOfPaymentData>()
   const formRef = useRef<HTMLFormElement>(null)
   const [errors, setErrors] = useState<TFormErrors>({})
+  const [showTermsModal, setShowTermsModal] = useState<boolean>(false)
+  const [userAcceptedTerms, setUserAcceptedTerms] = useState<boolean>(false)
 
   const validateForm = (formEle: HTMLFormElement) => {
     let isValid: boolean = true
@@ -68,15 +71,41 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
     setEndOfPayment(undefined)
   }
 
-  const handleConfirmPayment = async () => {
+  const openTermsModal = () => {
+    setShowTermsModal(true)
+  }
+
+  const closeTermsModal = () => {
+    setShowTermsModal(false)
+  }
+
+  const handleTermsAccepted = (accepted: boolean) => {
+    setUserAcceptedTerms(accepted)
+    if (accepted) {
+      // Close terms modal and proceed with payment
+      closeTermsModal()
+      processPayment()
+    }
+  }
+
+  const handleConfirmPayment = () => {
+    console.log('>>> [100] 100')
     const form = formRef.current
     if (!form) return
-
+    console.log('>>> [100] 103')
     // Validate form
     if (!validateForm(form)) {
       toast.error('Vui lòng kiểm tra lại thông tin giao hàng')
       return
     }
+    console.log('>>> [100] 109')
+    // Show terms modal for user to accept
+    openTermsModal()
+  }
+
+  const processPayment = async () => {
+    const form = formRef.current
+    if (!form) return
 
     // Get form data
     const formData = new FormData(form)
@@ -274,6 +303,13 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
           <EndOfPayment data={endOfPayment} resetEndOfPaymentData={resetEndOfPaymentData} />
         )}
       </div>
+      {showTermsModal && (
+        <TermConditions
+          userAccepted={userAcceptedTerms}
+          onAccepted={handleTermsAccepted}
+          closeModal={closeTermsModal}
+        />
+      )}
     </div>
   )
 }

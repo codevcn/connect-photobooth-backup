@@ -1,3 +1,4 @@
+import { createQueryStringInURL } from '@/utils/navigator'
 import { useState, useEffect, useRef } from 'react'
 
 type TIdleWarningModalProps = {
@@ -10,13 +11,13 @@ const IdleWarningModal = ({ show, countdown, onConfirm }: TIdleWarningModalProps
   if (!show) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl shadow-2xl p-4 max-w-md w-full mx-4 border-4 border-blue-500">
+    <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="bg-white rounded-3xl shadow-2xl p-4 max-w-md w-full mx-4 border-4 border-main-cl">
         {/* Icon Warning */}
         <div className="flex justify-center mb-6">
           <div className="relative">
-            <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping"></div>
-            <div className="relative bg-linear-to-br from-blue-500 to-blue-600 p-5 rounded-full shadow-lg">
+            <div className="absolute inset-0 bg-main-cl/20 rounded-full animate-ping"></div>
+            <div className="relative bg-linear-to-br from-main-cl to-main-cl p-5 rounded-full shadow-lg">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"
@@ -48,12 +49,12 @@ const IdleWarningModal = ({ show, countdown, onConfirm }: TIdleWarningModalProps
         </p>
 
         {/* Countdown */}
-        <div className="bg-linear-to-br from-blue-500/10 to-blue-600/10 rounded-2xl p-6 mb-6 border-2 border-blue-500/30">
+        <div className="bg-linear-to-br from-main-cl/10 to-main-cl/10 rounded-2xl p-6 mb-6 border-2 border-main-cl/30">
           <div className="text-center">
             <p className="text-sm text-gray-800 mb-2 font-medium">Thời gian còn lại</p>
             <div className="flex items-center justify-center gap-2">
-              <div className="bg-white rounded-xl px-6 py-3 shadow-md border-2 border-blue-500">
-                <span className="text-4xl font-bold text-blue-500 tabular-nums">{countdown}</span>
+              <div className="bg-white rounded-xl px-6 py-3 shadow-md border-2 border-main-cl">
+                <span className="text-4xl font-bold text-main-cl tabular-nums">{countdown}</span>
               </div>
               <span className="text-2xl font-bold text-gray-600">giây</span>
             </div>
@@ -63,7 +64,7 @@ const IdleWarningModal = ({ show, countdown, onConfirm }: TIdleWarningModalProps
         {/* Confirm Button */}
         <button
           onClick={onConfirm}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-3"
+          className="w-full bg-main-cl mobile-touch transition text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg flex items-center justify-center gap-3"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +170,7 @@ export const UserIdleTracker = ({
       onTimeout()
     } else {
       // Mặc định chuyển về trang chủ
-      window.location.href = '/'
+      window.location.href = '/' + createQueryStringInURL()
     }
   }
 
@@ -226,13 +227,13 @@ export const UserIdleTracker = ({
   return (
     <>
       {/* Debug info - có thể xóa trong production */}
-      <div className="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm">
+      {/* <div className="fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-sm">
         <div className="font-semibold mb-2">Idle Tracker Debug</div>
         <div>
           Idle countdown: <span className="font-mono font-bold">{idleCountdown}s</span>
         </div>
         <div>Modal: {showModal ? '✅ Hiển thị' : '❌ Ẩn'}</div>
-      </div>
+      </div> */}
 
       <IdleWarningModal show={showModal} countdown={modalCountdown} onConfirm={handleConfirm} />
     </>

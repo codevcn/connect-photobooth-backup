@@ -30,6 +30,7 @@ import { MiddleInfoSection } from './MiddleInfoSection'
 import { toast } from 'react-toastify'
 import { useQueryFilter } from '@/hooks/extensions'
 import { useUserDataStore } from '@/stores/ui/user-data.store'
+import { AppLoading } from '@/components/custom/Loading'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -59,15 +60,16 @@ const TemplateFrameMenuResponsive = () => {
   )
 }
 
-const AddingToCartLoadingModal = () => {
+type TAddingToCartLoadingModalProps = {
+  onClose?: () => void
+}
+
+const AddingToCartLoadingModal = ({ onClose }: TAddingToCartLoadingModalProps) => {
   const isLoading = useProductUIDataStore((s) => s.isAddingToCart)
   return (
     isLoading && (
       <div className="fixed inset-0 flex items-center justify-center z-9999 animate-pop-in p-4">
-        <div className="bg-black/50 absolute inset-0 z-10"></div>
-        <video autoPlay loop muted playsInline className="z-20 relative">
-          <source src="/videos/add-to-cart-loading.webm" type="video/webm" />
-        </video>
+        <AppLoading message="Đang thêm vào giỏ hàng..." classNames={{ message: 'text-main-cl' }} />
       </div>
     )
   )
