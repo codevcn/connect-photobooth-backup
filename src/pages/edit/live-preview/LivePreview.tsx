@@ -7,14 +7,10 @@ import { AddToCartHandler } from './AddToCartHandler'
 import { adjustNearF3F4F6, getFinalColorValue } from '@/utils/helpers'
 import { SectionLoading } from '@/components/custom/Loading'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
-import { cancelSelectingZoomingImages, handlePutPrintedImagesInLayout } from '../helpers'
+import { cancelSelectingZoomingImages } from '../helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
-import { MyDevComponent } from '@/dev/components/Preview'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
-import { reAssignElementsByLayoutData } from '../customize/print-layout/builder'
-import { TPrintLayout } from '@/utils/types/print-layout'
-import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type TZoomButtonsProps = {
@@ -126,7 +122,6 @@ export const LivePreview = ({
   const prevProductIdRef = useRef<TBaseProduct['id'] | null>(null)
   const pickedLayout = useLayoutStore((s) => s.pickedLayout)
   const elementControlRef = useRef<{ todo: (param: any) => void }>({ todo: (param: any) => {} })
-  const layoutMode = useLayoutStore((s) => s.layoutMode)
 
   const printAreaInfo = useMemo(() => {
     return pickedProduct.printAreaList.find(
@@ -151,6 +146,20 @@ export const LivePreview = ({
     zoomEditAreaController.reset()
   }
 
+  const fitLayoutSlots = () => {
+    for (const displayer of allowedPrintAreaRef.current?.querySelectorAll<HTMLElement>(
+      '.NAME-slots-displayer[data-layout-type="6-square"]'
+    ) || []) {
+      const slots = displayer.querySelectorAll<HTMLElement>('.NAME-layout-slot')
+      let totalWidth = 0
+      for (const slot of Array.from(slots).slice(0, 2)) {
+        const slotRect = slot.getBoundingClientRect()
+        totalWidth += slotRect.width
+      }
+      displayer.style.width = `${totalWidth + 4}px` // +4 cho p-0.5
+    }
+  }
+
   const handlePrintAreaUpdated = () => {
     const currentProductId = pickedProduct.id
     const isProductChanged = prevProductIdRef.current !== currentProductId
@@ -163,10 +172,6 @@ export const LivePreview = ({
           requestAnimationFrame(() => {
             // Lấy giá trị mới nhất từ store
             const layoutForDefault = useLayoutStore.getState().layoutForDefault
-            console.log('>>> [hhh] curr:', {
-              layoutForDefault,
-              mountType: layoutForDefault?.mountType,
-            })
             if (layoutForDefault && layoutForDefault.mountType === 'suggested') {
               // handlePutPrintedImagesInLayout(layoutForDefault, allowedPrintAreaRef.current!)
             }
@@ -176,7 +181,8 @@ export const LivePreview = ({
       } else {
         useProductUIDataStore.getState().resetAllowedPrintedAreaChangeId()
       }
-    }, 100)
+      fitLayoutSlots()
+    }, 50)
   }
 
   const { printAreaRef, printAreaContainerRef, checkIfAnyElementOutOfBounds, isOutOfBounds } =

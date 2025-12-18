@@ -17,12 +17,11 @@ export const SlotsDisplayer = ({ layout, scrollable = true }: TFramesDisplayerPr
     slotId: TLayoutSlotConfig['id'],
     layoutId: TPrintLayout['id']
   ) => {
-    console.log('>>> slotId:', slotId, ', layoutId:', layoutId)
     eventEmitter.emit(EInternalEvents.HIDE_SHOW_PRINTED_IMAGES_MODAL, true, slotId, layoutId)
   }
 
   return (
-    <div className="inline-flex justify-center items-center relative w-full h-full overflow-hidden">
+    <div className="flex justify-center items-center relative w-full h-full overflow-hidden">
       <div
         style={{
           ...(layoutContainerConfigs.style || {}),
@@ -30,6 +29,7 @@ export const SlotsDisplayer = ({ layout, scrollable = true }: TFramesDisplayerPr
             ? { aspectRatio: 'auto', height: '100%', width: '100%' }
             : {}),
         }}
+        data-layout-type={layout.layoutType}
         className={`NAME-slots-displayer p-0.5 h-full w-full`}
       >
         {slotConfigs.map((slot, idx) => (
