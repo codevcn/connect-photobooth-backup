@@ -221,8 +221,6 @@ export function hardCodedLayoutData(layoutType?: TLayoutType): TPrintLayout[] {
         placeItems: 'center', // Căn giữa các items
         width: 'max-content',
         maxWidth: 'max-content',
-        height: '100%',
-        maxHeight: '100%',
       },
     },
   }
