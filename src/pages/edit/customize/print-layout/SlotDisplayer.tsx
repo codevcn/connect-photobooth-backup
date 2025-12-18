@@ -29,7 +29,7 @@ export const SlotsDisplayer = ({ layout, scrollable = true }: TFramesDisplayerPr
             ? { aspectRatio: 'auto', height: '100%', width: '100%' }
             : {}),
         }}
-        className={`NAME-slots-displayer absolute p-0.5 h-full w-full`}
+        className={`NAME-slots-displayer p-0.5 h-full w-full`}
       >
         {slotConfigs.map((slot, idx) => (
           <LayoutSlot
