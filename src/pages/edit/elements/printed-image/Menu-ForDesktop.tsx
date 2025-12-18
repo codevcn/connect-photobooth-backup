@@ -95,7 +95,10 @@ const GrayscaleControl = ({
       <div className="relative flex-1 text-black">
         <div className="flex justify-between">
           <p>Độ xám</p>
-          <p>100%</p>
+          <p>
+            <span>{grayscale}</span>
+            <span>%</span>
+          </p>
         </div>
         <input
           type="range"

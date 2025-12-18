@@ -111,6 +111,12 @@ const restoreMockupVisualStates = (mockupId: string) => {
   setTimeout(() => {
     const elementsVisualState = foundMockup.elementsVisualState
 
+    const layoutMode = elementsVisualState.layoutMode
+    console.log('>>> [reto] layoutMode:', layoutMode)
+    if (layoutMode) {
+      useLayoutStore.getState().setLayoutMode(layoutMode)
+    }
+
     // Restore layout
     const restoredLayout = elementsVisualState.storedLayouts || []
     console.log('>>> [reto] restoredLayout:', restoredLayout)

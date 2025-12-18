@@ -5,6 +5,7 @@ import EditPage from './Page'
 import { PageLoading } from '@/components/custom/Loading'
 import { useProductStore } from '@/stores/product/product.store'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
+import { AppNavigator } from '@/utils/navigator'
 
 const Layout = () => {
   const [error, setError] = useState<string | null>(null)
@@ -55,7 +56,7 @@ const Layout = () => {
       </svg>
       <p className="text-main-cl text-lg text-center font-bold mt-2">{error}</p>
       <button
-        onClick={() => navigate('/')}
+        onClick={() => AppNavigator.navTo(navigate, '/')}
         className="bg-main-cl text-white text-lg font-bold px-4 py-2 rounded mt-4"
       >
         Quay lại trang chủ

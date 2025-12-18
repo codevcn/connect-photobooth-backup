@@ -10,6 +10,7 @@ import { TBaseProduct, TPrintedImage, TUserInputImage } from '@/utils/types/glob
 import { generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
 import { LocalStorageHelper } from '@/utils/localstorage'
+import { AppNavigator } from '@/utils/navigator'
 
 const LayoutFUN = () => {
   const [error, setError] = useState<string | null>(null)
@@ -119,7 +120,7 @@ const LayoutFUN = () => {
       </svg>
       <p className="text-main-cl text-lg text-center font-bold mt-2">{error}</p>
       <button
-        onClick={() => navigate('/')}
+        onClick={() => AppNavigator.navTo(navigate, '/')}
         className="bg-main-cl text-white text-lg font-bold px-4 py-2 rounded mt-4"
       >
         Quay lại trang chủ

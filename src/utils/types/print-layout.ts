@@ -43,3 +43,5 @@ export type TPrintLayout = {
   }
   mountType?: 'suggested' | 'picked'
 }
+
+export type TLayoutMode = 'with-layout' | 'no-layout' | 'frame-layout'

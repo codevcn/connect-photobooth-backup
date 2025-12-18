@@ -1,13 +1,13 @@
 import { hardCodedLayoutData } from '@/configs/print-layout/print-layout-data-Fun'
 import { generateUniqueId } from '@/utils/helpers'
 import { TPrintedImage, TPrintedImageVisualState } from '@/utils/types/global'
-import { TLayoutType, TPrintLayout } from '@/utils/types/print-layout'
+import { TLayoutMode, TLayoutType, TPrintLayout } from '@/utils/types/print-layout'
 import { create } from 'zustand'
 
 type TLayoutStore = {
   pickedLayout: TPrintLayout | null
   allLayouts: TPrintLayout[]
-  layoutMode: 'with-layout' | 'no-layout' | 'frame-layout'
+  layoutMode: TLayoutMode
   layoutForDefault: TPrintLayout | null
 
   pickFrameLayout: (originalFrameImage: TPrintedImage) => void
@@ -26,6 +26,7 @@ type TLayoutStore = {
   getLayoutByLayoutType: (layoutType: TLayoutType) => TPrintLayout | null
   setLayoutForDefault: (layout: TPrintLayout | null) => void
   restoreLayout: (layout: TPrintLayout) => void
+  setLayoutMode: (mode: TLayoutMode) => void
 }
 
 export const useLayoutStore = create<TLayoutStore>((set, get) => ({
@@ -39,8 +40,9 @@ export const useLayoutStore = create<TLayoutStore>((set, get) => ({
   layoutForDefault: null,
 
   restoreLayout: (layout: TPrintLayout) => {
-    set({ pickedLayout: layout, layoutMode: 'with-layout' })
+    set({ pickedLayout: layout })
   },
+  setLayoutMode: (mode) => set({ layoutMode: mode }),
   setLayoutForDefault: (layout) => set({ layoutForDefault: layout }),
   getLayoutByLayoutType: (layoutType) => {
     return get().allLayouts.find((layout) => layout.layoutType === layoutType) || null

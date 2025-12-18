@@ -283,7 +283,7 @@ export const CropImageElementModal = ({
               <div className="5xl:text-2xl flex gap-y-2 gap-x-2 flex-col">
                 <div className="flex gap-3 items-stretch">
                   <button
-                    className="5xl:h-12 flex items-center justify-center gap-2 w-full h-8 rounded cursor-pointer bg-main-cl text-white font-bold active:scale-90 transition-colors disabled:opacity-50"
+                    className="5xl:h-12 flex items-center justify-center gap-2 w-full h-8 rounded cursor-pointer bg-main-cl text-white font-bold active:scale-90 transition disabled:opacity-50"
                     onClick={handleCrop}
                     disabled={!completedCrop || isCropping}
                   >
@@ -339,14 +339,14 @@ export const CropImageElementModal = ({
                   {showNoCrop && (
                     <button
                       onClick={handleNoCrop}
-                      className="5xl:h-12 flex items-center justify-center gap-2 w-full h-8 rounded cursor-pointer bg-main-cl text-white font-bold active:scale-90 transition-colors disabled:opacity-50"
+                      className="5xl:h-12 flex items-center justify-center gap-2 w-full h-8 rounded cursor-pointer bg-main-cl text-white font-bold active:scale-90 transition disabled:opacity-50"
                     >
                       Giữ nguyên (Không Cắt)
                     </button>
                   )}
                 </div>
                 <button
-                  className="5xl:h-12 w-full h-8 rounded text-white bg-gray-400 font-bold cursor-pointer hover:bg-gray-500 transition-colors disabled:opacity-50"
+                  className="5xl:h-12 w-full h-8 rounded text-white bg-gray-400 font-bold cursor-pointer hover:bg-gray-500 transition disabled:opacity-50"
                   onClick={onClose}
                   disabled={isCropping}
                 >

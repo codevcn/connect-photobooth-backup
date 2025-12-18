@@ -82,7 +82,7 @@ export const LayoutSlot = ({
         ...(layoutType === 'full' ? { aspectRatio: 'auto', height: '100%', width: '100%' } : {}),
       }}
       className={cn(
-        'NAME-layout-slot cursor-pointer relative flex justify-center items-center overflow-hidden aspect-square border border-gray-600 border-dashed',
+        'NAME-layout-slot cursor-pointer mobile-touch relative flex justify-center items-center overflow-hidden aspect-square border border-gray-600 border-dashed',
         scrollable ? '' : 'touch-none'
       )}
       onClick={onClickFrame ? (e) => onClickFrame(e, layoutSlot.id, layoutId) : undefined}

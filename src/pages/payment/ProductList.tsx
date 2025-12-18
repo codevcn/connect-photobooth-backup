@@ -120,8 +120,6 @@ export const ProductList: React.FC<ProductListProps> = ({
     productVariantId: TClientProductVariant['id']
     mockupId: TMockupData['id']
   } | null>(null)
-  const mockupNote = useProductUIDataStore((s) => s.mockupsAttachedData)
-  console.log('>>> [note] các mockupNote:', mockupNote)
 
   const handleDeleteClick = (
     productId: TBaseProduct['id'],

@@ -21,6 +21,7 @@ export const useVisualStatesCollector = (): TUseVisualStatesCollectorReturn => {
         printedImages: [],
         storedTemplates: [],
         storedLayouts: [],
+        layoutMode: useLayoutStore.getState().layoutMode,
       }
 
       const pickedLayout = useLayoutStore.getState().pickedLayout
