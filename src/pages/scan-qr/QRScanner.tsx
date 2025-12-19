@@ -4,6 +4,8 @@ import { qrGetter } from '@/configs/brands/photoism/qr-getter'
 import { toast } from 'react-toastify'
 import { TUserInputImage } from '@/utils/types/global'
 import { useFastBoxes } from '@/hooks/use-fast-boxes'
+import { useNavigate } from 'react-router-dom'
+import { AppNavigator } from '@/utils/navigator'
 
 type QRScannerProps = {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -16,6 +18,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string>('')
   const { detectFromFile, isReady } = useFastBoxes()
+  const navigate = useNavigate()
 
   const initializeScanner = useCallback(() => {
     if (!videoRef.current) return
@@ -34,7 +37,9 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
                 console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
                 setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
                 toast.error('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại')
-                window.location.reload()
+                setTimeout(() => {
+                  AppNavigator.navTo(navigate, '/')
+                }, 3000)
                 return
               }
               if (images) {
