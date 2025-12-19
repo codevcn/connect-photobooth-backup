@@ -1,4 +1,9 @@
-import { TBaseProduct, TPrintAreaInfo, TPrintedImage } from '@/utils/types/global'
+import {
+  TBaseProduct,
+  TClientProductVariant,
+  TPrintAreaInfo,
+  TPrintedImage,
+} from '@/utils/types/global'
 import { PrintAreaOverlayPreview } from './live-preview/PrintAreaOverlay'
 import { usePrintArea } from '@/hooks/use-print-area'
 import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
@@ -23,6 +28,7 @@ import { useEditModeStore } from '@/stores/ui/edit-mode.store'
 import { useElementStylingStore } from '@/stores/element/element-styling.store'
 import { useQueryFilter } from '@/hooks/extensions'
 import { AppNavigator } from '@/utils/navigator'
+import { TProductVariant } from '@/utils/types/api'
 
 type TProductProps = {
   product: TBaseProduct
@@ -31,7 +37,8 @@ type TProductProps = {
   onPickProduct: (
     product: TBaseProduct,
     initialLayout: TPrintLayout,
-    firstPrintAreaInProduct: TPrintAreaInfo
+    firstPrintAreaInProduct: TPrintAreaInfo,
+    initialVariant?: TClientProductVariant
   ) => void
   isPicked: boolean
   onInitFirstProduct: (
@@ -55,6 +62,7 @@ const Product = ({
 }: TProductProps) => {
   const [initialLayout, setInitialLayout] = useState<TPrintLayout>()
   const isMobileScreen = checkIfMobileScreen()
+  const wantedVariantRef = useRef<TClientProductVariant | undefined>(undefined)
 
   const buildInitialLayout = () => {
     requestAnimationFrame(() => {
@@ -92,7 +100,7 @@ const Product = ({
     })
   }
 
-  const displayProductName = (product: TBaseProduct): string => {
+  const hardCode_displayProductName = (product: TBaseProduct): string => {
     const productId = product.id
     if (productId === 31) {
       return 'Móc chìa khóa'
@@ -118,14 +126,33 @@ const Product = ({
     return ''
   }
 
-  const { printAreaRef, printAreaContainerRef } = usePrintArea(
-    firstPrintAreaInProduct,
-    buildInitialLayout
-  )
+  const { printAreaContainerRef } = usePrintArea(firstPrintAreaInProduct, buildInitialLayout)
 
   useEffect(() => {
     buildInitialLayout()
   }, [product.id])
+
+  const hardCode_findBlackColor = (): string => {
+    let imageURL: string = firstPrintAreaInProduct.imageUrl
+    const productId = product.id
+    if (productId !== 29 && productId !== 25 && productId !== 7) return imageURL
+    // Tìm màu đen rồi chọn nó làm màu mặc định nếu có
+    const wantedVariant = product.variants.find(
+      (variant) =>
+        variant.attributes.color?.toLowerCase() === 'black' ||
+        variant.attributes.color?.toLowerCase() === 'đen'
+    )
+    if (wantedVariant) {
+      wantedVariantRef.current = wantedVariant
+      const foundPrintArea = product.printAreaList.find(
+        (printArea) => printArea.variantId === wantedVariant.id
+      )?.imageUrl
+      if (foundPrintArea) {
+        imageURL = foundPrintArea
+      }
+    }
+    return imageURL
+  }
 
   return (
     <div
@@ -139,7 +166,8 @@ const Product = ({
         isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
       } NAME-gallery-product spmd:w-full spmd:h-auto smd:rounded-lg group h-full rounded-lg aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative`}
       onClick={() => {
-        if (initialLayout) onPickProduct(product, initialLayout, firstPrintAreaInProduct)
+        if (initialLayout)
+          onPickProduct(product, initialLayout, firstPrintAreaInProduct, wantedVariantRef.current)
       }}
     >
       <div
@@ -151,11 +179,11 @@ const Product = ({
         }}
       >
         <div className="smd:top-0.5 w-full h-1.5 smd:h-1 5xl:h-1.5 bg-white absolute top-0 left-0"></div>
-        {displayProductName(product)}
+        {hardCode_displayProductName(product)}
       </div>
       <div className="NAME-gallery-child-to-rounded w-full h-full bg-white border border-gray-200 relative rounded-t-lg z-20">
         <img
-          src={firstPrintAreaInProduct.imageUrl || '/images/placeholder.svg'}
+          src={hardCode_findBlackColor() || '/images/placeholder.svg'}
           alt={product.name}
           className="NAME-product-image absolute top-0 left-0 min-h-full max-h-full w-full h-full object-contain rounded-xl"
         />
@@ -274,7 +302,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const handlePickProduct = (
     product: TBaseProduct,
     initialLayout: TPrintLayout,
-    firstPrintAreaInProduct: TPrintAreaInfo
+    firstPrintAreaInProduct: TPrintAreaInfo,
+    initialVariant?: TClientProductVariant
   ) => {
     if (!pickedProduct) return
     if (pickedProduct.id === product.id) return
@@ -293,7 +322,9 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       // useLayoutStore.getState().setLayoutForDefault(initialLayout)
       useLayoutStore.getState().pickLayout(initialLayout)
     }
-    useProductUIDataStore.getState().handlePickProduct(product, firstPrintAreaInProduct)
+    useProductUIDataStore
+      .getState()
+      .handlePickProduct(product, firstPrintAreaInProduct, initialVariant)
   }
 
   const scrollToPickedProduct = () => {

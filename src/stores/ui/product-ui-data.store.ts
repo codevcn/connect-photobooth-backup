@@ -31,7 +31,11 @@ type TProductUIDataStore = {
   ) => void
   addMockupNote: (mockupId: TMockupData['id'], note: string) => void
   getMockupAttachedData: (mockupId: TMockupData['id']) => TMockupAttatchedData | undefined
-  handlePickProduct: (prod: TBaseProduct, printArea: TPrintAreaInfo) => void
+  handlePickProduct: (
+    prod: TBaseProduct,
+    printArea: TPrintAreaInfo,
+    initialVariant?: TClientProductVariant
+  ) => void
   handlePickFirstProduct: (
     prod: TBaseProduct,
     printArea: TPrintAreaInfo,
@@ -170,11 +174,11 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     })
   },
 
-  handlePickProduct: (product, printArea) => {
+  handlePickProduct: (product, printArea, initialVariant) => {
     console.log('>>> [ppp] start:', { product, printArea })
     set({
       pickedProduct: product,
-      pickedVariant: product.variants[0],
+      pickedVariant: initialVariant || product.variants[0],
       pickedSurface: printArea,
     })
     // useTemplateStore.getState().pickTemplate(initialTemplate.id, printArea)
