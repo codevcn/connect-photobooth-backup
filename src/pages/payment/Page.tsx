@@ -424,7 +424,7 @@ const PaymentPage = () => {
           {/* Fixed Checkout Button - Mobile only */}
           <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg px-2">
             {queryFilter.funId && (
-              <div className="flex gap-2 w-full text-sm text-gray-600 mt-4">
+              <div className="flex gap-2 w-full text-sm text-gray-600 mt-4 px-2">
                 <input
                   type="checkbox"
                   id="terms-and-conditions"
@@ -442,7 +442,7 @@ const PaymentPage = () => {
                     }}
                     className="text-blue-600 underline cursor-pointer"
                   >
-                    Chính sách & điều khoản dịch vụ
+                    Chính sách & Điều khoản dịch vụ
                   </span>
                   <span> của công ty.</span>
                 </div>
@@ -450,7 +450,7 @@ const PaymentPage = () => {
             )}
             <div
               style={{
-                opacity: acceptedTerms ? 1 : 0.5,
+                opacity: acceptedTerms ? 1 : 0.7,
                 pointerEvents: acceptedTerms ? 'auto' : 'none',
                 cursor: acceptedTerms ? 'pointer' : 'not-allowed',
               }}

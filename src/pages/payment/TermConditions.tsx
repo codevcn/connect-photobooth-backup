@@ -23,8 +23,8 @@ export const TermConditions = ({ closeModal }: TTermConditionsProps) => {
           {/* <!-- HEADER: Tiêu đề và nút đóng --> */}
           <div className="bg-white px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 z-10 shadow-sm">
             <div>
-              <h3 className="text-xl font-bold text-gray-900" id="modal-title">
-                ĐIỀU KHOẢN VÀ ĐIỀU KIỆN
+              <h3 className="text-base font-bold text-gray-900" id="modal-title">
+                CHÍNH SÁCH VÀ ĐIỀU KHOẢN DỊCH VỤ
               </h3>
               <p className="text-sm text-gray-500 mt-1">
                 Dành cho Dịch vụ Photobooth & Print-on-Demand
