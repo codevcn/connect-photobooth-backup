@@ -174,24 +174,6 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
     initSelectedAttributesOnPickedVariantChange()
   }, [pickedVariant.id])
 
-  const hardCode_findBlackColor = () => {
-    const productId = pickedProduct.id
-    if (productId !== 27 && productId !== 25 && productId !== 7) return
-    // Tìm màu đen rồi chọn nó làm màu mặc định nếu có
-    const wantedVariant = pickedProduct.variants.find(
-      (variant) =>
-        variant.attributes.color?.toLowerCase() === 'black' ||
-        variant.attributes.color?.toLowerCase() === 'đen'
-    )
-    if (wantedVariant) {
-      pickColor(false, wantedVariant.attributes.color!)
-    }
-  }
-
-  useEffect(() => {
-    hardCode_findBlackColor()
-  }, [pickedProduct.id])
-
   const firstProductImageURL = pickedProduct.detailImages[0] || null
 
   const mergedAttributes = pickedProduct.mergedAttributes

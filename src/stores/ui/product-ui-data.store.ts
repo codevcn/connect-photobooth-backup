@@ -39,7 +39,8 @@ type TProductUIDataStore = {
   handlePickFirstProduct: (
     prod: TBaseProduct,
     printArea: TPrintAreaInfo,
-    initialLayout: TPrintLayout
+    initialLayout: TPrintLayout,
+    initialVariant?: TClientProductVariant
   ) => void
   handlePickVariant: (variant: TClientProductVariant) => void
   handlePickSurface: (
@@ -186,9 +187,9 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     // else useLayoutStore.getState().pickNoLayout()
   },
 
-  handlePickFirstProduct: (product, printArea, initialLayout) => {
+  handlePickFirstProduct: (product, printArea, initialLayout, initialVariant) => {
     useLayoutStore.getState().pickLayout(initialLayout)
-    get().handlePickProduct(product, printArea)
+    get().handlePickProduct(product, printArea, initialVariant)
   },
 
   handlePickVariant: (variant) => {

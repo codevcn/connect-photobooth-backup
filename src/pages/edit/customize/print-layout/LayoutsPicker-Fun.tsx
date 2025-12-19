@@ -35,17 +35,6 @@ type TemplateFrameProps = {
 }
 
 export const Slot = ({ slotConfig, isLayoutPicked, layoutType }: TemplateFrameProps) => {
-  const initStyle = (): React.CSSProperties => {
-    if (layoutType === '2-horizontal-square') {
-      return { ...slotConfig.style, height: '100%' }
-    } else if (layoutType === '2-vertical-square') {
-      return { ...slotConfig.style, width: '100%' }
-    } else if (layoutType === '6-square') {
-      return {}
-    }
-    return { ...slotConfig.style, height: '100%', width: '100%' }
-  }
-
   const initIconStyle = (): string => {
     if (layoutType === '6-square') {
       return '5xl:w-6 5xl:h-6 w-4 h-4'
@@ -56,7 +45,7 @@ export const Slot = ({ slotConfig, isLayoutPicked, layoutType }: TemplateFramePr
   return (
     <div
       style={{ ...slotConfig.style }}
-      className={`flex justify-center items-center w-full h-full ${
+      className={`NAME-layout-slot--picker flex justify-center items-center w-full h-full ${
         layoutType === '6-square' ? 'border border-dashed' : ''
       } ${isLayoutPicked ? 'border-main-cl' : 'border-gray-600'}`}
     >
@@ -64,7 +53,7 @@ export const Slot = ({ slotConfig, isLayoutPicked, layoutType }: TemplateFramePr
         style={{ ...slotConfig.style }}
         className={`${layoutType === '6-square' ? '' : 'border border-dashed'} ${
           isLayoutPicked ? 'border-main-cl' : 'border-gray-600'
-        } NAME-layout-slot--picker relative flex justify-center items-center overflow-hidden`}
+        } relative flex justify-center items-center overflow-hidden`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -129,38 +118,43 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
   }, [layoutMode, availableLayouts, pickedLayout])
 
   const unFitLayoutSlots = () => {
-    const displayer = containerRef.current?.querySelector<HTMLElement>(
-      '.NAME-slots-displayer--picker'
-    )
-    if (!displayer) return
-    displayer.style.height = '100%'
-    displayer.style.width = '100%'
-    for (const slot of displayer.querySelectorAll<HTMLElement>('.NAME-layout-slot--picker') || []) {
-      slot.style.width = '100%'
-      slot.style.height = '100%'
+    const displayers =
+      containerRef.current?.querySelectorAll<HTMLElement>('.NAME-slots-displayer--picker') || []
+    if (displayers.length === 0) return
+    for (const displayer of displayers) {
+      displayer.style.height = '100%'
+      displayer.style.width = '100%'
+      for (const slot of displayer.querySelectorAll<HTMLElement>('.NAME-layout-slot--picker') ||
+        []) {
+        slot.style.width = '100%'
+        slot.style.height = '100%'
+      }
     }
   }
 
   const fitLayoutSlots = () => {
-    const displayer = containerRef.current?.querySelector<HTMLElement>(
-      '.NAME-slots-displayer--picker'
-    )
-    if (!displayer) return
-    if (displayer.getAttribute('data-layout-type') === 'full') return
-    for (const slot of displayer.querySelectorAll<HTMLElement>('.NAME-layout-slot--picker') || []) {
-      const { height, width } = slot.getBoundingClientRect()
-      let newHeight = height
-      let newWidth = width
-      if (newHeight > newWidth) {
-        newHeight = newWidth
-      } else {
-        newWidth = newHeight
+    const displayers =
+      containerRef.current?.querySelectorAll<HTMLElement>('.NAME-slots-displayer--picker') || []
+    if (displayers.length === 0) return
+    for (const displayer of displayers) {
+      if (displayer.getAttribute('data-layout-type') === 'full') continue
+      for (const slot of displayer.querySelectorAll<HTMLElement>('.NAME-layout-slot--picker') ||
+        []) {
+        const { height, width } = slot.getBoundingClientRect()
+        let newHeight = height
+        let newWidth = width
+        if (newHeight > newWidth) {
+          newHeight = newWidth
+        } else {
+          newWidth = newHeight
+        }
+        slot.style.height = `${newHeight}px`
+        slot.style.width = `${newWidth}px`
       }
-      slot.style.height = `${newHeight}px`
-      slot.style.width = `${newWidth}px`
+      console.log('>>> [pick] lay typ:', displayer.getAttribute('data-layout-type'))
+      displayer.style.height = 'fit-content'
+      displayer.style.width = 'fit-content'
     }
-    displayer.style.height = 'fit-content'
-    displayer.style.width = 'fit-content'
   }
 
   const handleFitUnFitLayoutSlots = () => {
@@ -171,8 +165,9 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
   }
 
   useEffect(() => {
+    if (availableLayouts.length === 0) return
     handleFitUnFitLayoutSlots()
-  }, [allLayouts])
+  }, [availableLayouts])
 
   return (
     <div ref={containerRef} className="w-full relative">
@@ -211,12 +206,13 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
             onClick={() => handlePickLayout(layout)}
             className={`${
               layoutMode !== 'no-layout' && pickedLayout?.id === layout.id ? 'border-main-cl' : ''
-            } NAME-slots-displayer--picker NAME-fix-aspect 5xl:min-w-24 5xl:min-h-24 5xl:max-w-24 5xl:max-h-24 min-h-16 min-w-16 max-w-16 max-h-16 flex justify-center items-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
+            } NAME-fix-aspect 5xl:min-w-24 5xl:min-h-24 5xl:max-w-24 5xl:max-h-24 min-h-16 min-w-16 max-w-16 max-h-16 flex justify-center items-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
             data-layout-id={layout.id}
+            data-layout-type={layout.layoutType}
           >
             <div
               style={layout.layoutContainerConfigs?.style}
-              className="NAME-slots-displayer flex items-center justify-center p-px h-full w-full"
+              className="NAME-slots-displayer--picker aspect-square flex items-center justify-center p-px h-full w-full"
             >
               {layout.slotConfigs.map((slot) => (
                 <Slot

@@ -44,7 +44,8 @@ type TProductProps = {
   onInitFirstProduct: (
     product: TBaseProduct,
     initialLayout: TPrintLayout,
-    firstPrintAreaInProduct: TPrintAreaInfo
+    firstPrintAreaInProduct: TPrintAreaInfo,
+    initialVariant?: TClientProductVariant
   ) => void
   printedImages: TPrintedImage[]
   productsCount: number
@@ -66,37 +67,35 @@ const Product = ({
 
   const buildInitialLayout = () => {
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const initialLayout: TPrintLayout = {
-          ...hardCodedLayoutDataFun('full')[0],
-          printedImageElements: [],
-        }
-        setInitialLayout(initialLayout)
-        onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
-        // if (queryFilter.dev || queryFilter.funId) {
-        //   const initialLayout: TPrintLayout = {
-        //     ...hardCodedLayoutDataFun('full')[0],
-        //     printedImageElements: [],
-        //   }
-        //   setInitialLayout(initialLayout)
-        //   onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
-        // } else {
-        //   if (!printAreaContainerRef.current || !printAreaRef.current) return
-        //   const { layout } = buildDefaultLayout(
-        //     printAreaContainerRef.current,
-        //     printAreaRef.current,
-        //     printedImages,
-        //     2
-        //   )
-        //   const initialLayout: TPrintLayout = {
-        //     ...hardCodedLayoutDataPtm(layout.type)[0],
-        //     printedImageElements: layout.elements,
-        //     mountType: 'suggested',
-        //   }
-        //   setInitialLayout(initialLayout)
-        //   onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
-        // }
-      })
+      const initialLayout: TPrintLayout = {
+        ...hardCodedLayoutDataFun('full')[0],
+        printedImageElements: [],
+      }
+      setInitialLayout(initialLayout)
+      onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct, wantedVariantRef.current)
+      // if (queryFilter.dev || queryFilter.funId) {
+      //   const initialLayout: TPrintLayout = {
+      //     ...hardCodedLayoutDataFun('full')[0],
+      //     printedImageElements: [],
+      //   }
+      //   setInitialLayout(initialLayout)
+      //   onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+      // } else {
+      //   if (!printAreaContainerRef.current || !printAreaRef.current) return
+      //   const { layout } = buildDefaultLayout(
+      //     printAreaContainerRef.current,
+      //     printAreaRef.current,
+      //     printedImages,
+      //     2
+      //   )
+      //   const initialLayout: TPrintLayout = {
+      //     ...hardCodedLayoutDataPtm(layout.type)[0],
+      //     printedImageElements: layout.elements,
+      //     mountType: 'suggested',
+      //   }
+      //   setInitialLayout(initialLayout)
+      //   onInitFirstProduct(product, initialLayout, firstPrintAreaInProduct)
+      // }
     })
   }
 
@@ -279,7 +278,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const allLayouts = useLayoutStore((s) => s.allLayouts)
   const mockupId = useSearchParams()[0].get('mockupId')
-  const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintAreaInfo, TPrintLayout]>()
+  const [firstProduct, setFirstProduct] =
+    useState<[TBaseProduct, TPrintAreaInfo, TPrintLayout, TClientProductVariant?]>()
   const { collectMockupVisualStates } = useVisualStatesCollector()
   const navigate = useNavigate()
   const [showExitModal, setShowExitModal] = useState(false)
@@ -340,10 +340,15 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   const initFirstProduct = () => {
     if (!mockupId) {
-      if (allLayouts.length > 0 && firstProduct && firstProduct.length === 3) {
+      if (allLayouts.length > 0 && firstProduct && firstProduct.length === 4) {
         useProductUIDataStore
           .getState()
-          .handlePickFirstProduct(firstProduct[0], firstProduct[1], firstProduct[2])
+          .handlePickFirstProduct(
+            firstProduct[0],
+            firstProduct[1],
+            firstProduct[2],
+            firstProduct[3]
+          )
       }
     }
   }
@@ -351,10 +356,11 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const handleSetFirstProduct = (
     firstProductInList: TBaseProduct,
     initialLayout: TPrintLayout,
-    initialSurface: TPrintAreaInfo
+    initialSurface: TPrintAreaInfo,
+    initialVariant?: TClientProductVariant
   ) => {
     if (firstProductInList.id === products[0].id) {
-      setFirstProduct([firstProductInList, initialSurface, initialLayout])
+      setFirstProduct([firstProductInList, initialSurface, initialLayout, initialVariant])
     }
   }
 
@@ -414,7 +420,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   useEffect(() => {
     initFirstProduct()
-  }, [allLayouts.length, firstProduct?.length, firstProduct?.map((item) => item.id).join('-')])
+  }, [allLayouts.length, firstProduct?.length, firstProduct])
 
   useEffect(() => {
     scrollToPickedProduct()
