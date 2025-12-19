@@ -257,23 +257,23 @@ class QRGetter {
     //   method: 'POST',
     // })
 
-    // console.log('>>> [qr] result from QR scanning:', imgURL)
-    // const strippedURL = this.removeProtocol(imgURL)
-    // console.log('>>> [qr] stripped URL:', strippedURL)
-    // let a = await fetch(`https://api.encycom.com/api/getimg/?u=${strippedURL}`)
-    // onProgress(50, null, null)
-    // return (await a.json()) as TGetCustomerMediaResponse
-
+    console.log('>>> [qr] result from QR scanning:', imgURL)
+    const strippedURL = this.removeProtocol(imgURL)
+    console.log('>>> [qr] stripped URL:', strippedURL)
+    let a = await fetch(`https://api.encycom.com/api/getimg/?u=${strippedURL}`)
     onProgress(50, null, null)
-    return {
-      content: {
-        fileInfo: {
-          picFile: {
-            path: getLinkByCount(),
-          },
-        },
-      },
-    } as TGetCustomerMediaResponse_dev
+    return (await a.json()) as TGetCustomerMediaResponse_dev
+
+    // onProgress(50, null, null)
+    // return {
+    //   content: {
+    //     fileInfo: {
+    //       picFile: {
+    //         path: getLinkByCount(),
+    //       },
+    //     },
+    //   },
+    // } as TGetCustomerMediaResponse_dev
   }
 
   private async fetchImageData(
