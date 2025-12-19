@@ -10,6 +10,7 @@ import { LocalStorageHelper } from '@/utils/localstorage'
 import { SectionLoading } from '@/components/custom/Loading'
 import { EndOfPayment } from './EndOfPayment'
 import { TermConditions } from './TermConditions'
+import { useQueryFilter } from '@/hooks/extensions'
 
 interface PaymentModalProps {
   paymentInfo: {
@@ -21,6 +22,7 @@ interface PaymentModalProps {
 }
 
 export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModalProps) => {
+  const queryFilter = useQueryFilter()
   const [paymentMethod, setPaymentMethod] = useState<TPaymentType>('bank-transfer')
   const [confirming, setConfirming] = useState<boolean>(false)
   const [confirmingMessage, setConfirmingMessage] = useState<string>('Đang xử lý...')
@@ -303,7 +305,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
           <EndOfPayment data={endOfPayment} resetEndOfPaymentData={resetEndOfPaymentData} />
         )}
       </div>
-      {showTermsModal && (
+      {queryFilter.funId && showTermsModal && (
         <TermConditions
           userAccepted={userAcceptedTerms}
           onAccepted={handleTermsAccepted}

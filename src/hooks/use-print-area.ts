@@ -252,9 +252,9 @@ export const usePrintArea = (
       updateOverlayVisibility(hasOutOfBounds)
     }
 
-    const checkBoundsIntervalId = setInterval(() => {
-      // checkBounds()
-    }, 170)
+    // const checkBoundsIntervalId = setInterval(() => {
+    //   checkBounds()
+    // }, 170)
 
     // const debouncedCheck = () => {
     //   clearTimeout(checkTimeout)
@@ -269,7 +269,7 @@ export const usePrintArea = (
     // checkBounds()
 
     return () => {
-      clearInterval(checkBoundsIntervalId)
+      // clearInterval(checkBoundsIntervalId)
       // clearTimeout(checkTimeout)
       // document.removeEventListener('mousemove', debouncedCheck)
       // document.removeEventListener('touchmove', debouncedCheck)
