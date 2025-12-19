@@ -10,6 +10,9 @@ import {
 } from '@/utils/types/global'
 import { create } from 'zustand'
 import { useElementLayerStore } from '../ui/element-layer.store'
+import { useLayoutStore } from '../ui/print-layout.store'
+import { createInitialConstants } from '@/utils/contants'
+import { TLayoutMode } from '@/utils/types/print-layout'
 
 type TSavedElementVisualState = Partial<TElementsVisualState> & {
   productId: TBaseProduct['id']
@@ -132,11 +135,17 @@ export const useEditedElementStore = create<TUseElementStore>((set, get) => ({
     const printedImages = savedElementsVisualState.printedImages || []
     const stickerElements = savedElementsVisualState.stickers || []
     const textElements = savedElementsVisualState.texts || []
+    const storedLayouts = savedElementsVisualState.storedLayouts || []
+    const layoutMode =
+      savedElementsVisualState.layoutMode ||
+      createInitialConstants<TLayoutMode>('DEFAULT_LAYOUT_MODE')
     set({
       printedImages: printedImages.map((img) => ({ ...img, mountType: 'from-saved' })),
       stickerElements: stickerElements.map((sticker) => ({ ...sticker, mountType: 'from-saved' })),
       textElements: textElements.map((text) => ({ ...text, mountType: 'from-saved' })),
     })
+    useLayoutStore.getState().restoreLayout(storedLayouts[0])
+    useLayoutStore.getState().setLayoutMode(layoutMode)
     useElementLayerStore.getState().addElementLayersOnRestore(
       printedImages
         .map((text) => ({

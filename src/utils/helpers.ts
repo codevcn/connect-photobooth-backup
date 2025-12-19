@@ -621,3 +621,19 @@ export const resetAllStores = () => {
   // Clear localStorage
   LocalStorageHelper.clearAllMockupData()
 }
+
+export function setPathParams(path: string, params: Record<string, any> = {}) {
+  const [pathname, search = ''] = path.split('?')
+  const searchParams = new URLSearchParams(search)
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value === null || value === undefined) {
+      searchParams.delete(key)
+    } else {
+      searchParams.set(key, String(value))
+    }
+  }
+
+  const query = searchParams.toString()
+  return query ? `${pathname}?${query}` : pathname
+}

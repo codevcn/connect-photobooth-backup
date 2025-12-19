@@ -31,15 +31,11 @@ type TProductUIDataStore = {
   ) => void
   addMockupNote: (mockupId: TMockupData['id'], note: string) => void
   getMockupAttachedData: (mockupId: TMockupData['id']) => TMockupAttatchedData | undefined
-  handlePickProduct: (
-    prod: TBaseProduct,
-    printArea: TPrintAreaInfo,
-    initialLayout?: TPrintLayout
-  ) => void
+  handlePickProduct: (prod: TBaseProduct, printArea: TPrintAreaInfo) => void
   handlePickFirstProduct: (
     prod: TBaseProduct,
-    initialLayout: TPrintLayout,
-    printArea: TPrintAreaInfo
+    printArea: TPrintAreaInfo,
+    initialLayout: TPrintLayout
   ) => void
   handlePickVariant: (variant: TClientProductVariant) => void
   handlePickSurface: (
@@ -174,21 +170,21 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
     })
   },
 
-  handlePickProduct: (product, printArea, initialLayout) => {
-    console.log('>>> [ppp] start:', { product, printArea, initialLayout })
+  handlePickProduct: (product, printArea) => {
+    console.log('>>> [ppp] start:', { product, printArea })
     set({
       pickedProduct: product,
       pickedVariant: product.variants[0],
       pickedSurface: printArea,
     })
     // useTemplateStore.getState().pickTemplate(initialTemplate.id, printArea)
-    if (initialLayout) useLayoutStore.getState().pickLayout(initialLayout)
-    else useLayoutStore.getState().pickNoLayout()
+    // if (initialLayout) useLayoutStore.getState().pickLayout(initialLayout)
+    // else useLayoutStore.getState().pickNoLayout()
   },
 
-  handlePickFirstProduct: (product, initialLayout, printArea) => {
-    useLayoutStore.getState().setLayoutForDefault(initialLayout)
-    get().handlePickProduct(product, printArea, initialLayout)
+  handlePickFirstProduct: (product, printArea, initialLayout) => {
+    useLayoutStore.getState().pickLayout(initialLayout)
+    get().handlePickProduct(product, printArea)
   },
 
   handlePickVariant: (variant) => {

@@ -69,7 +69,10 @@ const AddingToCartLoadingModal = ({ onClose }: TAddingToCartLoadingModalProps) =
   return (
     isLoading && (
       <div className="fixed inset-0 flex items-center justify-center z-9999 animate-pop-in p-4">
-        <AppLoading message="Đang thêm vào giỏ hàng..." classNames={{ message: 'text-main-cl' }} />
+        <AppLoading
+          message="Đang thêm vào giỏ hàng..."
+          classNames={{ message: 'text-white', shapesContainer: 'text-white' }}
+        />
       </div>
     )
   )

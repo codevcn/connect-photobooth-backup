@@ -32,9 +32,12 @@ type TInitialContentsType =
   | 'ELEMENT_ROTATION_SNAP_THRESHOLD'
   | 'ELEMENT_ROTATION_SNAP_BREAK_THRESHOLD'
   | 'LAYOUT_PADDING'
+  | 'DEFAULT_LAYOUT_MODE'
 
 export const createInitialConstants = <R>(type: TInitialContentsType): R => {
   switch (type) {
+    case 'DEFAULT_LAYOUT_MODE':
+      return 'with-layout' as R
     case 'ELEMENT_ZINDEX_STEP':
       return 10 as R
     case 'ELEMENT_ZINDEX':

@@ -242,9 +242,11 @@ const PaymentPage = () => {
 
   const handleEditMockup = (mockupDataId: string) => {
     if (queryFilter.isPhotoism) {
-      navigate(`/edit${fillQueryStringToURL()}&mockupId=${mockupDataId}`)
+      // navigate(`/edit${fillQueryStringToURL()}&mockupId=${mockupDataId}`)
+      AppNavigator.navTo(navigate, `/edit`, { mockupId: mockupDataId })
     } else {
-      navigate(`/${fillQueryStringToURL()}&mockupId=${mockupDataId}`)
+      // navigate(`/${fillQueryStringToURL()}&mockupId=${mockupDataId}`)
+      AppNavigator.navTo(navigate, `/`, { mockupId: mockupDataId })
     }
   }
 

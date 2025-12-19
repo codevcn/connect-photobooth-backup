@@ -145,12 +145,12 @@ const Product = ({
       <div
         className={`${
           isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
-        } NAME-gallery-child-to-render smd:text-[20px] smd:font-bold w-full text-center z-10 h-fit px-2 pt-2.5 rounded-b-lg whitespace-nowrap group-hover:outline-2 group-hover:outline-main-cl truncate absolute top-[98%] left-0 text-[12px] text-black`}
+        } NAME-gallery-child-to-render 5xl:text-[20px] smd:text-[14px] smd:font-bold smd:pt-1.5 5xl:pt-2.5 w-full text-center z-10 h-fit px-2 pt-2.5 rounded-b-lg whitespace-nowrap group-hover:outline-2 group-hover:outline-main-cl truncate absolute top-[98%] left-0 text-[12px] text-black`}
         style={{
           backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%)`,
         }}
       >
-        <div className="smd:top-0.5 w-full h-1.5 bg-white absolute top-0 left-0"></div>
+        <div className="smd:top-0.5 w-full h-1.5 smd:h-1 5xl:h-1.5 bg-white absolute top-0 left-0"></div>
         {displayProductName(product)}
       </div>
       <div className="NAME-gallery-child-to-rounded w-full h-full bg-white border border-gray-200 relative rounded-t-lg z-20">
@@ -251,7 +251,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const allLayouts = useLayoutStore((s) => s.allLayouts)
   const mockupId = useSearchParams()[0].get('mockupId')
-  const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintLayout, TPrintAreaInfo]>()
+  const [firstProduct, setFirstProduct] = useState<[TBaseProduct, TPrintAreaInfo, TPrintLayout]>()
   const { collectMockupVisualStates } = useVisualStatesCollector()
   const navigate = useNavigate()
   const [showExitModal, setShowExitModal] = useState(false)
@@ -287,14 +287,13 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       ...elementsVisualState,
     })
     if (checkSavedElementsVisualStateExists(product.id)) {
-      useLayoutStore.getState().setLayoutForDefault(null)
-      // useEditedElementStore.getState().recoverSavedElementsVisualStates(product.id)
+      // useLayoutStore.getState().setLayoutForDefault(null)
+      useEditedElementStore.getState().recoverSavedElementsVisualStates(product.id)
     } else {
       // useLayoutStore.getState().setLayoutForDefault(initialLayout)
+      useLayoutStore.getState().pickLayout(initialLayout)
     }
-    useProductUIDataStore
-      .getState()
-      .handlePickProduct(product, firstPrintAreaInProduct, initialLayout)
+    useProductUIDataStore.getState().handlePickProduct(product, firstPrintAreaInProduct)
   }
 
   const scrollToPickedProduct = () => {
@@ -324,7 +323,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     initialSurface: TPrintAreaInfo
   ) => {
     if (firstProductInList.id === products[0].id) {
-      setFirstProduct([firstProductInList, initialLayout, initialSurface])
+      setFirstProduct([firstProductInList, initialSurface, initialLayout])
     }
   }
 
@@ -448,7 +447,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
       />
       <button
         onClick={handleBackButtonClick}
-        className="smd:flex hidden gap-3 cursor-pointer mobile-touch items-center justify-center font-bold w-full py-3 px-1 border-b border-gray-300 bg-main-cl text-white"
+        className="smd:flex smd:py-1 hidden gap-3 cursor-pointer mobile-touch items-center justify-center font-bold w-full py-3 px-1 border-b border-gray-300 bg-main-cl text-white"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -464,7 +463,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         </svg>
         <span className="5xl:inline 5xl:text-2xl smd:text-lg">Quay về</span>
       </button>
-      <h2 className="5xl:text-[1.3em] text-[1em] py-2 px-2 w-full text-center font-bold text-gray-800">
+      <h2 className="5xl:text-[1.3em] smd:text-[0.9em] text-[1em] py-2 px-2 w-full text-center font-bold text-gray-800">
         Chọn sản phẩm
         <span className="smd:inline hidden font-light">
           <span> </span>(
@@ -490,7 +489,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
             ref={(node) => {
               scrollableBox.current = node
             }}
-            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col flex items-center gap-x-2 gap-y-12 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
+            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col 5xl:gap-y-12 smd:gap-y-8 flex items-center gap-x-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
           >
             {hasProducts &&
               products.map((product, index) => {
