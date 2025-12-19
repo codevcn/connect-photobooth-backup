@@ -275,7 +275,7 @@ type TStickerGroupsConfig = {
 
 // Cấu hình các nhóm sticker
 const initStickerGroupItems = (): TStickerGroupsConfig[] => [
-  { name: 'Jewery', displayName: 'Jewery', count: 69 },
+  { name: 'Jewery', displayName: 'Jewery', count: 58 },
   // { name: 'Couple-cat', displayName: 'Couple Cat', count: 6 },
   // { name: 'BabyWony', displayName: 'Baby Wony', count: 20 },
   // { name: 'BrownandFriends', displayName: 'Brown & Friends', count: 20 },
