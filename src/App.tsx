@@ -44,7 +44,7 @@ import { useQueryFilter } from './hooks/extensions'
 import { UserIdleTracker } from './components/custom/IdleWarningModal'
 
 const IdleCountdown = () => {
-  return <UserIdleTracker idleTimeout={30} modalTimeout={10} />
+  return !isHomePage() && <UserIdleTracker idleTimeout={30} modalTimeout={10} />
   // return <></>
 }
 

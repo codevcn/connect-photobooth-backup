@@ -1,6 +1,9 @@
 import { VoucherValidationResult } from '@/utils/types/global'
 import { postCheckVoucher } from './api/voucher.api'
 import { TCheckVoucherReq } from '@/utils/types/api'
+import { checkQueryString } from '@/utils/helpers'
+import { useUserDataStore } from '@/stores/ui/user-data.store'
+import { LocalStorageHelper } from '@/utils/localstorage'
 
 class VoucherService {
   /**
@@ -14,13 +17,28 @@ class VoucherService {
     items: TCheckVoucherReq['items'],
     storeCode: string
   ): Promise<VoucherValidationResult> {
-    const requestData: TCheckVoucherReq = {
-      store_code: storeCode,
+    const checkedQuery = checkQueryString()
+    let deviceId: string | null = null
+    if (checkedQuery.isPhotoism || checkedQuery.dev) {
+      deviceId = useUserDataStore.getState().deviceId
+    } else {
+      deviceId = LocalStorageHelper.getPtbid()
+    }
+    if (!deviceId) {
+      throw new Error('Thiếu dữ liệu để thực hiện thanh toán')
+    }
+    // const requestData: TCheckVoucherReq = {
+    //   store_code: storeCode,
+    //   items,
+    //   voucher_code: code,
+    // }
+    const reqData = {
+      device_id: deviceId,
       items,
       voucher_code: code,
     }
 
-    const response = await postCheckVoucher(requestData)
+    const response = await postCheckVoucher(reqData)
 
     if (!response.success || !response.data?.data) {
       return {

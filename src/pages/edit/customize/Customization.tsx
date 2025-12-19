@@ -180,10 +180,7 @@ const InstructionsModal = ({ onClose }: TInstructionsModalProps) => {
                   Lưu ý quan trọng
                 </p>
                 <p className="text-xs 5xl:text-sm text-amber-800 leading-snug">
-                  Hình xem trước có thể khác sản phẩm thực tế về màu sắc do ánh sáng và màn hình.
-                </p>
-                <p className="text-xs 5xl:text-sm text-amber-800 leading-snug">
-                  Màu in lệch 10% so với ảnh digital.
+                  Màu in có thể lệch 10% so với ảnh digital.
                 </p>
               </div>
             </div>

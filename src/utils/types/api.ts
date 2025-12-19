@@ -318,7 +318,7 @@ export type TAddressWard = {
 
 // Voucher API Types
 export type TCheckVoucherReq = {
-  store_code: string
+  device_id: string
   items: {
     variant_id: number
     quantity: number
