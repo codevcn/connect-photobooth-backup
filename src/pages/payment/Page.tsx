@@ -436,8 +436,6 @@ const PaymentPage = () => {
                   <span>Tôi đã đọc và đồng ý với </span>
                   <span
                     onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
                       setShowTermsModal(true)
                     }}
                     className="text-blue-600 underline cursor-pointer"
@@ -450,7 +448,7 @@ const PaymentPage = () => {
             )}
             <div
               style={{
-                opacity: acceptedTerms ? 1 : 0.7,
+                opacity: acceptedTerms ? 1 : 0.8,
                 pointerEvents: acceptedTerms ? 'auto' : 'none',
                 cursor: acceptedTerms ? 'pointer' : 'not-allowed',
               }}
