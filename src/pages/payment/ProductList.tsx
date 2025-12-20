@@ -181,15 +181,15 @@ export const ProductList: React.FC<ProductListProps> = ({
 
               {/* Product Details */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-[1em] font-semibold text-gray-900 leading-tight">{name}</h3>
+                <div className="flex items-start justify-between gap-2 mb-2 relative">
+                  <h3 className="text-[1.1em] font-semibold text-gray-900 leading-snug pr-8">
+                    {name}
+                  </h3>
                   <button
                     onClick={() => {
-                      // toast.info('Đang tạm khóa')
-                      // tempObject.firstBackFromCartEdit_allowedPrintAreaChange = true
                       onEditMockup(mockupData.id)
                     }}
-                    className="shrink-0 p-1.5 text-gray-600 bg-gray-200 transition-colors rounded-lg active:scale-95"
+                    className="5xl:top-1 5xl:right-1 absolute top-0 right-0 shrink-0 p-1.5 text-gray-600 bg-gray-200 transition-colors rounded-lg active:scale-95"
                     aria-label="Chỉnh sửa sản phẩm"
                   >
                     <svg
@@ -200,7 +200,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="lucide lucide-pen-icon lucide-pen w-3 h-3 sm:w-4 sm:h-4 5xl:w-6 5xl:h-6"
+                      className="lucide lucide-pen-icon lucide-pen w-3 h-3 sm:w-4 sm:h-4 5xl:w-7 5xl:h-7"
                     >
                       <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
                     </svg>
@@ -323,7 +323,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                           strokeWidth="3"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-x-icon lucide-x text-white w-3 h-3 sm:w-6 sm:h-6"
+                          className="lucide lucide-x-icon lucide-x text-white w-3 h-3 sm:w-5 sm:h-5"
                         >
                           <path d="M18 6 6 18" />
                           <path d="m6 6 12 12" />

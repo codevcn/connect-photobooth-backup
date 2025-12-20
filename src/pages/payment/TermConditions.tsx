@@ -6,7 +6,7 @@ export const TermConditions = ({ closeModal }: TTermConditionsProps) => {
   return (
     <div
       id="termsModal"
-      className="fixed inset-0 z-50"
+      className="fixed inset-0 z-50 animate-pop-in"
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
@@ -18,7 +18,7 @@ export const TermConditions = ({ closeModal }: TTermConditionsProps) => {
       ></div>
 
       {/* <!-- Nội dung Popup (Căn giữa) --> */}
-      <div className="flex items-center justify-center min-h-screen p-4 text-center sm:p-0 pointer-events-none">
+      <div className="flex min-h-screen p-4 text-center sm:p-0 pointer-events-none">
         <div className="relative bg-white rounded-xl shadow-2xl text-left overflow-hidden transform transition-all w-full max-w-4xl flex flex-col max-h-[85vh] pointer-events-auto">
           {/* <!-- HEADER: Tiêu đề và nút đóng --> */}
           <div className="bg-white px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 z-10 shadow-sm">
@@ -52,9 +52,9 @@ export const TermConditions = ({ closeModal }: TTermConditionsProps) => {
           </div>
 
           {/* <!-- BODY: Nội dung điều khoản (Có thanh cuộn) --> */}
-          <div className="px-6 py-6 overflow-y-auto custom-scrollbar grow bg-gray-50 text-gray-700 leading-relaxed">
+          <div className="px-4 py-4 overflow-y-auto custom-scrollbar grow bg-gray-50 text-gray-700 leading-relaxed">
             {/* Mục 1 */}
-            <section className="mb-8 bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+            <section className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
               <h4 className="text-lg font-bold text-main-cl mb-4 flex items-center">
                 <span className="bg-light-main-cl text-main-cl text-xs font-semibold mr-2 px-2.5 py-0.5 rounded border border-main-hover-cl">
                   1

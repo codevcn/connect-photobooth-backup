@@ -4,9 +4,57 @@ import 'simple-keyboard/build/css/index.css'
 import { useVietnameseKeyboard } from '@/hooks/use-vietnamese-keyboard'
 import '@/styles/virtual-keyboard.css'
 import { AutoSizeTextField } from '../AutoSizeTextField'
+import { CustomScrollbar } from '../CustomScrollbar'
+import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
+import { TKeyboardSuggestion } from '@/utils/types/global'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
 
-type TLayoutName = 'default' | 'shift' | 'specialCharacters'
+type TKeyboardSuggestionsProps = {
+  currentInputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>
+  onPickSuggestion?: (suggestion: TKeyboardSuggestion, type: string) => void
+}
+
+const TypingSuggestions = ({ currentInputRef, onPickSuggestion }: TKeyboardSuggestionsProps) => {
+  const suggestions = useKeyboardStore((s) => s.suggestions)
+
+  const pickSuggestion = (suggestion: TKeyboardSuggestion) => {
+    let type = 'province'
+    if (currentInputRef.current) {
+      if (currentInputRef.current.classList.contains('NAME-district')) {
+        type = 'district'
+      } else if (currentInputRef.current.classList.contains('NAME-ward')) {
+        type = 'ward'
+      }
+    }
+    eventEmitter.emit(EInternalEvents.KEYBOARD_SUGGESTION_PICKED, suggestion, type)
+    onPickSuggestion?.(suggestion, type)
+  }
+
+  return (
+    suggestions &&
+    suggestions.length > 0 && (
+      <CustomScrollbar
+        showScrollbar={false}
+        classNames={{
+          container: 'mx-3',
+          content: 'flex flex-nowrap gap-2 w-full py-2 max-h-28 bg-white border-b border-gray-200',
+        }}
+      >
+        {suggestions.map((suggestion) => (
+          <button
+            onClick={() => pickSuggestion(suggestion)}
+            key={suggestion.id}
+            className="px-2 py-1 bg-gray-100 mobile-touch rounded hover:bg-gray-300 w-max whitespace-nowrap"
+          >
+            {suggestion.text}
+          </button>
+        ))}
+      </CustomScrollbar>
+    )
+  )
+}
+
+type TLayoutName = 'default' | 'shift' | 'specialCharacters' | 'numberic'
 
 type TVietnameseKeyboardProps = {
   textDisplayerRef: React.RefObject<HTMLTextAreaElement | null>
@@ -42,6 +90,196 @@ export const VietnameseKeyboard = ({
   currentInputRef,
   isOpen = false,
 }: TVietnameseKeyboardProps) => {
+  const [vietnameseLayout, setVietnameseLayout] = useState({
+    default: [
+      '1 2 3 4 5 6 7 8 9 0 - = {bksp}',
+      'q w e r t y u i o p [ ] \\',
+      "a s d f g h j k l ; ' {enter}",
+      '{shift} z x c v b n m , . / {shift}',
+      '{=/<} {TELEX} {1234} {space} @ gmail .com {done}',
+    ],
+    shift: [
+      '1 2 3 4 5 6 7 8 9 0 _ + {bksp}',
+      'Q W E R T Y U I O P { } |',
+      'A S D F G H J K L : " {enter}',
+      '{shift} Z X C V B N M < > ? {shift}',
+      '{=/<} {TELEX} {1234} {space} @ gmail .com {done}',
+    ],
+    specialCharacters: [
+      '1 2 3 4 5 6 7 8 9 0 _ + {bksp}',
+      '~ ˋ | • √ π ÷ × ¶ Δ { } |',
+      '# $ % & ( ) : " {enter}',
+      '* " ! < > ?',
+      '{abc} {TELEX} {1234} {space} @ gmail .com {done}',
+    ],
+    numberic: [', 1 2 3 {bksp}', '( 4 5 6 -', ') 7 8 9 +', '{abc} . 0 {space} {done}'],
+  })
+
+  const display: Record<string, string> = {
+    ';': '<span class="text-xl font-bold">;</span>',
+    '-': '<span class="text-xl scale-x-[3.25] inline-block">-</span>',
+    '~': '<span class="text-xl">~</span>',
+    '`': '<span class="text-3xl">`</span>',
+    '*': '<span class="text-3xl translate-y-1 inline-block">*</span>',
+    ':': '<span class="text-xl font-bold">:</span>',
+    "'": '<span class="text-xl font-bold">\'</span>',
+    ',': '<span class="text-3xl font-bold -translate-y-1 inline-block">,</span>',
+    '.': '<span class="text-3xl font-bold translate-y-1 inline-block">.</span>',
+    '{1234}': '<span>1234</span>',
+    '{=/<}': '<span>=/<</span>',
+    '{abc}': '<span>ABC</span>',
+    '{TELEX}': `<span>TELEX</span>`,
+    '{VNI}': `<span>VNI</span>`,
+    '{bksp}': `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        class="lucide lucide-delete-icon lucide-delete"
+      >
+        <path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" />
+        <path d="m12 9 6 6" />
+        <path d="m18 9-6 6" />
+      </svg>
+    `,
+    '{enter}': `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="26"
+        height="26"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="3"
+      >
+        <path
+          stroke="#000"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="3"
+          d="M20 7v1.2c0 1.68 0 2.52-.327 3.162a3 3 0 0 1-1.311 1.311C17.72 13 16.88 13 15.2 13H4m0 0 4-4m-4 4 4 4"
+        />
+      </svg>
+    `,
+    '{shift}': `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        class="lucide lucide-arrow-big-up-icon lucide-arrow-big-up"
+      >
+        <path d="M9 13a1 1 0 0 0-1-1H5.061a1 1 0 0 1-.75-1.811l6.836-6.835a1.207 1.207 0 0 1 1.707 0l6.835 6.835a1 1 0 0 1-.75 1.811H16a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z" />
+      </svg>
+    `,
+    '{space}': `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        class="lucide lucide-space-icon lucide-space"
+      >
+        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
+      </svg>
+    `,
+    '{clear}': `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        class="lucide lucide-eraser-icon lucide-eraser"
+      >
+        <path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21" />
+        <path d="m5.082 11.09 8.828 8.828" />
+      </svg>
+    `,
+    '{done}': `
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        class="lucide lucide-check-icon lucide-check"
+      >
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
+    `,
+  }
+
+  const buttonTheme = [
+    {
+      class: 'hg-button-to-numeric-characters',
+      buttons: '{1234}',
+    },
+    {
+      class: 'hg-button-to-special-characters',
+      buttons: '{=/<}',
+    },
+    {
+      class: 'hg-button-to-normal-letters',
+      buttons: '{abc}',
+    },
+    {
+      class: 'hg-button-mode-telex',
+      buttons: '{TELEX}',
+    },
+    {
+      class: 'hg-button-mode-vni',
+      buttons: '{VNI}',
+    },
+    {
+      class: 'hg-button-clear',
+      buttons: '{clear}',
+    },
+    {
+      class: 'hg-button-bksp',
+      buttons: '{bksp}',
+    },
+    {
+      class: 'hg-button-enter',
+      buttons: '{enter}',
+    },
+    {
+      class: 'hg-button-shift',
+      buttons: '{shift}',
+    },
+    {
+      class: 'hg-button-space',
+      buttons: '{space}',
+    },
+    {
+      class: 'hg-button-done',
+      buttons: '{done}',
+    },
+  ]
+
   const [input, setInput] = useState<string>(initialInputValue)
   const [layoutName, setLayoutName] = useState<TLayoutName>('default')
   const internalKeyboardRef = useRef<any>(null)
@@ -130,9 +368,29 @@ export const VietnameseKeyboard = ({
   }
 
   const handleKeyPress = (button: string) => {
-    if (button === '{abc}') {
+    if (button === '{1234}') {
+      setLayoutName('numberic')
+    } else if (button === '{TELEX}') {
+      toggleInputMethod('vni')
+      setVietnameseLayout((prevLayout) => {
+        const newLayout = { ...prevLayout }
+        newLayout.default[4] = newLayout.default[4].replace('{TELEX}', '{VNI}')
+        newLayout.shift[4] = newLayout.shift[4].replace('{TELEX}', '{VNI}')
+        newLayout.specialCharacters[4] = newLayout.specialCharacters[4].replace('{TELEX}', '{VNI}')
+        return newLayout
+      })
+    } else if (button === '{VNI}') {
+      toggleInputMethod('telex')
+      setVietnameseLayout((prevLayout) => {
+        const newLayout = { ...prevLayout }
+        newLayout.default[4] = newLayout.default[4].replace('{VNI}', '{TELEX}')
+        newLayout.shift[4] = newLayout.shift[4].replace('{VNI}', '{TELEX}')
+        newLayout.specialCharacters[4] = newLayout.specialCharacters[4].replace('{VNI}', '{TELEX}')
+        return newLayout
+      })
+    } else if (button === '{abc}') {
       setLayoutName('default')
-    } else if (button === '{?123}') {
+    } else if (button === '{=/<}') {
       setLayoutName('specialCharacters')
     } else if (button === '{shift}' || button === '{lock}') {
       if (layoutName === 'shift') {
@@ -218,9 +476,6 @@ export const VietnameseKeyboard = ({
   const catchEnterKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // Allow Enter for new line, use Ctrl+Enter or Cmd+Enter to submit
     if (e.shiftKey) {
-      if (currentInputRef.current?.tagName === 'INPUT') {
-        e.preventDefault()
-      }
     } else {
       if (e.key === 'Enter') {
         e.preventDefault()
@@ -236,162 +491,16 @@ export const VietnameseKeyboard = ({
     catchEnterKey(e)
   }
 
-  const vietnameseLayout = {
-    default: [
-      '1 2 3 4 5 6 7 8 9 0 - = {bksp}',
-      'q w e r t y u i o p [ ] \\',
-      "a s d f g h j k l ; ' {enter}",
-      '{shift} z x c v b n m , . / {shift}',
-      '{?123} @ {space} .com {done}',
-    ],
-    shift: [
-      '1 2 3 4 5 6 7 8 9 0 _ + {bksp}',
-      'Q W E R T Y U I O P { } |',
-      'A S D F G H J K L : " {enter}',
-      '{shift} Z X C V B N M < > ? {shift}',
-      '{?123} @ {space} .com {done}',
-    ],
-    specialCharacters: [
-      '1 2 3 4 5 6 7 8 9 0 _ + {bksp}',
-      '~ ˋ | • √ π ÷ × ¶ Δ { } |',
-      '@ # $ % & ( ) : " {enter}',
-      '{shift} * " ! < > ? {shift}',
-      '{abc} @ {space} .com {done}',
-    ],
-  }
-
-  const display: Record<string, string> = {
-    '{?123}': '<span>?123</span>',
-    '{abc}': '<span>ABC</span>',
-    '{bksp}': `
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="26"
-        height="26"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="lucide lucide-delete-icon lucide-delete"
-      >
-        <path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" />
-        <path d="m12 9 6 6" />
-        <path d="m18 9-6 6" />
-      </svg>
-    `,
-    '{enter}': `
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="26"
-        height="26"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="3"
-      >
-        <path
-          stroke="#000"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="3"
-          d="M20 7v1.2c0 1.68 0 2.52-.327 3.162a3 3 0 0 1-1.311 1.311C17.72 13 16.88 13 15.2 13H4m0 0 4-4m-4 4 4 4"
-        />
-      </svg>
-    `,
-    '{shift}': `
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="28"
-        height="28"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="lucide lucide-arrow-big-up-icon lucide-arrow-big-up"
-      >
-        <path d="M9 13a1 1 0 0 0-1-1H5.061a1 1 0 0 1-.75-1.811l6.836-6.835a1.207 1.207 0 0 1 1.707 0l6.835 6.835a1 1 0 0 1-.75 1.811H16a1 1 0 0 0-1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z" />
-      </svg>
-    `,
-    '{space}': `
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="26"
-        height="26"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="lucide lucide-space-icon lucide-space"
-      >
-        <path d="M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1" />
-      </svg>
-    `,
-    '{clear}': `
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="26"
-        height="26"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="lucide lucide-eraser-icon lucide-eraser"
-      >
-        <path d="M21 21H8a2 2 0 0 1-1.42-.587l-3.994-3.999a2 2 0 0 1 0-2.828l10-10a2 2 0 0 1 2.829 0l5.999 6a2 2 0 0 1 0 2.828L12.834 21" />
-        <path d="m5.082 11.09 8.828 8.828" />
-      </svg>
-    `,
-    '{done}': `
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="28"
-        height="28"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="lucide lucide-check-icon lucide-check"
-      >
-        <path d="M20 6 9 17l-5-5" />
-      </svg>
-    `,
-  }
-
-  const buttonTheme = [
-    {
-      class: 'hg-button-clear',
-      buttons: '{clear}',
-    },
-    {
-      class: 'hg-button-bksp',
-      buttons: '{bksp}',
-    },
-    {
-      class: 'hg-button-enter',
-      buttons: '{enter}',
-    },
-    {
-      class: 'hg-button-shift',
-      buttons: '{shift}',
-    },
-    {
-      class: 'hg-button-space',
-      buttons: '{space}',
-    },
-    {
-      class: 'hg-button-done',
-      buttons: '{done}',
-    },
-  ]
+  useEffect(() => {
+    if (isOpen) {
+      const inputType = currentInputRef.current?.type
+      if (inputType === 'number' || inputType === 'tel') {
+        setLayoutName('numberic')
+      } else {
+        setLayoutName('default')
+      }
+    }
+  }, [isOpen])
 
   return (
     <div className={`${keyboardName} 5xl:text-[26px] w-full shadow-[0_3px_10px_rgba(0,0,0,0.8)]`}>
@@ -403,6 +512,10 @@ export const VietnameseKeyboard = ({
             setInput(e.target.value)
             setTimeout(handleTextAreaSelect, 0)
           }}
+          onAllowResizeTextArea={() => {
+            if (currentInputRef.current?.tagName === 'TEXTAREA') return true
+            return false
+          }}
           onEnter={catchEnterKey}
           onKeyDown={handleTextAreaKeyDown}
           onSelect={handleTextAreaSelect}
@@ -410,34 +523,16 @@ export const VietnameseKeyboard = ({
           textfieldRef={textDisplayerRef}
           maxHeight={150}
           minHeight={40}
-          className="w-full outline-transparent focus:outline-main-cl overflow-y-auto px-2 py-1.5 text-[1em] border border-gray-200 rounded-lg bg-gray-50 whitespace-pre-wrap wrap-break-word"
+          className="w-full outline-transparent focus:outline-main-cl overflow-y-auto px-2 leading-normal py-1.5 text-[1em] border border-gray-200 rounded-lg bg-gray-50 whitespace-pre-wrap wrap-break-word"
         />
       </div>
 
-      {/* Input method toggle - chuyển đổi VNI/Telex */}
-      <div className="text-[0.8em] px-3 py-2 bg-white border-b border-gray-200 flex items-center gap-2">
-        <span className="text-gray-600 font-medium">Kiểu gõ:</span>
-        <button
-          onClick={() => toggleInputMethod('telex')}
-          className={`${
-            inputMethod === 'telex' ? 'bg-main-cl text-white' : 'text-gray-800'
-          } px-3 py-1.5 rounded-lg font-semibold mobile-touch border border-gray-300`}
-        >
-          TELEX
-        </button>
-        <button
-          onClick={() => toggleInputMethod('vni')}
-          className={`${
-            inputMethod === 'vni' ? 'bg-main-cl text-white' : 'text-gray-800'
-          } px-3 py-1.5 rounded-lg font-semibold mobile-touch border border-gray-300`}
-        >
-          VNI
-        </button>
-      </div>
+      <TypingSuggestions currentInputRef={currentInputRef} onPickSuggestion={onClose} />
 
       {/* Keyboard */}
       <div className="px-2 py-2 bg-white">
         <Keyboard
+          key={inputMethod}
           keyboardRef={(r) => {
             keyboardRef.current = r
           }}

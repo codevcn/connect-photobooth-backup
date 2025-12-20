@@ -12,6 +12,7 @@ type AutosizeTextareaProps = {} & Partial<{
   maxHeight: number
   className: string
   textfieldRef: React.RefObject<HTMLTextAreaElement | null>
+  onAllowResizeTextArea: () => boolean
 }>
 
 export const AutoSizeTextField = ({
@@ -26,18 +27,29 @@ export const AutoSizeTextField = ({
   maxHeight = 300,
   className = '',
   textfieldRef,
+  onAllowResizeTextArea,
 }: AutosizeTextareaProps) => {
   const [text, setText] = useState(value)
   const textFieldInternalRef = useRef<HTMLTextAreaElement | null>(null)
   const finalTextFieldRef = textfieldRef || textFieldInternalRef
 
-  // Auto-resize textarea
-  const adjustHeight = () => {
+  const doResizeTextArea = () => {
     const textarea = finalTextFieldRef.current
     if (textarea) {
       textarea.style.height = 'auto'
       const newHeight = Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight)
       textarea.style.height = `${newHeight}px`
+    }
+  }
+
+  // Auto-resize textarea
+  const adjustHeight = () => {
+    if (onAllowResizeTextArea) {
+      if (onAllowResizeTextArea()) {
+        doResizeTextArea()
+      }
+    } else {
+      doResizeTextArea()
     }
   }
 
@@ -59,10 +71,18 @@ export const AutoSizeTextField = ({
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     // Handle Enter key
-    if (e.key === 'Enter' && !e.shiftKey) {
-      if (onEnter) {
-        e.preventDefault()
-        onEnter(e)
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        if (onAllowResizeTextArea) {
+          if (!onAllowResizeTextArea()) {
+            e.preventDefault()
+          }
+        }
+      } else {
+        if (onEnter) {
+          e.preventDefault()
+          onEnter(e)
+        }
       }
     }
     if (onKeyDown) {
@@ -80,6 +100,7 @@ export const AutoSizeTextField = ({
       onClick={onClick}
       placeholder={placeholder}
       className={className}
+      rows={1}
       style={{
         minHeight: `${minHeight}px`,
         maxHeight: `${maxHeight}px`,

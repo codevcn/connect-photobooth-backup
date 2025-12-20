@@ -350,9 +350,10 @@ export type TPaymentProductItem = {
 export type TShippingInfo = {
   name: string
   phone: string
-  email: string
+  email?: string
   province: string
   city: string
+  ward: string
   address: string
   message?: string
 }
@@ -522,4 +523,9 @@ export type TSelectedElement = {
   elementId: string
   elementType: TElementType
   elementURL?: string
+}
+
+export type TKeyboardSuggestion = {
+  id: string
+  text: string
 }

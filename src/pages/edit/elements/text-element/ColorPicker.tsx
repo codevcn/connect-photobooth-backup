@@ -174,7 +174,7 @@ export const ColorPickerModal = ({
           <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-lg">
             <button
               onClick={() => setPickerMode('preset')}
-              className={`py-2 px-3 rounded-md font-semibold text-sm transition-all ${
+              className={`text-[0.6em] py-2 px-3 rounded-md font-semibold text-sm transition-all ${
                 pickerMode === 'preset'
                   ? 'bg-main-cl text-white shadow'
                   : 'bg-transparent text-gray-600 hover:bg-gray-200'
@@ -184,7 +184,7 @@ export const ColorPickerModal = ({
             </button>
             <button
               onClick={() => setPickerMode('custom')}
-              className={`py-2 px-3 rounded-md font-semibold text-sm transition-all ${
+              className={`text-[0.6em] py-2 px-3 rounded-md font-semibold text-sm transition-all ${
                 pickerMode === 'custom'
                   ? 'bg-main-cl text-white shadow'
                   : 'bg-transparent text-gray-600 hover:bg-gray-200'

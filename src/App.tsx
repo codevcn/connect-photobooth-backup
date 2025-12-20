@@ -42,6 +42,7 @@ import SwipeKeyboard from './dev/pages/Dev'
 import { GlobalKeyboardProvider } from './providers/GlobalKeyboardProvider'
 import { useQueryFilter } from './hooks/extensions'
 import { UserIdleTracker } from './components/custom/IdleWarningModal'
+import ScanQRPageV2 from './dev/pages/Dev'
 
 const IdleCountdown = () => {
   return <UserIdleTracker idleTimeout={30} modalTimeout={10} />
@@ -107,7 +108,7 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<EditPageDev />} />
           <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/dev" element={<SwipeKeyboard />} />
+          <Route path="/dev" element={<ScanQRPageV2 />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <GlobalKeyboardProvider />

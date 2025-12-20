@@ -12,6 +12,31 @@
   color: #2d3748;
 }
 
+.vietnamese-keyboard-drawer .hg-button-to-numeric-characters {
+  max-width: 6%;
+  min-width: 40px;
+}
+
+.vietnamese-keyboard-drawer .hg-button-to-special-characters {
+  max-width: 6%;
+  min-width: 40px;
+}
+
+.vietnamese-keyboard-drawer .hg-button-to-normal-letters {
+  max-width: 6%;
+  min-width: 40px;
+}
+
+.vietnamese-keyboard-drawer .hg-button-mode-telex {
+  max-width: 6%;
+  min-width: 40px;
+}
+
+.vietnamese-keyboard-drawer .hg-button-mode-vni {
+  max-width: 6%;
+  min-width: 40px;
+}
+
 .vietnamese-keyboard-drawer .hg-button:active {
   transform: scale(0.95);
   background-color: var(--vcn-main-cl);
@@ -78,7 +103,7 @@
 .vietnamese-keyboard-drawer .hg-button-space {
   color: #374151;
   border: none;
-  width: 65%;
+  width: 50%;
   font-weight: 700;
 }
 .vietnamese-keyboard-drawer .hg-button-space svg {
@@ -107,14 +132,21 @@
   margin-bottom: 0;
 }
 
-/* Responsive */
+/* Numeric keyboard layout - các phím có kích thước bằng nhau */
+.vietnamese-keyboard-drawer.hg-layout-numberic .hg-button {
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: none;
+  width: auto;
+}
+
+.vietnamese-keyboard-drawer.hg-layout-numberic .hg-button-space {
+  width: auto;
+}
+
 @media (min-width: 1590px) {
   .vietnamese-keyboard-drawer .hg-button {
-    font-size: 28px;
-    height: 50px;
-  }
-
-  .vietnamese-keyboard-drawer .hg-button-bksp {
-    font-size: 28px;
+    font-size: 32px;
+    height: 68px;
   }
 }

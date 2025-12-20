@@ -230,13 +230,14 @@ export type TCreateOrderReq = {
   device_id: string
   customer: {
     name: string
-    email: string
+    email?: string
     phone: string
   }
   shipping_address: {
     address1: string
     city: string
     province: string
+    ward: string
     postcode: string
     country: string
   }

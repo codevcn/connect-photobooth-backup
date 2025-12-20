@@ -258,7 +258,6 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const [showExitModal, setShowExitModal] = useState(false)
   const galleryRef = useRef<HTMLDivElement | null>(null)
   const initialGalleryHeight = useRef<number>(0)
-  console.log('>>> [ini] all layouts:', allLayouts)
 
   const handleConfirmExit = () => {
     resetAllStores()

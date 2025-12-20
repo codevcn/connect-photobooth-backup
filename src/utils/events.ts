@@ -1,4 +1,4 @@
-import { TElementType, TSizeInfo } from './types/global'
+import { TElementType, TKeyboardSuggestion, TSizeInfo } from './types/global'
 
 export enum EInternalEvents {
   CLICK_ON_PAGE = 'CLICK_ON_PAGE',
@@ -15,9 +15,14 @@ export enum EInternalEvents {
   BEFORE_PRINT_AREA_CHANGE = 'BEFORE_PRINT_AREA_CHANGE',
   EDITED_PRINT_AREA_CHANGED = 'EDITED_PRINT_AREA_CHANGED',
   ADD_TEXT_ON_DONE_KEYBOARD = 'ADD_TEXT_ON_DONE_KEYBOARD',
+  KEYBOARD_SUGGESTION_PICKED = 'KEYBOARD_SUGGESTION_PICKED',
 }
 
 interface IInternalEvents {
+  [EInternalEvents.KEYBOARD_SUGGESTION_PICKED]: (
+    suggestion: TKeyboardSuggestion,
+    type: string
+  ) => void
   [EInternalEvents.ADD_TEXT_ON_DONE_KEYBOARD]: (textContent: string) => void
   [EInternalEvents.CROP_PRINTED_IMAGE_ON_FRAME]: (frameId: string, croppedImageUrl: string) => void
   [EInternalEvents.CLICK_ON_PAGE]: (target: HTMLElement | null) => void

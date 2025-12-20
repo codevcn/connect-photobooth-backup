@@ -19,7 +19,6 @@ export const GlobalKeyboardProvider = () => {
 
   const showKeyboard = useCallback((input: HTMLInputElement | HTMLTextAreaElement) => {
     if (input.classList.contains(ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD)) {
-      console.log('>>> [in] focus in nhaaa:', input)
       currentInputRef.current = input
       setIsVisible(true)
     }
@@ -250,6 +249,8 @@ export const GlobalKeyboardProvider = () => {
                 textDisplayerRef={textDisplayerRef}
                 initialInputValue={initialInputValue}
                 currentInputRef={currentInputRef}
+                onClose={hideKeyboard}
+                isOpen={isVisible}
               />
             </div>
           )}

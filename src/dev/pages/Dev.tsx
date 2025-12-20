@@ -1,274 +1,326 @@
-// import { useState, useRef, useEffect } from 'react'
-
-// const SwipeKeyboard = () => {
-//   const [text, setText] = useState('')
-//   const [isDrawing, setIsDrawing] = useState(false)
-//   const [currentPath, setCurrentPath] = useState([])
-//   const [recognizedChar, setRecognizedChar] = useState('')
-//   const canvasRef = useRef(null)
-//   const ctxRef = useRef(null)
-
-//   useEffect(() => {
-//     const canvas = canvasRef.current
-//     if (canvas) {
-//       const ctx = canvas.getContext('2d')
-//       ctx.lineCap = 'round'
-//       ctx.lineJoin = 'round'
-//       ctx.lineWidth = 3
-//       ctx.strokeStyle = '#2563eb'
-//       ctxRef.current = ctx
-//     }
-//   }, [])
-
-//   const getCoordinates = (e) => {
-//     const canvas = canvasRef.current
-//     const rect = canvas.getBoundingClientRect()
-
-//     if (e.touches) {
-//       return {
-//         x: e.touches[0].clientX - rect.left,
-//         y: e.touches[0].clientY - rect.top,
-//       }
-//     }
-//     return {
-//       x: e.clientX - rect.left,
-//       y: e.clientY - rect.top,
-//     }
-//   }
-
-//   const startDrawing = (e) => {
-//     e.preventDefault()
-//     setIsDrawing(true)
-//     const coords = getCoordinates(e)
-//     setCurrentPath([coords])
-
-//     const ctx = ctxRef.current
-//     ctx.beginPath()
-//     ctx.moveTo(coords.x, coords.y)
-//   }
-
-//   const draw = (e) => {
-//     if (!isDrawing) return
-//     e.preventDefault()
-
-//     const coords = getCoordinates(e)
-//     setCurrentPath((prev) => [...prev, coords])
-
-//     const ctx = ctxRef.current
-//     ctx.lineTo(coords.x, coords.y)
-//     ctx.stroke()
-//   }
-
-//   const stopDrawing = (e) => {
-//     if (!isDrawing) return
-//     e.preventDefault()
-//     setIsDrawing(false)
-
-//     // Nhận dạng ký tự từ đường vẽ
-//     const char = recognizeCharacter(currentPath)
-//     setRecognizedChar(char)
-
-//     // Tự động thêm vào text sau 500ms
-//     setTimeout(() => {
-//       if (char) {
-//         setText((prev) => prev + char)
-//       }
-//       clearCanvas()
-//       setRecognizedChar('')
-//     }, 500)
-//   }
-
-//   const clearCanvas = () => {
-//     const canvas = canvasRef.current
-//     const ctx = ctxRef.current
-//     ctx.clearRect(0, 0, canvas.width, canvas.height)
-//     setCurrentPath([])
-//   }
-
-//   const recognizeCharacter = (path) => {
-//     if (path.length < 5) return ''
-
-//     const features = extractFeatures(path)
-
-//     // Phân tích hướng vuốt chính
-//     const direction = features.mainDirection
-//     const curvature = features.curvature
-//     const aspectRatio = features.aspectRatio
-
-//     // Nhận dạng đơn giản dựa trên hướng và hình dạng
-//     if (direction === 'vertical' && curvature < 0.3) {
-//       return 'I'
-//     } else if (direction === 'horizontal' && curvature < 0.3) {
-//       return '-'
-//     } else if (curvature > 0.7 && aspectRatio < 1.5) {
-//       return 'O'
-//     } else if (direction === 'up-right') {
-//       return '/'
-//     } else if (direction === 'down-right') {
-//       return '\\'
-//     } else if (curvature > 0.5 && features.hasLoop) {
-//       return 'e'
-//     } else if (direction === 'vertical' && features.height > features.width * 1.5) {
-//       return 'l'
-//     } else if (curvature > 0.4 && direction === 'right') {
-//       return 'c'
-//     } else if (features.zigzag) {
-//       return 'z'
-//     }
-
-//     // Mặc định
-//     return '~'
-//   }
-
-//   const extractFeatures = (path) => {
-//     if (path.length < 2) return {}
-
-//     const minX = Math.min(...path.map((p) => p.x))
-//     const maxX = Math.max(...path.map((p) => p.x))
-//     const minY = Math.min(...path.map((p) => p.y))
-//     const maxY = Math.max(...path.map((p) => p.y))
-
-//     const width = maxX - minX
-//     const height = maxY - minY
-//     const aspectRatio = width / (height || 1)
-
-//     // Tính hướng chính
-//     const deltaX = path[path.length - 1].x - path[0].x
-//     const deltaY = path[path.length - 1].y - path[0].y
-
-//     let mainDirection = 'unknown'
-//     if (Math.abs(deltaX) < width * 0.3 && height > width) {
-//       mainDirection = 'vertical'
-//     } else if (Math.abs(deltaY) < height * 0.3 && width > height) {
-//       mainDirection = 'horizontal'
-//     } else if (deltaX > 0 && deltaY < 0) {
-//       mainDirection = 'up-right'
-//     } else if (deltaX > 0 && deltaY > 0) {
-//       mainDirection = 'down-right'
-//     } else {
-//       mainDirection = 'right'
-//     }
-
-//     // Tính độ cong
-//     let totalAngleChange = 0
-//     for (let i = 1; i < path.length - 1; i++) {
-//       const v1 = { x: path[i].x - path[i - 1].x, y: path[i].y - path[i - 1].y }
-//       const v2 = { x: path[i + 1].x - path[i].x, y: path[i + 1].y - path[i].y }
-//       const angle = Math.atan2(v2.y, v2.x) - Math.atan2(v1.y, v1.x)
-//       totalAngleChange += Math.abs(angle)
-//     }
-//     const curvature = totalAngleChange / (path.length - 2)
-
-//     // Kiểm tra vòng lặp
-//     const hasLoop = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2)) < (width + height) * 0.3
-
-//     // Kiểm tra zigzag
-//     let directionChanges = 0
-//     for (let i = 1; i < path.length - 1; i++) {
-//       const d1 = path[i].y - path[i - 1].y
-//       const d2 = path[i + 1].y - path[i].y
-//       if ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) {
-//         directionChanges++
-//       }
-//     }
-//     const zigzag = directionChanges > 2
-
-//     return {
-//       width,
-//       height,
-//       aspectRatio,
-//       mainDirection,
-//       curvature,
-//       hasLoop,
-//       zigzag,
-//     }
-//   }
-
-//   return (
-//     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-//       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
-//         <h1 className="text-2xl font-bold text-gray-800 mb-4 text-center">Bàn Phím Vuốt Tay</h1>
-
-//         {/* Hiển thị text */}
-//         <div className="bg-gray-50 rounded-lg p-4 mb-4 min-h-[80px] border-2 border-gray-200">
-//           <p className="text-lg text-gray-700 break-words">
-//             {text || <span className="text-gray-400 italic">Vuốt để viết...</span>}
-//           </p>
-//         </div>
-
-//         {/* Canvas vẽ */}
-//         <div className="relative mb-4">
-//           <canvas
-//             ref={canvasRef}
-//             width={400}
-//             height={300}
-//             className="border-2 border-blue-300 rounded-lg bg-white cursor-crosshair touch-none"
-//             onMouseDown={startDrawing}
-//             onMouseMove={draw}
-//             onMouseUp={stopDrawing}
-//             onMouseLeave={stopDrawing}
-//             onTouchStart={startDrawing}
-//             onTouchMove={draw}
-//             onTouchEnd={stopDrawing}
-//           />
-
-//           {/* Hiển thị ký tự nhận dạng */}
-//           {recognizedChar && (
-//             <div className="absolute top-2 right-2 bg-blue-500 text-white px-4 py-2 rounded-full text-2xl font-bold shadow-lg animate-pulse">
-//               {recognizedChar}
-//             </div>
-//           )}
-//         </div>
-
-//         {/* Hướng dẫn */}
-//         <div className="bg-blue-50 rounded-lg p-3 mb-4 text-sm text-gray-600">
-//           <p className="font-semibold mb-1">💡 Hướng dẫn:</p>
-//           <ul className="list-disc list-inside space-y-1 text-xs">
-//             <li>
-//               Vẽ dọc: <strong>I</strong> hoặc <strong>l</strong>
-//             </li>
-//             <li>
-//               Vẽ ngang: <strong>-</strong>
-//             </li>
-//             <li>
-//               Vẽ tròn: <strong>O</strong>
-//             </li>
-//             <li>
-//               Vẽ cong: <strong>c</strong>, <strong>e</strong>
-//             </li>
-//             <li>
-//               Vẽ ziczac: <strong>z</strong>
-//             </li>
-//           </ul>
-//         </div>
-
-//         {/* Buttons */}
-//         <div className="flex gap-2">
-//           <button
-//             onClick={clearCanvas}
-//             className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition"
-//           >
-//             Xóa Canvas
-//           </button>
-//           <button
-//             onClick={() => setText((prev) => prev.slice(0, -1))}
-//             className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition"
-//           >
-//             Xóa Ký Tự
-//           </button>
-//           <button
-//             onClick={() => setText('')}
-//             className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition"
-//           >
-//             Xóa Hết
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default SwipeKeyboard
-export default function Dev() { 
-  return <></>
+const toast = {
+  loading: (msg: string, opt?: any) => console.log('Loading:', msg),
+  dismiss: (id: any) => console.log('Dismiss toast'),
+  success: (msg: string) => alert('Success: ' + msg),
+  error: (msg: string) => alert('Error: ' + msg),
 }
+const useNavigate = () => (path: string) => console.log('Navigating to:', path)
+const usePrintedImageStore = (selector: any) => ({
+  setPrintedImages: (imgs: any) => console.log('Set images:', imgs),
+})
+const generateUniqueId = () => Date.now().toString()
+const AppNavigator = { navTo: (nav: any, path: string) => console.log('AppNav to', path) }
+
+// --- MOCK QR SCANNER COMPONENT (Giả lập camera để xem UI) ---
+const QRScanner = ({ onScanSuccess }: { onScanSuccess: any }) => {
+  return (
+    <div
+      className="w-full h-full relative flex items-center justify-center overflow-hidden cursor-pointer"
+      onClick={() =>
+        onScanSuccess([{ url: 'https://via.placeholder.com/150', isOriginalImage: true }])
+      }
+    >
+      {/* Giả lập camera feed - Tăng độ rõ nét lên 100% */}
+      <img
+        src="https://images.unsplash.com/photo-1550948537-130a1ce83314?q=80&w=1000&auto=format&fit=crop"
+        className="absolute inset-0 w-full h-full object-cover"
+        alt="Camera Feed Mock"
+      />
+
+      {/* Scanning effect - Giữ lại tia quét laser mờ để người dùng biết đang hoạt động */}
+      <div className="absolute inset-0 bg-linear-to-b from-transparent via-pink-500/20 to-transparent w-full h-[10%] animate-scan-down"></div>
+    </div>
+  )
+}
+// --- END MOCK DEFINITIONS ---
+
+// --- Cấu hình Animation & Style ---
+const FloatingStyles = () => (
+  <style>{`
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
+    }
+    @keyframes float-medium {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(-3deg); }
+    }
+    @keyframes float-fast {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+    }
+    @keyframes scan-down {
+      0% { top: -10%; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 110%; opacity: 0; }
+    }
+    
+    .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+    .animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
+    .animate-float-fast { animation: float-fast 4s ease-in-out infinite; }
+    .animate-scan-down { animation: scan-down 3s linear infinite; }
+    
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  `}</style>
+)
+
+const ScanQRPageV2 = () => {
+  const setPrintedImages = usePrintedImageStore((s: any) => s.setPrintedImages)
+  const navigate = useNavigate()
+
+  const handleData = async (imageDataList: any[]) => {
+    // Logic xử lý ảnh
+    console.log('Processing images...', imageDataList)
+    const loadingToast = toast.loading('Đang xử lý ảnh...', { autoClose: false })
+    setTimeout(() => {
+      toast.dismiss(loadingToast)
+      toast.success('Quét thành công! (Demo)')
+    }, 1500)
+  }
+
+  return (
+    // Container chính - Quay lại Gradient Hồng Đỏ tươi sáng
+    <div className="relative h-screen w-screen overflow-hidden bg-linear-to-br from-[#9f1239] via-[#e11d48] to-[#f43f5e]">
+      <FloatingStyles />
+
+      {/* --- BACKGROUND DECORATION & FLOATING ICONS --- */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Nền họa tiết nhẹ */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        {/* Blobs màu tạo chiều sâu */}
+        <div className="absolute -top-20 -left-20 w-80 h-80 bg-rose-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+
+        {/* --- 8 ICON SẢN PHẨM TRÔI NỔI --- */}
+
+        {/* 1. Góc Trên Trái (Áo Thun) */}
+        <div className="absolute top-[8%] left-[5%] animate-float-slow opacity-80 z-10">
+          <div className="glass-panel p-2.5 rounded-2xl transform -rotate-12 hover:scale-110 transition-transform duration-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-lg"
+            >
+              <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 2. Góc Trên Phải (Ly Cà Phê) */}
+        <div className="absolute top-[8%] right-[5%] animate-float-medium opacity-80 z-10">
+          <div className="glass-panel p-2 rounded-full transform rotate-12 hover:scale-110 transition-transform duration-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-md"
+            >
+              <path d="M10 2v2" />
+              <path d="M14 2v2" />
+              <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1" />
+              <path d="M6 2v2" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 3. Góc Dưới Trái (Túi Xách) */}
+        <div className="absolute bottom-[8%] left-[5%] animate-float-fast opacity-80 z-10">
+          <div className="glass-panel p-2.5 rounded-xl transform rotate-6 hover:scale-110 transition-transform duration-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-lg"
+            >
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+              <path d="M3 6h18" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 4. Góc Dưới Phải (Điện thoại) */}
+        <div className="absolute bottom-[8%] right-[5%] animate-float-slow opacity-80 z-10">
+          <div className="glass-panel p-2 rounded-2xl transform -rotate-6 hover:scale-110 transition-transform duration-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-md"
+            >
+              <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+              <path d="M12 18h.01" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 5. Giữa Cạnh Trái (Hộp Quà) */}
+        <div className="absolute top-[50%] left-[2%] transform -translate-y-1/2 animate-float-medium opacity-70 z-0">
+          <div className="glass-panel p-2 rounded-xl transform rotate-12">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-md"
+            >
+              <rect x="3" y="8" width="18" height="4" rx="1" />
+              <path d="M12 8v13" />
+              <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+              <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 6. Giữa Cạnh Phải - Bên trên Hướng dẫn (Đồng Hồ) */}
+        <div className="absolute top-[35%] right-[2%] animate-float-slow opacity-60 z-0">
+          <div className="glass-panel p-2 rounded-full transform -rotate-12">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-md"
+            >
+              <circle cx="12" cy="12" r="6" />
+              <polyline points="12 10 12 12 13 13" />
+              <path d="m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05" />
+              <path d="m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 7. Giữa Bên Trên - Dưới Header (Tranh Ảnh) */}
+        <div className="absolute top-[20%] left-[45%] transform -translate-x-1/2 animate-float-fast opacity-50 z-0">
+          <div className="glass-panel p-2 rounded-2xl transform rotate-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-sm"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+              <circle cx="9" cy="9" r="2" />
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            </svg>
+          </div>
+        </div>
+
+        {/* 8. Giữa Bên Dưới - Dưới QR (Chìa Khóa) */}
+        <div className="absolute bottom-[20%] left-[45%] transform -translate-x-1/2 animate-float-slow opacity-50 z-0">
+          <div className="glass-panel p-2 rounded-xl transform -rotate-12">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white drop-shadow-sm"
+            >
+              <path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4" />
+              <path d="m21 2-9.6 9.6" />
+              <circle cx="7.5" cy="15.5" r="5.5" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      {/* 1. HEADER (TOP CENTER) */}
+      <section className="absolute top-4 left-0 w-full text-center z-20 px-4 pointer-events-none">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-2 uppercase tracking-wide">
+          QUÉT MÃ QR
+        </h1>
+        <p className="text-white/95 text-sm md:text-lg font-light italic bg-white/10 backdrop-blur-md px-6 py-1.5 rounded-full inline-block shadow-sm border border-white/20">
+          Biến ảnh photobooth thành sự độc đáo
+        </p>
+      </section>
+
+      {/* 3. INSTRUCTIONS (RIGHT SIDE - TOP 58%) */}
+      <div className="absolute right-3 top-[58%] transform -translate-y-1/2 z-40 flex flex-col gap-4">
+        {/* STEP 1 */}
+        <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl w-[100px] md:w-[130px] transform transition-all hover:scale-105 hover:bg-black/60 group cursor-default">
+          <div className="w-10 h-10 rounded-full bg-white text-[#e11d48] flex items-center justify-center font-bold text-lg shadow-inner mb-1.5 group-hover:bg-[#e11d48] group-hover:text-white transition-colors duration-300">
+            1
+          </div>
+          <span className="text-white font-bold text-xs text-center leading-tight">Quét QR</span>
+          <span className="hidden md:block text-white/80 text-[10px] text-center mt-1">
+            trên ảnh
+          </span>
+        </div>
+
+        {/* STEP 2 */}
+        <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl w-[100px] md:w-[130px] transform transition-all hover:scale-105 hover:bg-black/60 group cursor-default">
+          <div className="w-10 h-10 rounded-full bg-white text-[#e11d48] flex items-center justify-center font-bold text-lg shadow-inner mb-1.5 group-hover:bg-[#e11d48] group-hover:text-white transition-colors duration-300">
+            2
+          </div>
+          <span className="text-white font-bold text-xs text-center leading-tight">Xem Ảnh</span>
+          <span className="hidden md:block text-white/80 text-[10px] text-center mt-1">
+            trên quà
+          </span>
+        </div>
+
+        {/* STEP 3 */}
+        <div className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl w-[100px] md:w-[130px] transform transition-all hover:scale-105 hover:bg-black/60 group cursor-default">
+          <div className="w-10 h-10 rounded-full bg-white text-[#e11d48] flex items-center justify-center font-bold text-lg shadow-inner mb-1.5 group-hover:bg-[#e11d48] group-hover:text-white transition-colors duration-300">
+            3
+          </div>
+          <span className="text-white font-bold text-xs text-center leading-tight">Đặt Hàng</span>
+          <span className="hidden md:block text-white/80 text-[10px] text-center mt-1">ngay</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ScanQRPageV2

@@ -9,10 +9,19 @@ import { ShippingInfoForm, TFormErrors } from './ShippingInfo'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { SectionLoading } from '@/components/custom/Loading'
 import { EndOfPayment } from './EndOfPayment'
-import { TermConditions } from './TermConditions'
-import { useQueryFilter } from '@/hooks/extensions'
 
-interface PaymentModalProps {
+type TShippingInfo = {
+  name: string
+  phone: string
+  email?: string
+  province: string
+  city: string
+  ward: string
+  address: string
+  message?: string
+}
+
+type TPaymentModalProps = {
   paymentInfo: {
     total: number
   }
@@ -21,7 +30,7 @@ interface PaymentModalProps {
   cartItems: TPaymentProductItem[]
 }
 
-export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModalProps) => {
+export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: TPaymentModalProps) => {
   const [paymentMethod, setPaymentMethod] = useState<TPaymentType>('bank-transfer')
   const [confirming, setConfirming] = useState<boolean>(false)
   const [confirmingMessage, setConfirmingMessage] = useState<string>('Đang xử lý...')
@@ -29,41 +38,46 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
   const formRef = useRef<HTMLFormElement>(null)
   const [errors, setErrors] = useState<TFormErrors>({})
 
-  const validateForm = (formEle: HTMLFormElement) => {
-    let isValid: boolean = true
-    setErrors({})
+  const validateForm = (formEle: HTMLFormElement): TShippingInfo | null => {
     const formData = new FormData(formEle)
-    const fullName = formData.get('fullName')?.toString().trim()
-    const phone = formData.get('phone')?.toString().trim()
-    const email = formData.get('email')?.toString().trim()
-    const province = formData.get('province')?.toString().trim()
-    const city = formData.get('city')?.toString().trim()
-    const address = formData.get('address')?.toString().trim()
-    if (!fullName || !phone || !province || !city || !address) {
+    const shippingInfo: TShippingInfo = {
+      name: formData.get('fullName')?.toString().trim() || '',
+      phone: formData.get('phone')?.toString().trim() || '',
+      email: formData.get('email')?.toString().trim() || '',
+      province: formData.get('province')?.toString().trim() || '',
+      city: formData.get('city')?.toString().trim() || '',
+      ward: formData.get('ward')?.toString().trim() || '',
+      address: formData.get('address')?.toString().trim() || '',
+      message: formData.get('message')?.toString().trim(),
+    }
+    const { name, phone, email, province, city, ward, address } = shippingInfo
+    setErrors({})
+    if (!name || !phone || !province || !city || !ward || !address) {
       setErrors({
-        fullName: fullName ? undefined : 'Họ và tên là bắt buộc',
+        fullName: name ? undefined : 'Họ và tên là bắt buộc',
         phone: phone ? undefined : 'Số điện thoại là bắt buộc',
-        province: province ? undefined : 'Tỉnh/Thành phố là bắt buộc',
-        city: city ? undefined : 'Quận/Huyện là bắt buộc',
-        address: address ? undefined : 'Địa chỉ là bắt buộc',
+        province: province ? undefined : 'Tỉnh/Thành phố không hợp lệ',
+        city: city ? undefined : 'Quận/Huyện không hợp lệ',
+        ward: ward ? undefined : 'Phường/Xã không hợp lệ',
+        address: address ? undefined : 'Địa chỉ không hợp lệ',
       })
-      isValid = false
+      return null
     }
     if (phone && !isValidPhoneNumber(phone)) {
       setErrors((pre) => ({
         ...pre,
         phone: 'Số điện thoại không hợp lệ',
       }))
-      isValid = false
+      return null
     }
     if (email && !isValidEmail(email)) {
       setErrors((pre) => ({
         ...pre,
         email: 'Email không hợp lệ',
       }))
-      isValid = false
+      return null
     }
-    return isValid
+    return shippingInfo
   }
 
   const resetEndOfPaymentData = () => {
@@ -74,20 +88,8 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: PaymentModa
     const form = formRef.current
     if (!form) return
 
-    const isValid = validateForm(form)
-    if (!isValid) return
-
-    // Get form data
-    const formData = new FormData(form)
-    const shippingInfo = {
-      name: formData.get('fullName')?.toString().trim() || '',
-      phone: formData.get('phone')?.toString().trim() || '',
-      email: formData.get('email')?.toString().trim() || '',
-      province: formData.get('province')?.toString().trim() || '',
-      city: formData.get('city')?.toString().trim() || '',
-      address: formData.get('address')?.toString().trim() || '',
-      message: formData.get('message')?.toString().trim(),
-    }
+    const shippingInfo = validateForm(form)
+    if (!shippingInfo) return
 
     setConfirming(true)
     // Step 1: Create order

@@ -100,7 +100,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   useEffect(() => {
     if (!isReady) return
     qrGetter.setDetectFromFileHandler(detectFromFile as any)
-    initializeScanner()
+    // initializeScanner()
     if (error) {
       stopCamera()
     }
