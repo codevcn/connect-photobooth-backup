@@ -21,8 +21,6 @@ export const EditedElementsArea = ({
   const printedImages = useEditedElementStore((s) => s.printedImages)
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const selectElement = useEditedElementStore((s) => s.selectElement)
-  const mockupId = useSearchParams()[0].get('mockupId')
-  console.log('>>> [reto] all eles:', { stickerElements, textElements, printedImages })
 
   return (
     <>

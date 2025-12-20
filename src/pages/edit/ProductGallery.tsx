@@ -258,6 +258,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   const [showExitModal, setShowExitModal] = useState(false)
   const galleryRef = useRef<HTMLDivElement | null>(null)
   const initialGalleryHeight = useRef<number>(0)
+  console.log('>>> [ini] all layouts:', allLayouts)
 
   const handleConfirmExit = () => {
     resetAllStores()
@@ -313,8 +314,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   const initFirstProduct = () => {
     if (!mockupId) {
-      console.log('>>> [ini] initFirstProduct:', pickedProduct)
-      if (!pickedProduct && allLayouts.length > 0) {
+      console.log('>>> [ini] initFirstProduct:', { pickedProduct, allLayouts, firstProduct })
+      if (!pickedProduct) {
         const product = products[0]
         const initialLayout = createInitialLayout()
         const firstPrintAreaInProduct = product.printAreaList[0]
@@ -403,9 +404,9 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     }
   }, [])
 
-  useEffect(() => {
-    initFirstProduct()
-  }, [products.map((p) => p.id).join(','), pickedProduct?.id])
+  // useEffect(() => {
+  //   initFirstProduct()
+  // }, [products.map((p) => p.id).join(','), pickedProduct?.id])
 
   useEffect(() => {
     update()
@@ -413,7 +414,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
 
   useEffect(() => {
     initFirstProduct()
-  }, [allLayouts.length, firstProduct?.length, firstProduct])
+  }, [pickedProduct?.id])
 
   useEffect(() => {
     scrollToPickedProduct()

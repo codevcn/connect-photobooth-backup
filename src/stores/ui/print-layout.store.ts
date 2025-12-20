@@ -31,11 +31,7 @@ type TLayoutStore = {
 
 export const useLayoutStore = create<TLayoutStore>((set, get) => ({
   pickedLayout: null,
-  allLayouts:
-    new URLSearchParams(window.location.search).get('funstudio') ||
-    new URLSearchParams(window.location.search).get('dev')
-      ? hardCodedLayoutData()
-      : [],
+  allLayouts: hardCodedLayoutData() || [],
   layoutMode: 'with-layout',
   layoutForDefault: null,
 
