@@ -6,6 +6,7 @@ import { TUserInputImage } from '@/utils/types/global'
 import { useFastBoxes } from '@/hooks/use-fast-boxes'
 import { useNavigate } from 'react-router-dom'
 import { AppNavigator } from '@/utils/navigator'
+import { SectionLoading } from '@/components/custom/Loading'
 
 type QRScannerProps = {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -19,6 +20,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const [error, setError] = useState<string>('')
   const { detectFromFile, isReady } = useFastBoxes()
   const navigate = useNavigate()
+  const [cameraIsActive, setCameraIsActive] = useState(false)
 
   const initializeScanner = useCallback(() => {
     if (!videoRef.current) return
@@ -81,11 +83,16 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
       }
     )
     scannerRef.current = qrScanner
-    qrScanner.start().catch((error) => {
-      console.log('>>> [qr] error:', error)
-      setError('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
-      toast.error('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
-    })
+    qrScanner
+      .start()
+      .then(() => {
+        setCameraIsActive(true)
+      })
+      .catch((error) => {
+        console.log('>>> [qr] error:', error)
+        setError('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
+        toast.error('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
+      })
     return () => {
       qrScanner.stop()
       qrScanner.destroy()
@@ -157,6 +164,14 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   return (
     <div className="h-[calc(100vh-250px)] w-fit">
       <div className="h-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
+        {!cameraIsActive && (
+          <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-white font-bold text-2xl">
+            <SectionLoading
+              message="Đang tải Camera..."
+              classNames={{ message: 'text-white text-xl', shapesContainer: 'text-white' }}
+            />
+          </div>
+        )}
         <video
           ref={videoRef}
           className="max-h-full max-w-full w-full h-full object-cover transition-transform duration-300"

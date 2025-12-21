@@ -61,20 +61,18 @@ const IntroPage = () => {
           <Star /> */}
           <button
             onClick={() => AppNavigator.navTo(navigate, '/qr')}
-            className="NAME-call-to-action-button animate-[call-to-action-button_1s_infinite] cursor-pointer relative flex items-center gap-3 bg-white text-main-cl font-bold px-12 py-5 rounded-full border-b-8 border-r-4 border-gray-200 hover:border-gray-300 active:border-b-0 active:border-r-0 active:translate-y-2 active:translate-x-1 shadow-2xl transition-all duration-150 text-2xl uppercase tracking-widest"
+            className="NAME-call-to-action-button animate-[call-to-action-button_1s_infinite] cursor-pointer relative flex items-center gap-3 bg-white text-main-cl font-bold px-12 py-5 rounded-full border-b-8 border-r-4 border-gray-200 shadow-2xl transition-all duration-150 text-[38px] uppercase tracking-widest"
           >
             <span>Thử ngay</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="transition-transform group-hover:translate-x-2"
+              className="transition-transform group-hover:translate-x-2 w-10 h-10"
             >
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
