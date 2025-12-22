@@ -7,6 +7,7 @@ import { useFastBoxes } from '@/hooks/use-fast-boxes'
 import { useNavigate } from 'react-router-dom'
 import { AppNavigator } from '@/utils/navigator'
 import { SectionLoading } from '@/components/custom/Loading'
+import { checkIfLargeScreen } from '@/utils/helpers'
 
 type QRScannerProps = {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -68,7 +69,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
         maxScansPerSecond: 15, // Tăng tần suất quét mã QR
         // Tăng vùng quét QR lên gần như toàn bộ camera (padding 16px)
         calculateScanRegion: (video) => {
-          const padding = 16 // Padding 16px từ mỗi cạnh
+          const padding = checkIfLargeScreen() ? 16 : 30 // Padding 16px từ mỗi cạnh
           const smallerDimension = Math.min(video.videoWidth, video.videoHeight)
           const scanRegionSize = smallerDimension - padding * 2
           return {
@@ -118,13 +119,35 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
     console.log('>>> Camera đã được tắt hoàn toàn.')
   }, [])
 
-  useEffect(() => {
-    if (!isReady) return
+  const startScanning = () => {
     qrGetter.setDetectFromFileHandler(detectFromFile as any)
-    initializeScanner()
+    const videoElement = videoRef.current
+    if (videoElement) {
+      const videoWrapper = videoElement.closest<HTMLElement>('.NAME-video-wrapper')
+      if (videoWrapper) {
+        // const { width, height } = videoElement.getBoundingClientRect()
+        // if (width > height) {
+        //   videoElement.style.width = `${height}px`
+        //   videoWrapper.style.width = `${height}px`
+        //   videoWrapper.style.height = `${height}px`
+        // } else {
+        //   videoElement.style.height = `${width}px`
+        //   videoWrapper.style.height = `${width}px`
+        //   videoWrapper.style.width = `${width}px`
+        // }
+        requestAnimationFrame(() => {
+          initializeScanner()
+        })
+      }
+    }
     if (error) {
       stopCamera()
     }
+  }
+
+  useEffect(() => {
+    if (!isReady) return
+    startScanning()
     return () => {
       stopCamera()
     }
@@ -162,8 +185,8 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   // }, [isReady])
 
   return (
-    <div className="h-[calc(100vh-250px)] w-fit">
-      <div className="h-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
+    <div className="smd:px-0 smd:w-fit h-[calc(100vh-250px)] px-4 w-full">
+      <div className="NAME-video-wrapper smd:w-fit h-full w-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
         {!cameraIsActive && (
           <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-white font-bold text-2xl">
             <SectionLoading
@@ -174,7 +197,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
         )}
         <video
           ref={videoRef}
-          className="max-h-full max-w-full w-full h-full object-cover transition-transform duration-300"
+          className="max-h-full max-w-full w-full h-full aspect-square object-cover transition-transform duration-300"
           playsInline
         />
         {error ? (

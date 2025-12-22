@@ -14,29 +14,7 @@ import { TOrderStatusRes } from '@/utils/types/api'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { AppNavigator } from '@/utils/navigator'
-
-type TQRCanvasProps = {
-  value: string
-  size?: number
-  onCanvasReady?: (canvas: HTMLCanvasElement) => void
-}
-
-const QRCanvas = ({ value, size = 200, onCanvasReady }: TQRCanvasProps) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-
-  useEffect(() => {
-    if (!canvasRef.current) return
-
-    QRCode.toCanvas(canvasRef.current, value, { width: size }, (error) => {
-      if (error) console.error(error)
-      else if (canvasRef.current && onCanvasReady) {
-        onCanvasReady(canvasRef.current)
-      }
-    })
-  }, [value, size, onCanvasReady])
-
-  return <canvas ref={canvasRef} width={size} height={size} />
-}
+import { QRCanvas } from '@/components/custom/QRCanvas'
 
 const getColorByPaymentMethod = (method: TPaymentType): string => {
   switch (method) {
@@ -186,7 +164,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
   return (
     <div
       ref={containerRef}
-      className="5xl:text-xxl text-[16px] flex flex-col items-center px-2 py-2 overflow-y-auto gallery-scroll max-h-[calc(95vh-80px)]"
+      className="5xl:text-xxl max-h-[calc(95vh-80px)] text-[16px] flex flex-col items-center px-2 py-2 overflow-y-auto gallery-scroll"
     >
       <div className="relative bg-white rounded-xl shadow flex flex-col items-center w-full p-3 border border-gray-200 max-w-5xl">
         {method === 'momo' || method === 'zalopay' || method === 'bank-transfer' ? (

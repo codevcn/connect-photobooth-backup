@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { voucherService } from '@/services/voucher.service'
 import { TVoucher, TPaymentProductItem } from '@/utils/types/global'
 import { TCheckVoucherReq } from '@/utils/types/api'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
+import { useVoucherStore } from '@/stores/voucher/product.store'
 
 interface VoucherSectionProps {
   cartItems: TPaymentProductItem[]
@@ -16,9 +17,11 @@ type TDiscountMessage = {
 
 export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionProps) => {
   const [discountCode, setDiscountCode] = useState('')
-  const [appliedVoucher, setAppliedVoucher] = useState<TVoucher | null>(null)
+  const appliedVoucher = useVoucherStore((state) => state.appliedVoucher)
+  const setAppliedVoucher = useVoucherStore((state) => state.setAppliedVoucher)
   const [discountMessage, setDiscountMessage] = useState<TDiscountMessage>()
   const [isApplyingVoucher, setIsApplyingVoucher] = useState(false)
+  const reapplyVoucherID = useVoucherStore((state) => state.reapplyVoucherID)
 
   // Convert cart items to API format
   const buildVoucherCheckItems = (): TCheckVoucherReq['items'] => {
@@ -84,6 +87,10 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
     setDiscountMessage(undefined)
     onVoucherApplied(null, 0)
   }
+
+  useEffect(() => {
+    applyVoucher()
+  }, [reapplyVoucherID, discountCode])
 
   return (
     <section className="bg-white rounded-2xl shadow-sm p-4">
@@ -184,22 +191,20 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
       </div>
       {discountMessage && !appliedVoucher && (
         <p
-          className={`mt-2 text-sm flex items-center gap-1 ${
+          className={`mt-2 text-[0.8em] flex items-center gap-1 ${
             discountMessage.status === 'success' ? 'text-green-600' : 'text-red-500'
           }`}
         >
           {discountMessage.status === 'success' ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-check-circle-icon lucide-check-circle"
+              className="lucide lucide-check-circle-icon lucide-check-circle 5xl:w-6 5xl:h-6 w-4 h-4"
             >
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <path d="m9 11 3 3L22 4" />
@@ -207,15 +212,13 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-triangle-alert-icon lucide-triangle-alert"
+              className="lucide lucide-triangle-alert-icon lucide-triangle-alert 5xl:w-6 5xl:h-6 w-4 h-4"
             >
               <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
               <path d="M12 9v4" />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { fillQueryStringToURL, formatNumberWithCommas } from '@/utils/helpers'
+import { formatNumberWithCommas } from '@/utils/helpers'
 import {
   TPaymentProductItem,
   TClientProductVariant,
@@ -19,11 +19,11 @@ import { toast } from 'react-toastify'
 import { createInitialConstants } from '@/utils/contants'
 import { useQueryFilter } from '@/hooks/extensions'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
-import { useUserDataStore } from '@/stores/ui/user-data.store'
 import { AppNavigator } from '@/utils/navigator'
 import { TermConditions } from './TermConditions'
+import { useVoucherStore } from '@/stores/voucher/product.store'
 
-interface IPaymentModalProps {
+type IPaymentModalProps = {
   imgSrc?: string
   onClose: () => void
 }
@@ -124,6 +124,7 @@ const PaymentPage = () => {
           : item
       })
     )
+    useVoucherStore.getState().resetReapplyVoucherID()
   }
 
   const findProductVariantInProducts = (productVariantId: number): TClientProductVariant | null => {
@@ -288,7 +289,7 @@ const PaymentPage = () => {
   }
 
   return (
-    <div className="5xl:text-3xl h-screen bg-gray-100">
+    <div className="STYLE-height-full-dynamic relative 5xl:text-3xl bg-gray-100">
       {/* Header */}
       <header className="2xl:px-24 xl:px-20 lg:px-14 spmd:px-10 sms:px-4 px-2 flex items-center bg-white w-full top-0 z-10">
         <div>
@@ -356,7 +357,7 @@ const PaymentPage = () => {
                 </div>
 
                 {/* Order Summary */}
-                <section className="bg-white rounded-2xl shadow-sm p-4 md:p-5 space-y-2 md:sticky md:top-4 mb-18">
+                <section className="bg-white rounded-2xl shadow-sm p-4 md:p-5 space-y-2 md:sticky md:top-4 mb-30">
                   <h3 className="5xl:text-[0.9em] text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">
                     Tổng đơn hàng
                   </h3>
@@ -420,31 +421,30 @@ const PaymentPage = () => {
           </div>
 
           {/* Fixed Checkout Button - Mobile only */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg px-2">
-            {queryFilter.funId ||
-              (queryFilter.dev && (
-                <div className="flex gap-2 w-full text-sm text-gray-600 mt-4 px-2">
-                  <input
-                    type="checkbox"
-                    id="terms-and-conditions"
-                    checked={acceptedTerms}
-                    onChange={handleTickTerms}
-                    className="text-main-cl border border-main-cl h-5 w-5 rounded"
-                  />
-                  <div>
-                    <span>Tôi đã đọc và đồng ý với </span>
-                    <span
-                      onClick={(e) => {
-                        setShowTermsModal(true)
-                      }}
-                      className="text-blue-600 underline cursor-pointer"
-                    >
-                      Chính sách & Điều khoản dịch vụ
-                    </span>
-                    <span> của công ty.</span>
-                  </div>
+          <div className="md:hidden absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-lg px-2">
+            {(queryFilter.funId || queryFilter.dev) && (
+              <div className="flex gap-2 w-full text-sm text-gray-600 mt-4 px-2">
+                <input
+                  type="checkbox"
+                  id="terms-and-conditions"
+                  checked={acceptedTerms}
+                  onChange={handleTickTerms}
+                  className="text-main-cl border border-main-cl h-5 w-5 rounded"
+                />
+                <div>
+                  <span>Tôi đã đọc và đồng ý với </span>
+                  <span
+                    onClick={(e) => {
+                      setShowTermsModal(true)
+                    }}
+                    className="text-blue-600 underline cursor-pointer"
+                  >
+                    Chính sách & Điều khoản dịch vụ
+                  </span>
+                  <span> của công ty.</span>
                 </div>
-              ))}
+              </div>
+            )}
             <div
               style={{
                 opacity: acceptedTerms ? 1 : 0.8,
@@ -460,7 +460,7 @@ const PaymentPage = () => {
                 style={{
                   backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
                 }}
-                className="sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
+                className="NAME-proceed-to-payment-btn sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

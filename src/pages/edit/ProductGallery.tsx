@@ -145,7 +145,7 @@ const Product = ({
       <div
         className={`${
           isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
-        } NAME-gallery-child-to-render 5xl:text-[20px] smd:text-[14px] smd:font-bold smd:pt-1.5 5xl:pt-2.5 w-full text-center z-10 h-fit px-2 pt-2.5 rounded-b-lg whitespace-nowrap group-hover:outline-2 group-hover:outline-main-cl truncate absolute top-[98%] left-0 text-[12px] text-black`}
+        } NAME-gallery-child-to-render 5xl:text-[20px] smd:text-[14px] smd:font-bold smd:pt-1.5 5xl:pt-2.5 font-[Roboto] font-bold w-full text-center z-10 h-fit px-2 pt-2.5 rounded-b-lg whitespace-nowrap group-hover:outline-2 group-hover:outline-main-cl truncate absolute top-[98%] left-0 text-[14px] text-black`}
         style={{
           backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 100%)`,
         }}

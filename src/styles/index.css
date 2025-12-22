@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
 :root {
+  --vcn-submain-cl: #e60076;
   --vcn-superlight-main-cl: #fff6f4;
   --vcn-light-main-cl: #ffece4;
   --vcn-main-cl: #f54900;

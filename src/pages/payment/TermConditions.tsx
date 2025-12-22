@@ -19,7 +19,7 @@ export const TermConditions = ({ closeModal }: TTermConditionsProps) => {
 
       {/* <!-- Nội dung Popup (Căn giữa) --> */}
       <div className="flex min-h-screen p-4 text-center sm:p-0 pointer-events-none">
-        <div className="relative bg-white rounded-xl shadow-2xl text-left overflow-hidden transform transition-all w-full max-w-4xl flex flex-col max-h-[85vh] pointer-events-auto">
+        <div className="relative bg-white rounded-xl shadow-2xl text-left overflow-hidden transform transition-all w-full max-w-4xl flex flex-col max-h-[95dvh] pointer-events-auto">
           {/* <!-- HEADER: Tiêu đề và nút đóng --> */}
           <div className="bg-white px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 z-10 shadow-sm">
             <div>

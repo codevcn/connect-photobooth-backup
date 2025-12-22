@@ -341,7 +341,7 @@ export const CropImageElementModal = ({
                       onClick={handleNoCrop}
                       className="5xl:h-12 flex items-center justify-center gap-2 w-full h-8 rounded cursor-pointer bg-main-cl text-white font-bold active:scale-90 transition disabled:opacity-50"
                     >
-                      Giữ nguyên (Không Cắt)
+                      Không Cắt Ảnh
                     </button>
                   )}
                 </div>

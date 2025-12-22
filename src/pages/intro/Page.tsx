@@ -1,39 +1,79 @@
-import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { fillQueryStringToURL } from '@/utils/helpers'
+import { QRFrame } from '@/components/custom/QRFrame'
 import { AppNavigator } from '@/utils/navigator'
-import { useUserDataStore } from '@/stores/ui/user-data.store'
+import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import QRCode from 'qrcode'
 
-const Star = () => {
+type TStarProps = {
+  top?: string
+  left?: string
+  right?: string
+  bottom?: string
+  index: number
+}
+
+const Star = ({ top, left, right, bottom, index }: TStarProps) => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="lucide lucide-sparkle-icon lucide-sparkle w-6 h-6 text-main-cl fill-main-cl"
+    <div
+      style={{
+        top: top,
+        left: left,
+        right: right,
+        bottom: bottom,
+      }}
+      className={`NAME-intro-star NAME-intro-star-${index} absolute w-14 h-14`}
     >
-      <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
-    </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <path
+          stroke="#fff"
+          fill="#e60076"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1"
+          d="m12 3 2.036 5.162c.188.476.282.714.425.915.128.178.284.334.462.462.2.143.439.237.915.425L21 12l-5.162 2.036c-.476.188-.714.282-.915.425a1.998 1.998 0 0 0-.462.462c-.143.2-.237.439-.425.915L12 21l-2.036-5.162c-.188-.476-.282-.714-.425-.915a1.999 1.999 0 0 0-.462-.462c-.2-.143-.439-.237-.915-.425L3 12l5.162-2.036c.476-.188.714-.282.915-.425a2 2 0 0 0 .462-.462c.143-.2.237-.439.425-.915L12 3Z"
+        />
+      </svg>
+    </div>
   )
 }
 
 const IntroPage = () => {
   const navigate = useNavigate()
-  const [showFullscreenModal, setShowFullscreenModal] = useState(true)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const firstRenderRef = useRef(true)
+
+  useEffect(() => {
+    if (!firstRenderRef.current) return
+    firstRenderRef.current = false
+
+    const textInput = 'https://api.encycom.com/' + window.location.search + '&device=mobile'
+
+    QRCode.toString(textInput, {
+      type: 'svg',
+      color: {
+        dark: '#e60076',
+        light: '#fff',
+      },
+    })
+      .then((svgString) => {
+        const parser = new DOMParser()
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml')
+        const svgElement = svgDoc.documentElement
+        containerRef.current!.querySelector('.NAME-qr-svg-placeholder')!.replaceWith(svgElement)
+      })
+      .catch(console.error)
+  }, [])
 
   return (
     <div className="h-screen w-screen bg-black">
-      {/* Fullscreen Modal */}
-      {/* <FullscreenModal
-        show={showFullscreenModal}
-        onConfirm={() => setShowFullscreenModal(false)}
-      /> */}
-
       <div className="relative h-full w-full">
+        <div
+          ref={containerRef}
+          className="absolute top-1/2 -translate-y-1/2 left-20 w-[460px] h-[460px] z-20"
+        >
+          <QRFrame />
+        </div>
+
         <div className="relative h-full w-full z-10">
           <video
             className="NAME-intro-video w-full h-full object-cover"
@@ -53,29 +93,36 @@ const IntroPage = () => {
         </div>
       </div>
 
-      <div className="fixed top-1/2 -translate-y-1/2 md:bottom-8 md:top-auto md:translate-y-0 left-1/2 -translate-x-1/2 z-20">
+      <div className="fixed top-1/2 -translate-y-1/2 right-16 z-20">
         <div className="relative inline-block group">
-          {/* <Star />
-          <Star />
-          <Star />
-          <Star /> */}
           <button
             onClick={() => AppNavigator.navTo(navigate, '/qr')}
-            className="NAME-call-to-action-button animate-[call-to-action-button_1s_infinite] cursor-pointer relative flex items-center gap-3 bg-white text-main-cl font-bold px-12 py-5 rounded-full border-b-8 border-r-4 border-gray-200 shadow-2xl transition-all duration-150 text-[38px] uppercase tracking-widest"
+            className="NAME-intro-CTA-button relative bg-white border-main-cl border-b-6 px-14 py-6 text-main-cl font-black text-5xl rounded-full cursor-pointer tracking-wider flex items-center gap-3"
           >
-            <span>Thử ngay</span>
+            <Star index={1} top="-12px" left="-12px" />
+            <Star index={2} top="-12px" right="-12px" />
+            <Star index={3} bottom="-26px" left="30px" />
+            <Star index={4} bottom="-26px" right="12px" />
+            <Star index={5} top="-26px" right="32px" />
+
+            {/* <!-- Vùng chứa text sẽ được xử lý JS --> */}
+            <span className="relative z-10 flex">
+              <span className="text-[1em]">M</span>
+              <span className="text-[1em]">U</span>
+              <span className="text-[1em] inline-block mr-3">A</span>
+              <span className="text-[1em]">N</span>
+              <span className="text-[1em]">G</span>
+              <span className="text-[1em]">A</span>
+              <span className="text-[1em]">Y</span>
+            </span>
+
+            {/* Icon mũi tên */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="transition-transform group-hover:translate-x-2 w-10 h-10"
+              className="w-16 h-16 relative z-10 text-main-cl fill-main-cl rotate-12"
+              viewBox="-1 0 19 19"
             >
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
+              <path d="m15.867 7.593-1.534.967a.544.544 0 0 1-.698-.118l-.762-.957v7.256a.476.476 0 0 1-.475.475h-7.79a.476.476 0 0 1-.475-.475V7.477l-.769.965a.544.544 0 0 1-.697.118l-1.535-.967a.387.387 0 0 1-.083-.607l2.245-2.492a2.814 2.814 0 0 1 2.092-.932h.935a2.374 2.374 0 0 0 4.364 0h.934a2.816 2.816 0 0 1 2.093.933l2.24 2.49a.388.388 0 0 1-.085.608z" />
             </svg>
           </button>
         </div>

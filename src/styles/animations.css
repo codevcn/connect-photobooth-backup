@@ -247,3 +247,25 @@
     transform: scale(1.05);
   }
 }
+
+/* Định nghĩa chuyển động sóng biển cho chữ */
+@keyframes flexible-wave {
+  0% {
+    transform: translateY(0);
+  }
+  5% {
+    transform: translateY(-6px);
+  }
+  10% {
+    transform: translateY(-12px);
+  }
+  15% {
+    transform: translateY(-6px);
+  }
+  20% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

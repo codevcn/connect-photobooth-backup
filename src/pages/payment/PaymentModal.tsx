@@ -189,7 +189,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: TPaymentMod
         onClick={() => handleHideShowModal(false)}
         className="bg-black/50 absolute inset-0 z-10"
       ></div>
-      <div className="flex flex-col pt-8 bg-white rounded-2xl z-20 overflow-hidden relative shadow-2xl w-fit max-w-[98vw] max-h-[90vh] animate-in slide-in-from-bottom duration-200">
+      <div className="5xl:max-h-[90vh] max-h-[90dvh] flex flex-col pt-8 bg-white rounded-2xl z-20 overflow-hidden relative shadow-2xl w-fit max-w-[98vw] animate-in slide-in-from-bottom duration-200">
         {confirming && (
           <div className="absolute flex justify-center items-center w-full h-full top-0 text-white left-0 bg-black/50 z-30">
             <SectionLoading

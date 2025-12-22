@@ -265,18 +265,18 @@ const ScanQRPage = () => {
       </div>
 
       {/* 1. HEADER (TOP CENTER) */}
-      <section className="flex flex-col h-full justify-center items-center gap-4 relative w-full text-center z-20 p-8 pointer-events-none">
-        <h1 className="h-12 block text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg uppercase tracking-wide">
-          QUÉT MÃ QR
+      <section className="pt-6 flex flex-col h-full items-center gap-4 relative w-full text-center z-20 pointer-events-none">
+        <h1 className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-white drop-shadow-lg uppercase tracking-wide">
+          QUÉT MÃ QR PHOTBOOTH
         </h1>
-        <p className="h-[42px] text-white/95 text-base md:text-xl font-bold bg-white/10 backdrop-blur-md px-6 py-1.5 rounded-full inline-block shadow-sm border border-white/20">
-          Biến ảnh photobooth thành sự độc đáo của riêng bạn
+        <p className="smd:px-6 text-white/95 text-base md:text-xl font-bold bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-full inline-block shadow-sm border border-white/20">
+          Đưa mã QR photobooth của bạn vào camera, căn chỉnh để quét QR cho rõ nét!
         </p>
         <QRScanner onScanSuccess={handleData} />
       </section>
 
       {/* 3. INSTRUCTIONS (RIGHT SIDE - TOP 58%) */}
-      <div className="absolute right-12 text-xl top-[58%] transform -translate-y-1/2 z-40 flex flex-col gap-4">
+      <div className="smd:flex hidden absolute right-12 text-xl top-[58%] transform -translate-y-1/2 z-40 flex-col gap-4">
         {/* STEP 1 */}
         <div className="w-[320px] flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl transform transition-all hover:scale-105 hover:bg-black/60 group cursor-default">
           <div className="px-4 w-max h-12 rounded-full bg-white text-[#e11d48] flex items-center justify-center font-bold shadow-inner mb-1.5 group-hover:bg-[#e11d48] group-hover:text-white transition-colors duration-300">

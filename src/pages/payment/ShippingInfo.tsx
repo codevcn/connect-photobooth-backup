@@ -355,16 +355,14 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
         </h3>
         <div className="space-y-3">
           <div>
-            <label
-              htmlFor="fullName-input"
-              className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
               Họ và tên
             </label>
             <input
               id="fullName-input"
               name="fullName"
               type="text"
+              defaultValue="Nguyễn Văn A"
               placeholder="Nguyễn Văn A"
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
             />
@@ -378,10 +376,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
 
           <div className="md:gap-3 gap-2 grid grid-cols-2">
             <div>
-              <label
-                htmlFor="phone-input"
-                className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
                 Số điện thoại
               </label>
               <input
@@ -389,6 +384,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 name="phone"
                 type="tel"
                 placeholder="09xx xxx xxx"
+                defaultValue="0901234567"
                 className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
               />
               {errors.phone && (
@@ -400,10 +396,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
             </div>
 
             <div>
-              <label
-                htmlFor="email-input"
-                className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
                 Email
               </label>
               <input
@@ -411,6 +404,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 name="email"
                 type="email"
                 placeholder="email@domain.com"
+                defaultValue="email@domain.com"
                 className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
               />
               {errors.email && (
@@ -424,10 +418,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
 
           <div className="md:gap-3 gap-2 grid grid-cols-2">
             <div className="relative">
-              <label
-                htmlFor="province-input"
-                className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
                 Tỉnh/Thành phố
               </label>
               <input
@@ -467,10 +458,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
             <div
               className={`relative ${selectedProvinceId ? '' : 'pointer-events-none opacity-60'}`}
             >
-              <label
-                htmlFor="city-input"
-                className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
                 Quận/Huyện
               </label>
               <input
@@ -515,10 +503,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
           </div>
 
           <div className={`relative ${selectedDistrictId ? '' : 'pointer-events-none opacity-60'}`}>
-            <label
-              htmlFor="ward-input"
-              className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
               Phường/Xã
             </label>
             <input
@@ -560,16 +545,14 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
           </div>
 
           <div>
-            <label
-              htmlFor="address-input"
-              className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
               Địa chỉ chi tiết
             </label>
             <input
               id="address-input"
               name="address"
               type="text"
+              defaultValue="123 Đường ABC, Phường XYZ"
               placeholder="Số nhà, tên đường, phường/xã..."
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
             />
@@ -582,16 +565,14 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
           </div>
 
           <div>
-            <label
-              htmlFor="message-input"
-              className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
               Lời nhắn (tùy chọn)
             </label>
             <textarea
               id="message-input"
               name="message"
               placeholder="Nhập lời nhắn của bạn..."
+              defaultValue="Giao hàng trong giờ hành chính."
               rows={2}
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] py-2 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
             ></textarea>

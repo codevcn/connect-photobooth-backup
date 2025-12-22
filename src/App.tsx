@@ -19,7 +19,7 @@ window.cancelIdleCallback =
   }
 
 if (new URLSearchParams(window.location.search).get('q') === 'ptm') {
-  document.documentElement.style.setProperty('--vcn-main-cl', '#e60076')
+  document.documentElement.style.setProperty('--vcn-main-cl', 'var(--vcn-submain-cl)')
 }
 
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
@@ -38,7 +38,6 @@ import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
 import MaintainPage from './pages/maintain/Page'
 import { AppTempContainer } from './components/custom/TempContainer'
-import SwipeKeyboard from './dev/pages/Dev'
 import { GlobalKeyboardProvider } from './providers/GlobalKeyboardProvider'
 import { useQueryFilter } from './hooks/extensions'
 import { UserIdleTracker } from './components/custom/IdleWarningModal'
@@ -73,6 +72,21 @@ function AppRoutes() {
 
   // Routes cho Photoism
   if (queryFilter.isPhotoism) {
+    if (queryFilter.isMobileDevice) {
+      return (
+        <>
+          {/* <IdleCountdown /> */}
+          <IdleCountdown />
+          <Routes>
+            <Route path="/" element={<ScanQRPage />} />
+            <Route path="/edit" element={<EditPagePTM />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <GlobalKeyboardProvider />
+        </>
+      )
+    }
     return (
       <>
         {/* <IdleCountdown /> */}

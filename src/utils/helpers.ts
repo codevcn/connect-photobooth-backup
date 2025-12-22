@@ -17,6 +17,7 @@ import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditModeStore } from '@/stores/ui/edit-mode.store'
 import { useElementStylingStore } from '@/stores/element/element-styling.store'
 import { LocalStorageHelper } from './localstorage'
+import { toast } from 'react-toastify'
 
 export const getNaturalSizeOfImage = (
   imgURL: string,
