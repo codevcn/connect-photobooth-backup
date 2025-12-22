@@ -52,6 +52,7 @@ const IntroPage = () => {
 
     QRCode.toString(textInput, {
       type: 'svg',
+      margin: 1,
       color: {
         dark: '#e60076',
         light: '#fff',

@@ -11,6 +11,7 @@ type TFilterLogReturn<L extends TFunctionWithParams> = (
 
 class AppLogger {
   worker: Worker
+  version = '1.0.0'
 
   constructor() {
     this.worker = new LoggingWorker()
@@ -106,6 +107,7 @@ class AppLogger {
           }
         : undefined,
       userAgent: navigator.userAgent,
+      loggerVersion: this.version,
     }
     return entry
   }

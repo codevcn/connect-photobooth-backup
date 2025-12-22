@@ -548,4 +548,5 @@ export type TLogEntry = {
     stack?: string
   }
   userAgent: string
+  loggerVersion: string
 }
