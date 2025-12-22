@@ -237,7 +237,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                 <div className="sm:gap-2 gap-1 flex flex-col">
                   {discountedPrice ? (
                     <div className="flex flex-col">
-                      <span className="text-xs text-gray-400 line-through font-medium">
+                      <span className="text-[0.7em] text-gray-400 line-through font-medium">
                         <span>{formatNumberWithCommas(originalPrice)}</span>
                         <span> VND</span>
                       </span>
@@ -248,7 +248,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                     </div>
                   ) : (
                     <div>
-                      <span className="text-[1.2em] font-bold text-primary">
+                      <span className="text-[1.5em] font-bold text-primary">
                         <span>{formatNumberWithCommas(originalPrice)}</span>
                         <span> VND</span>
                       </span>
@@ -277,12 +277,12 @@ export const ProductList: React.FC<ProductListProps> = ({
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-minus-icon lucide-minus text-gray-600 w-4.5 h-4.5 p-0.5 sm:w-7 sm:h-7 sm:p-1.5 5xl:w-9 5xl:h-9"
+                          className="lucide lucide-minus-icon lucide-minus text-gray-600 w-6 h-6 p-0.5 sm:w-7 sm:h-7 sm:p-1.5 5xl:w-9 5xl:h-9"
                         >
                           <path d="M5 12h14" />
                         </svg>
                       </button>
-                      <span className="5xl:text-xl w-8 text-center font-semibold text-sm">
+                      <span className="5xl:text-xl w-8 text-center font-semibold text-base">
                         {quantity}
                       </span>
                       <button
@@ -301,14 +301,14 @@ export const ProductList: React.FC<ProductListProps> = ({
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-plus-icon lucide-plus text-gray-600 w-4.5 h-4.5 p-0.5 sm:w-7 sm:h-7 sm:p-1.5 5xl:w-9 5xl:h-9"
+                          className="lucide lucide-plus-icon lucide-plus text-gray-600 w-6 h-6 p-0.5 sm:w-7 sm:h-7 sm:p-1.5 5xl:w-9 5xl:h-9"
                         >
                           <path d="M5 12h14" />
                           <path d="M12 5v14" />
                         </svg>
                       </button>
                     </div>
-                    <div className="flex h-fit ml-2">
+                    <div className="flex h-fit ml-1">
                       <button
                         onClick={() =>
                           handleDeleteClick(productId, productVariantId, mockupData.id)
@@ -323,7 +323,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                           strokeWidth="3"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-x-icon lucide-x text-white w-3 h-3 sm:w-5 sm:h-5"
+                          className="lucide lucide-x-icon lucide-x text-white w-3.5 h-3.5 sm:w-5 sm:h-5"
                         >
                           <path d="M18 6 6 18" />
                           <path d="m6 6 12 12" />

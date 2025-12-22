@@ -4,6 +4,7 @@ import { TVoucher, TPaymentProductItem } from '@/utils/types/global'
 import { TCheckVoucherReq } from '@/utils/types/api'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
 import { useVoucherStore } from '@/stores/voucher/product.store'
+import { toast } from 'react-toastify'
 
 interface VoucherSectionProps {
   cartItems: TPaymentProductItem[]
@@ -89,7 +90,9 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
   }
 
   useEffect(() => {
-    applyVoucher()
+    if (discountCode) {
+      applyVoucher()
+    }
   }, [reapplyVoucherID, discountCode])
 
   return (

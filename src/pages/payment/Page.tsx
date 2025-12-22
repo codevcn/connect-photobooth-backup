@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { formatNumberWithCommas } from '@/utils/helpers'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { checkIfMobileScreen, formatNumberWithCommas } from '@/utils/helpers'
 import {
   TPaymentProductItem,
   TClientProductVariant,
@@ -76,6 +76,8 @@ const PaymentPage = () => {
   const queryFilter = useQueryFilter()
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [showTermsModal, setShowTermsModal] = useState<boolean>(false)
+  const proceedToPaymentRef = useRef<HTMLDivElement>(null)
+  const voucherContainerRef = useRef<HTMLDivElement>(null)
 
   // Hàm tính subtotal (tổng tiền trước giảm giá voucher)
   const calculateSubtotal = (): number => {
@@ -288,6 +290,39 @@ const PaymentPage = () => {
     setAcceptedTerms((pre) => !pre)
   }
 
+  // useEffect(() => {
+  //   const adjustUIOnScroll = (e: Event) => {
+  //     if (!checkIfMobileScreen()) return
+  //     const proceedToPayment = proceedToPaymentRef.current
+  //     const voucherContainer = voucherContainerRef.current
+  //     if (proceedToPayment && voucherContainer) {
+  //       const proceedToPaymentRect = proceedToPayment.getBoundingClientRect()
+  //       if (proceedToPaymentRect.bottom > window.innerHeight) {
+  //         voucherContainer.style.paddingBottom = `${60}px`
+  //         proceedToPayment.style.cssText = `
+  //           position: absolute;
+  //           bottom: 0px;
+  //           left: 0px;
+  //           padding: 0px;
+  //           width: 100%;
+  //         `
+  //       } else {
+  //         voucherContainer.style.paddingBottom = `0px`
+  //         proceedToPayment.style.cssText = `
+  //           position: static;
+  //           padding: 0px 8px 80px 8px;
+  //           width: auto;
+  //         `
+  //       }
+  //     }
+  //   }
+
+  //   window.addEventListener('scroll', adjustUIOnScroll)
+  //   return () => {
+  //     window.removeEventListener('scroll', adjustUIOnScroll)
+  //   }
+  // }, [])
+
   return (
     <div className="STYLE-height-full-dynamic relative 5xl:text-3xl bg-gray-100">
       {/* Header */}
@@ -350,14 +385,14 @@ const PaymentPage = () => {
               </div>
 
               {/* Right Column: Summary & Voucher (Sticky on large screens) */}
-              <div className="mb-16 md:mb-0 flex flex-col gap-2 h-full overflow-y-auto gallery-scroll">
+              <div className="mb-3 md:mb-0 flex flex-col gap-2 h-full overflow-y-auto gallery-scroll">
                 {/* Discount Code Section - Desktop */}
                 <div className="hidden md:block">
                   <VoucherSection cartItems={cartItems} onVoucherApplied={handleVoucherApplied} />
                 </div>
 
                 {/* Order Summary */}
-                <section className="bg-white rounded-2xl shadow-sm p-4 md:p-5 space-y-2 md:sticky md:top-4 mb-30">
+                <section className="bg-white rounded-2xl shadow-sm p-4 md:p-5 space-y-2 md:sticky md:top-4">
                   <h3 className="5xl:text-[0.9em] text-base md:text-lg font-bold text-gray-900 mb-2 md:mb-3">
                     Tổng đơn hàng
                   </h3>
@@ -421,65 +456,67 @@ const PaymentPage = () => {
           </div>
 
           {/* Fixed Checkout Button - Mobile only */}
-          <div className="md:hidden absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-lg px-2">
-            {(queryFilter.funId || queryFilter.dev) && (
-              <div className="flex gap-2 w-full text-sm text-gray-600 mt-4 px-2">
-                <input
-                  type="checkbox"
-                  id="terms-and-conditions"
-                  checked={acceptedTerms}
-                  onChange={handleTickTerms}
-                  className="text-main-cl border border-main-cl h-5 w-5 rounded"
-                />
-                <div>
-                  <span>Tôi đã đọc và đồng ý với </span>
-                  <span
-                    onClick={(e) => {
-                      setShowTermsModal(true)
-                    }}
-                    className="text-blue-600 underline cursor-pointer"
-                  >
-                    Chính sách & Điều khoản dịch vụ
-                  </span>
-                  <span> của công ty.</span>
+          <div className="md:hidden px-2 w-full pb-32">
+            <div className="w-full rounded-2xl p-3 py-4 bg-white shadow-md">
+              {(queryFilter.funId || queryFilter.dev) && (
+                <div className="flex gap-2 w-full text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    id="terms-and-conditions"
+                    checked={acceptedTerms}
+                    onChange={handleTickTerms}
+                    className="text-main-cl border border-main-cl h-5 w-5 rounded"
+                  />
+                  <div>
+                    <span>Tôi đã đọc và đồng ý với </span>
+                    <span
+                      onClick={(e) => {
+                        setShowTermsModal(true)
+                      }}
+                      className="text-blue-600 underline cursor-pointer"
+                    >
+                      Chính sách & Điều khoản dịch vụ
+                    </span>
+                    <span> của công ty.</span>
+                  </div>
                 </div>
-              </div>
-            )}
-            <div
-              style={{
-                opacity: acceptedTerms ? 1 : 0.8,
-                pointerEvents: acceptedTerms ? 'auto' : 'none',
-                cursor: acceptedTerms ? 'pointer' : 'not-allowed',
-              }}
-              className="w-full mx-auto px-2 py-2"
-            >
-              <button
-                onClick={() => {
-                  setShowModal(true)
-                }}
+              )}
+              <div
                 style={{
-                  backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
+                  opacity: acceptedTerms ? 1 : 0.8,
+                  pointerEvents: acceptedTerms ? 'auto' : 'none',
+                  cursor: acceptedTerms ? 'pointer' : 'not-allowed',
                 }}
-                className="NAME-proceed-to-payment-btn sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
+                className="w-full mt-3"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-banknote-icon lucide-banknote"
+                <button
+                  onClick={() => {
+                    setShowModal(true)
+                  }}
+                  style={{
+                    backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
+                  }}
+                  className="sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
                 >
-                  <rect width="20" height="12" x="2" y="6" rx="2" />
-                  <circle cx="12" cy="12" r="2" />
-                  <path d="M6 12h.01M18 12h.01" />
-                </svg>
-                <span>Tiến hành thanh toán</span>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="lucide lucide-banknote-icon lucide-banknote"
+                  >
+                    <rect width="20" height="12" x="2" y="6" rx="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <path d="M6 12h.01M18 12h.01" />
+                  </svg>
+                  <span>Tiến hành thanh toán</span>
+                </button>
+              </div>
             </div>
           </div>
         </>
