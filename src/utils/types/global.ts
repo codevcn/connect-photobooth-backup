@@ -1,3 +1,4 @@
+import { EAppPage, ELogLevel } from '../enums'
 import { TLayoutMode, TLayoutType, TPrintLayout } from './print-layout'
 
 export type TIntersectSameFields<A, B> = {
@@ -528,4 +529,21 @@ export type TSelectedElement = {
 export type TKeyboardSuggestion = {
   id: string
   text: string
+}
+
+export type TLogEntry = {
+  timestamp: string
+  level: ELogLevel
+  message: string
+  appPage: EAppPage
+  causedElement?: {
+    className?: string
+    id?: string
+  }
+  error?: {
+    name: string
+    message: string
+    stack?: string
+  }
+  userAgent: string
 }

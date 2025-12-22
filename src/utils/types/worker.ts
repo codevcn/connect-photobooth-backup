@@ -1,3 +1,5 @@
+import { TLogEntry } from './global'
+
 export type TBase64WorkerInput = Partial<{
   blob: Blob
   url: string
@@ -8,3 +10,5 @@ export type TBase64WorkerOutput = Partial<{
   base64FromURL: string
   originalURL: string
 }>
+
+export type TLoggingWorkerInput = TLogEntry

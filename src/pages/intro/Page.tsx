@@ -3,6 +3,8 @@ import { AppNavigator } from '@/utils/navigator'
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QRCode from 'qrcode'
+import { appLogger } from '@/logging/Logger'
+import { EAppPage, ELogLevel } from '@/utils/enums'
 
 type TStarProps = {
   top?: string
@@ -64,6 +66,11 @@ const IntroPage = () => {
       .catch(console.error)
   }, [])
 
+  const clickOnCTAButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    appLogger.logInfo('User clicked on CTA button', EAppPage.INTRO, e.currentTarget)
+    AppNavigator.navTo(navigate, '/qr')
+  }
+
   return (
     <div className="h-screen w-screen bg-black">
       <div className="relative h-full w-full">
@@ -96,7 +103,7 @@ const IntroPage = () => {
       <div className="fixed top-1/2 -translate-y-1/2 right-16 z-20">
         <div className="relative inline-block group">
           <button
-            onClick={() => AppNavigator.navTo(navigate, '/qr')}
+            onClick={clickOnCTAButton}
             className="NAME-intro-CTA-button relative bg-white border-main-cl border-b-6 px-14 py-6 text-main-cl font-black text-5xl rounded-full cursor-pointer tracking-wider flex items-center gap-3"
           >
             <Star index={1} top="-12px" left="-12px" />

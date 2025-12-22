@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom'
 import { AppNavigator } from '@/utils/navigator'
 import { SectionLoading } from '@/components/custom/Loading'
 import { checkIfLargeScreen } from '@/utils/helpers'
+import { appLogger } from '@/logging/Logger'
+import { EAppPage, ELogLevel } from '@/utils/enums'
 
 type QRScannerProps = {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -87,10 +89,12 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
     qrScanner
       .start()
       .then(() => {
+        appLogger.logInfo('Camera started successfully', EAppPage.SCAN_QR)
         setCameraIsActive(true)
       })
       .catch((error) => {
         console.log('>>> [qr] error:', error)
+        appLogger.logError(error, 'Cannot start camera', EAppPage.SCAN_QR)
         setError('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
         toast.error('Không thể truy cập camera. Vui lòng cấp quyền sử dụng camera.')
       })
@@ -117,6 +121,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
     setIsScanning(false)
     console.log('>>> Camera đã được tắt hoàn toàn.')
+    appLogger.logInfo('Camera stopped', EAppPage.SCAN_QR)
   }, [])
 
   const startScanning = () => {
