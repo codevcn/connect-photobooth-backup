@@ -182,42 +182,42 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
   useEffect(() => {
     if (!isReady) return
-    // startScanning()
+    startScanning()
     return () => {
       stopCamera()
     }
   }, [error, isReady])
 
-  useEffect(() => {
-    if (!isReady) return
-    setTimeout(() => {
-      qrGetter.setDetectFromFileHandler(detectFromFile as any)
-      qrGetter
-        .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
-          setProgress(percentage)
-          if (error) {
-            console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
-            setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
-            toast.error(error.message)
-            return
-          }
-          if (images) {
-            console.log('>>> [qr] images extracted:', images)
-            onScanSuccess(
-              images.map((img) => ({
-                ...img,
-                url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
-              }))
-            )
-          }
-        })
-        .catch((err) => {
-          console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
-          setError('Không thể xử lý mã QR. Vui lòng thử lại.')
-          toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
-        })
-    }, 200)
-  }, [isReady])
+  // useEffect(() => {
+  //   if (!isReady) return
+  //   setTimeout(() => {
+  //     qrGetter.setDetectFromFileHandler(detectFromFile as any)
+  //     qrGetter
+  //       .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
+  //         setProgress(percentage)
+  //         if (error) {
+  //           console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
+  //           setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
+  //           toast.error(error.message)
+  //           return
+  //         }
+  //         if (images) {
+  //           console.log('>>> [qr] images extracted:', images)
+  //           onScanSuccess(
+  //             images.map((img) => ({
+  //               ...img,
+  //               url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
+  //             }))
+  //           )
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
+  //         setError('Không thể xử lý mã QR. Vui lòng thử lại.')
+  //         toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
+  //       })
+  //   }, 200)
+  // }, [isReady])
 
   return (
     <div className="smd:px-0 smd:w-fit h-[calc(100vh-250px)] px-4 w-full">
