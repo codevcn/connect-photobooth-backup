@@ -4,6 +4,7 @@ import { TextElement } from '../elements/text-element/TextElement'
 import { useElementLayerStore } from '@/stores/ui/element-layer.store'
 import { useSearchParams } from 'react-router-dom'
 import { PrintedImageElement } from '../elements/printed-image/PrintedImageElement'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 
 type TEditedElementsAreaProps = {
   allowedPrintAreaRef: React.RefObject<HTMLDivElement | null>
@@ -21,6 +22,11 @@ export const EditedElementsArea = ({
   const printedImages = useEditedElementStore((s) => s.printedImages)
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const selectElement = useEditedElementStore((s) => s.selectElement)
+  const loadedAllowedPrintedArea = useProductUIDataStore((s) => s.loadedAllowedPrintedArea)
+
+  if (!loadedAllowedPrintedArea) {
+    return <></>
+  }
 
   return (
     <>

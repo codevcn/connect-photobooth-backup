@@ -20,8 +20,12 @@ type TProductUIDataStore = {
   allowedPrintedAreaChangeId: string | null
   lastestMockupId: TMockupData['id'] | null
   firstProduct: [TBaseProduct, TPrintAreaInfo, TPrintLayout, TClientProductVariant?] | null
+  loadedAllowedPrintedArea: boolean
+  foundRestoredMockup: boolean
 
   // Actions
+  setRestoredMockupFound: (found: boolean) => void
+  setLoadedAllowedPrintedArea: (loaded: boolean) => void
   setFirstProduct: (
     product: TBaseProduct,
     printArea: TPrintAreaInfo,
@@ -80,7 +84,15 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   allowedPrintedAreaChangeId: null,
   lastestMockupId: null,
   firstProduct: null,
+  loadedAllowedPrintedArea: false,
+  foundRestoredMockup: false,
 
+  setRestoredMockupFound: (found: boolean) => {
+    set({ foundRestoredMockup: found })
+  },
+  setLoadedAllowedPrintedArea: (loaded: boolean) => {
+    set({ loadedAllowedPrintedArea: loaded })
+  },
   setFirstProduct: (product, printArea, layout, initialVariant) => {
     set({ firstProduct: [product, printArea, layout, initialVariant] })
   },

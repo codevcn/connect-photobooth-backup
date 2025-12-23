@@ -209,6 +209,7 @@ export const LivePreview = ({
         useProductUIDataStore.getState().resetAllowedPrintedAreaChangeId()
       }
       handleFitUnFitLayoutSlots()
+      useProductUIDataStore.getState().setLoadedAllowedPrintedArea(true)
     }, 0)
   }
 

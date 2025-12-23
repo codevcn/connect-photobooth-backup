@@ -11,7 +11,7 @@ import { ProductDetails } from './product/ProductDetails'
 import { Customization } from './customize/Customization'
 import { LivePreview } from './live-preview/LivePreview'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { useEffect, useRef } from 'react'
+import { use, useEffect, useRef } from 'react'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { AdditionalInformation } from './product/AdditionalInformation'
 import { Actions } from './Actions'
@@ -102,6 +102,7 @@ const restoreMockupVisualStates = (mockupId?: string) => {
             foundVariantId = variant.variantId
             foundProductId = item.productId
             elementsVisualState = mockupData.elementsVisualState
+            useProductUIDataStore.getState().setRestoredMockupFound(true)
             break
           }
         }
@@ -165,15 +166,13 @@ const restoreMockupVisualStates = (mockupId?: string) => {
       const restoredStickerElements = elementsVisualState.stickers || []
       console.log('>>> [reto] stickers:', restoredStickerElements)
       if (restoredStickerElements.length > 0) {
-        useEditedElementStore
-          .getState()
-          .setStickerElements(
-            restoredStickerElements.map((sticker) => ({
-              ...sticker,
-              isFromSaved: true,
-              mountType: 'from-saved',
-            }))
-          )
+        useEditedElementStore.getState().setStickerElements(
+          restoredStickerElements.map((sticker) => ({
+            ...sticker,
+            isFromSaved: true,
+            mountType: 'from-saved',
+          }))
+        )
       }
 
       useElementLayerStore.getState().resetData()
@@ -213,6 +212,8 @@ const restoreMockupVisualStates = (mockupId?: string) => {
       console.log('>>> [reto] surface:', surface)
       if (!surface) return
       useProductUIDataStore.getState().handlePickProductOnRestore(product, variant, surface)
+    } else if (!foundVariantId && !foundProductId && !foundSurfaceId) {
+      useProductUIDataStore.getState().setRestoredMockupFound(false)
     }
   }, 0)
 }
@@ -226,6 +227,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const pickedSurface = useProductUIDataStore((s) => s.pickedSurface)
   const pickedVariant = useProductUIDataStore((s) => s.pickedVariant)
+  const foundRestoredMockup = useProductUIDataStore((s) => s.foundRestoredMockup)
   const cancelSelectingElement = useEditedElementStore((s) => s.cancelSelectingElement)
   const { loadAllFonts } = useFontLoader()
   const mockupId = useSearchParams()[0].get('mockupId')
@@ -298,12 +300,19 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       document.body.removeEventListener('pointerdown', listenPointerDownOnPage)
       window.removeEventListener('resize', listenWindowResize)
       window.removeEventListener('scroll', listenWindowScroll)
+      useProductUIDataStore.getState().setLoadedAllowedPrintedArea(false)
       // useEditedElementStore.getState().resetData()
       // useElementLayerStore.getState().resetData()
       // useProductUIDataStore.getState().resetData()
       // useLayoutStore.getState().resetData()
     }
   }, [])
+
+  const reloadPageWithoutMockupId = () => {
+    const url = new URL(window.location.href)
+    url.searchParams.delete('mockupId')
+    window.location.href = url.toString()
+  }
 
   return (
     <div
@@ -325,6 +334,48 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
             pickedSurfaceId={pickedSurface.id}
             printedImages={printedImages}
           />
+        ) : !foundRestoredMockup ? (
+          <div className="smd:translate-0 smd:self-center -translate-y-12 flex flex-col items-center py-6 px-6 text-center w-full">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              className="w-32 h-32"
+            >
+              <path
+                fill="var(--vcn-main-cl)"
+                fill-rule="evenodd"
+                d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Zm3-10c.552 0 1-.672 1-1.5S15.552 9 15 9s-1 .672-1 1.5.448 1.5 1 1.5Zm-5-1.5c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S8.448 9 9 9s1 .672 1 1.5Zm-1.603 6.947a.75.75 0 0 0 1.05.155A4.267 4.267 0 0 1 12 16.75c.946 0 1.825.313 2.553.852a.75.75 0 1 0 .894-1.204A5.766 5.766 0 0 0 12 15.25a5.766 5.766 0 0 0-3.447 1.148.75.75 0 0 0-.156 1.049Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p className="text-xl text-main-cl">
+              <span>Không tìm thấy mockup với id "</span>
+              <span className="font-bold">{mockupId || ''}</span>
+              <span>" để khôi phục.</span>
+            </p>
+            <button
+              onClick={reloadPageWithoutMockupId}
+              className="flex items-center gap-2 text-xl font-bold text-white bg-main-cl px-4 py-2 rounded-md mt-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-refresh-cw-icon lucide-refresh-cw w-6 h-6"
+              >
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                <path d="M8 16H3v5" />
+              </svg>
+              <span>Tải lại trang web</span>
+            </button>
+          </div>
         ) : (
           <div></div>
         )}

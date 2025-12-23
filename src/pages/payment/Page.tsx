@@ -374,9 +374,9 @@ const PaymentPage = () => {
           {/* Main Content */}
           <div className="5xl:h-[calc(100vh-98px)] md:h-[calc(100vh-70px)] h-auto 2xl:px-24 xl:px-20 lg:px-14 spmd:px-10 sms:px-4 px-2 flex flex-col gap-2 mx-auto pt-2 bg-gray-100">
             {/* Layout: 2 columns on medium+ screens */}
-            <div className="grid grid-cols-1 md:grid-cols-[4fr_2fr] gap-3 h-full">
+            <div className="5xl:h-full h-auto md:grid md:grid-cols-[4fr_2fr] gap-3">
               {/* Left Column: Product List */}
-              <div className="overflow-y-hidden md:overflow-y-auto h-full gallery-scroll">
+              <div className="md:overflow-y-auto md:mb-0 mb-3 overflow-y-hidden h-full gallery-scroll">
                 <ProductList
                   cartItems={cartItems}
                   onUpdateQuantity={updateQuantity}

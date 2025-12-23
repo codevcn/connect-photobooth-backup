@@ -272,6 +272,27 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     setShowExitModal(true)
   }
 
+  const saveAndRecoverProductVisualState = (
+    prePickedProduct: TBaseProduct,
+    newPickedProduct: TBaseProduct,
+    initialLayout: TPrintLayout
+  ) => {
+    const elementsVisualState = collectMockupVisualStates()
+    const { resetData, addSavedElementVisualState } = useEditedElementStore.getState()
+    resetData()
+    useElementLayerStore.getState().resetData()
+    addSavedElementVisualState(prePickedProduct.id, {
+      ...elementsVisualState,
+    })
+    if (useEditedElementStore.getState().checkSavedElementsVisualStateExists(newPickedProduct.id)) {
+      // useLayoutStore.getState().setLayoutForDefault(null)
+      useEditedElementStore.getState().recoverSavedElementsVisualStates(newPickedProduct.id)
+    } else {
+      // useLayoutStore.getState().setLayoutForDefault(initialLayout)
+      useLayoutStore.getState().pickLayout(initialLayout)
+    }
+  }
+
   const handlePickProduct = (
     product: TBaseProduct,
     initialLayout: TPrintLayout,
@@ -280,21 +301,8 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
   ) => {
     if (!pickedProduct) return
     if (pickedProduct.id === product.id) return
-    const elementsVisualState = collectMockupVisualStates()
-    const { resetData, checkSavedElementsVisualStateExists, addSavedElementVisualState } =
-      useEditedElementStore.getState()
-    resetData()
-    useElementLayerStore.getState().resetData()
-    addSavedElementVisualState(pickedProduct.id, {
-      ...elementsVisualState,
-    })
-    if (checkSavedElementsVisualStateExists(product.id)) {
-      // useLayoutStore.getState().setLayoutForDefault(null)
-      useEditedElementStore.getState().recoverSavedElementsVisualStates(product.id)
-    } else {
-      // useLayoutStore.getState().setLayoutForDefault(initialLayout)
-      useLayoutStore.getState().pickLayout(initialLayout)
-    }
+    saveAndRecoverProductVisualState(pickedProduct, product, initialLayout)
+    useProductUIDataStore.getState().setLoadedAllowedPrintedArea(false)
     useProductUIDataStore
       .getState()
       .handlePickProduct(product, firstPrintAreaInProduct, initialVariant)
