@@ -264,10 +264,6 @@ const PaymentPage = () => {
   }, [cartItems, voucherDiscount])
 
   useEffect(() => {
-    document.body.style.overflow = showModal ? 'hidden' : 'auto'
-  }, [showModal])
-
-  useEffect(() => {
     window.requestIdleCallback(() => {
       loadCartItems()
     })
