@@ -16,9 +16,11 @@ export enum EInternalEvents {
   EDITED_PRINT_AREA_CHANGED = 'EDITED_PRINT_AREA_CHANGED',
   ADD_TEXT_ON_DONE_KEYBOARD = 'ADD_TEXT_ON_DONE_KEYBOARD',
   KEYBOARD_SUGGESTION_PICKED = 'KEYBOARD_SUGGESTION_PICKED',
+  DO_TEST_PASS_SCAN_QR = 'DO_TEST_PASS_SCAN_QR',
 }
 
 interface IInternalEvents {
+  [EInternalEvents.DO_TEST_PASS_SCAN_QR]: () => void
   [EInternalEvents.KEYBOARD_SUGGESTION_PICKED]: (
     suggestion: TKeyboardSuggestion,
     type: string

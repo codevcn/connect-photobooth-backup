@@ -10,6 +10,7 @@ import { SectionLoading } from '@/components/custom/Loading'
 import { checkIfLargeScreen } from '@/utils/helpers'
 import { appLogger } from '@/logging/Logger'
 import { EAppFeature, EAppPage, ELogLevel } from '@/utils/enums'
+import { EInternalEvents, eventEmitter } from '@/utils/events'
 
 type QRScannerProps = {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -188,39 +189,55 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
     }
   }, [error, isReady])
 
+  const doTest = () => {
+    if (!isReady) {
+      toast.warning('Chưa sẵn sàng để xử lý mã QR. Vui lòng thử lại sau.')
+      return
+    } else {
+      toast.info('Bắt đầu xử lý mã QR thử nghiệm...')
+    }
+    setTimeout(() => {
+      qrGetter.setDetectFromFileHandler(detectFromFile as any)
+      qrGetter
+        .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
+          setProgress(percentage)
+          if (error) {
+            console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
+            setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
+            toast.error(error.message)
+            return
+          }
+          if (images) {
+            console.log('>>> [qr] images extracted:', images)
+            onScanSuccess(
+              images.map((img) => ({
+                ...img,
+                url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
+              }))
+            )
+          }
+        })
+        .catch((err) => {
+          console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
+          setError('Không thể xử lý mã QR. Vui lòng thử lại.')
+          toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
+        })
+    }, 200)
+  }
+
   // useEffect(() => {
-  //   if (!isReady) return
-  //   setTimeout(() => {
-  //     qrGetter.setDetectFromFileHandler(detectFromFile as any)
-  //     qrGetter
-  //       .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
-  //         setProgress(percentage)
-  //         if (error) {
-  //           console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
-  //           setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
-  //           toast.error(error.message)
-  //           return
-  //         }
-  //         if (images) {
-  //           console.log('>>> [qr] images extracted:', images)
-  //           onScanSuccess(
-  //             images.map((img) => ({
-  //               ...img,
-  //               url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
-  //             }))
-  //           )
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
-  //         setError('Không thể xử lý mã QR. Vui lòng thử lại.')
-  //         toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
-  //       })
-  //   }, 200)
+  //   doTest()
   // }, [isReady])
 
+  useEffect(() => {
+    eventEmitter.on(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
+    return () => {
+      eventEmitter.off(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
+    }
+  }, [isReady])
+
   return (
-    <div className="smd:px-0 smd:w-fit h-[calc(100vh-250px)] px-4 w-full">
+    <div className="smd:px-0 smd:w-fit h-[calc(100vh-250px)] px-4 w-full pointer-events-none">
       <div className="NAME-video-wrapper smd:w-fit h-full w-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
         {!cameraIsActive && (
           <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-white font-bold text-2xl">

@@ -5,6 +5,7 @@ import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store
 import { generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
 import { AppNavigator } from '@/utils/navigator'
+import { EInternalEvents, eventEmitter } from '@/utils/events'
 
 // --- Cấu hình Animation & Style ---
 const FloatingStyles = () => (
@@ -319,10 +320,15 @@ const ScanQRPage = () => {
       {/* HEADER (TOP CENTER) */}
       <section
         id="scan-qr-area"
-        className="5xl:py-6 pt-6 flex flex-col h-full items-center relative w-full text-center z-20 pointer-events-none"
+        className="5xl:py-6 pt-6 flex flex-col h-full items-center relative w-full text-center z-50"
       >
         <div className="5xl:justify-center flex flex-col h-full items-center gap-4 w-[38vw]">
-          <h1 className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-main-cl uppercase tracking-wide">
+          <h1
+            onClick={() => {
+              eventEmitter.emit(EInternalEvents.DO_TEST_PASS_SCAN_QR)
+            }}
+            className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-main-cl uppercase tracking-wide"
+          >
             QUÉT MÃ QR PHOTOBOOTH
           </h1>
           <QRScanner onScanSuccess={handleData} />
@@ -330,7 +336,7 @@ const ScanQRPage = () => {
       </section>
 
       {/* --- BẠN SẼ NHẬN ĐƯỢC (BÊN PHẢI) --- */}
-      <div className="5xl:text-xl text-base h-full absolute right-6 top-4 w-[29vw] z-30 pointer-events-auto">
+      <div className="5xl:text-xl text-base h-full absolute right-6 top-4 w-[29vw] z-40 pointer-events-auto">
         <div className="bg-gray-100 border border-gray-400 rounded-xl p-4 pb-2">
           {/* Header */}
           <h2 className="text-[1.5rem] font-extrabold text-main-cl text-center mb-4 tracking-wide">
