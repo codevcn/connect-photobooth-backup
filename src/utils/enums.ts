@@ -22,6 +22,10 @@ export enum EAppFeature {
   // Payment Page
   PAYMENT_PROCEED = 'payment-proceed',
   PAYMENT_PROCESS = 'payment-process',
+  PAYMENT_SUCCESS = 'payment-success',
+  PAYMENT_FAILURE = 'payment-failure',
+  PAYMENT_TIMEOUT = 'payment-timeout',
+  PAYMENT_CANCEL = 'payment-cancel',
   // Common features
   VIRTUAL_KEYBOARD = 'virtual-keyboard',
 }

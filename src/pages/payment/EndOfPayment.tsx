@@ -15,6 +15,8 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { AppNavigator } from '@/utils/navigator'
 import { QRCanvas } from '@/components/custom/QRCanvas'
+import { appLogger } from '@/logging/Logger'
+import { EAppFeature, EAppPage } from '@/utils/enums'
 
 const getColorByPaymentMethod = (method: TPaymentType): string => {
   switch (method) {
@@ -93,9 +95,13 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
 
   const handlePaymentStatusUpdate = (statusData: TOrderStatusRes) => {
     if (statusData.is_paid) {
+      appLogger.logInfo('Payment completed', EAppPage.PAYMENT, EAppFeature.PAYMENT_SUCCESS)
+
       setPaymentStatus({ status: 'completed' })
       setTransactionCode(statusData.id.toString())
     } else if (statusData.status === 'cancelled') {
+      appLogger.logInfo('Payment completed', EAppPage.PAYMENT, EAppFeature.PAYMENT_CANCEL)
+
       setPaymentStatus({
         status: 'failed',
         reason: 'Đơn hàng đã bị hủy',

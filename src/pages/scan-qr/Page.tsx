@@ -74,11 +74,11 @@ const ScanQRPage = () => {
 
   return (
     // Container chính - Quay lại Gradient Hồng Đỏ tươi sáng
-    <div className="relative h-screen w-screen overflow-hidden bg-linear-to-br from-[#e60076] via-[#df197f] to-[#fe389e]">
+    <div className="relative h-screen w-screen overflow-hidden bg-white">
       <FloatingStyles />
 
       {/* --- BACKGROUND DECORATION & FLOATING ICONS --- */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
         {/* Nền họa tiết nhẹ */}
         <div className="absolute top-0 left-0 w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         {/* Blobs màu tạo chiều sâu */}
@@ -100,7 +100,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-lg"
+              className="text-main-cl drop-shadow-lg"
             >
               <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
             </svg>
@@ -120,7 +120,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-md"
+              className="text-main-cl drop-shadow-md"
             >
               <path d="M10 2v2" />
               <path d="M14 2v2" />
@@ -143,7 +143,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-lg"
+              className="text-main-cl drop-shadow-lg"
             >
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
               <path d="M3 6h18" />
@@ -165,7 +165,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-md"
+              className="text-main-cl drop-shadow-md"
             >
               <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
               <path d="M12 18h.01" />
@@ -186,7 +186,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-md"
+              className="text-main-cl drop-shadow-md"
             >
               <rect x="3" y="8" width="18" height="4" rx="1" />
               <path d="M12 8v13" />
@@ -209,7 +209,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-md"
+              className="text-main-cl drop-shadow-md"
             >
               <circle cx="12" cy="12" r="6" />
               <polyline points="12 10 12 12 13 13" />
@@ -232,7 +232,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-sm"
+              className="text-main-cl drop-shadow-sm"
             >
               <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
               <circle cx="9" cy="9" r="2" />
@@ -254,7 +254,7 @@ const ScanQRPage = () => {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-white drop-shadow-sm"
+              className="text-main-cl drop-shadow-sm"
             >
               <path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4" />
               <path d="m21 2-9.6 9.6" />
@@ -265,44 +265,50 @@ const ScanQRPage = () => {
       </div>
 
       {/* --- HƯỚNG DẪN QUÉT QR (BÊN TRÁI) --- */}
-      <div className="5xl:text-xl text-base absolute left-6 top-1/2 w-[28vw] -translate-y-1/2 z-30 pointer-events-auto">
-        <div className="glass-panel rounded-3xl p-4 pb-2 shadow-2xl">
+      <div className="5xl:text-xl text-base absolute left-6 top-4 w-[29vw] z-30 pointer-events-auto">
+        <div className="bg-gray-100 border border-gray-400 rounded-xl p-4 pb-2">
           {/* Header */}
-          <h2 className="text-[1.5rem] font-extrabold text-white text-center mb-4 tracking-wide">
+          <h2 className="text-[1.5rem] font-extrabold text-main-cl text-center mb-4 tracking-wide">
             HƯỚNG DẪN QUÉT QR
           </h2>
 
           {/* Các bước hướng dẫn */}
-          <div className="space-y-4">
+          <div className="flex flex-col items-start space-y-4">
             {/* Bước 1: Hướng QR vào webcam */}
-            <div className="flex flex-col items-center text-center">
-              <p className="text-white font-bold text-[1em] mb-1">
-                <span className="text-white">1. </span>
+            <div className="flex flex-col items-center">
+              <p className="flex gap-2 text-black font-bold text-[1em] mb-1">
+                <span className="flex items-center justify-center leading-none h-8 min-w-8 bg-main-cl rounded-full text-white">
+                  1.
+                </span>
                 <span className="">Hướng mã QR trên ảnh photobooth vào webcam</span>
               </p>
-              <div className="flex gap-2 items-center justify-center mb-3">
+              <div className="flex gap-2 items-center justify-center mb-3 w-full">
                 <img className="w-60" src="/images/design-qr-page/front.png" alt="Photobooth" />
               </div>
             </div>
 
             {/* Bước 1: Hướng QR vào webcam */}
-            <div className="flex flex-col items-center text-center">
-              <p className="text-white font-bold text-[1em] mb-1">
-                <span className="text-white">2. </span>
-                <span>Giữ khoảng cách ảnh với camera 8cm</span>
+            <div className="flex flex-col items-center">
+              <p className="flex gap-2 text-black font-bold text-[1em] mb-1">
+                <span className="flex items-center justify-center leading-none h-8 min-w-8 bg-main-cl rounded-full text-white">
+                  2.
+                </span>
+                <span>Giữ khoảng cách ảnh với camera khoảng 8cm</span>
               </p>
-              <div className="flex gap-2 items-center justify-center mb-3">
+              <div className="flex gap-2 items-center justify-center mb-3 w-full">
                 <img className="w-78" src="/images/design-qr-page/cm8.png" alt="Photobooth" />
               </div>
             </div>
 
             {/* Bước 3: Giữ khoảng cách 8cm */}
-            <div className="flex flex-col items-center text-center">
-              <p className="text-white font-bold text-[1em] mb-1">
-                <span className="text-white">3. </span>
-                <span>Căn chỉnh mã QR của bạn lọt vào khung hình camera</span>
+            <div className="flex flex-col items-center">
+              <p className="flex gap-2 text-black font-bold text-[1em] mb-1">
+                <span className="flex items-center justify-center leading-none h-8 min-w-8 bg-main-cl rounded-full text-white">
+                  3.
+                </span>
+                <span>Đưa mã QR của bạn vào khung hình camera</span>
               </p>
-              <div className="bg-white/30 p-1.5 rounded-2xl flex items-center justify-center mb-3 relative">
+              <div className="bg-white p-1.5 rounded-2xl flex items-center justify-center mb-3 w-full relative">
                 <img className="w-60" src="/images/design-qr-page/chu-y-qr.png" alt="Ruler" />
               </div>
             </div>
@@ -313,35 +319,34 @@ const ScanQRPage = () => {
       {/* HEADER (TOP CENTER) */}
       <section
         id="scan-qr-area"
-        className="pt-6 flex flex-col h-full items-center relativ w-full text-center z-20 pointer-events-none"
+        className="5xl:py-6 pt-6 flex flex-col h-full items-center relative w-full text-center z-20 pointer-events-none"
       >
-        <div className="flex flex-col h-full items-center gap-4 w-[38vw]">
-          <h1 className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-white drop-shadow-lg uppercase tracking-wide">
-            QUÉT MÃ QR PHOTBOOTH
+        <div className="5xl:justify-center flex flex-col h-full items-center gap-4 w-[38vw]">
+          <h1 className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-main-cl uppercase tracking-wide">
+            QUÉT MÃ QR PHOTOBOOTH
           </h1>
-          <p className="smd:px-6 text-white/95 text-base md:text-xl font-bold bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-full inline-block shadow-sm border border-white/20">
-            Đưa mã QR photobooth của bạn vào camera bên dưới, căn chỉnh để quét QR cho rõ nét!
-          </p>
           <QRScanner onScanSuccess={handleData} />
         </div>
       </section>
 
       {/* --- BẠN SẼ NHẬN ĐƯỢC (BÊN PHẢI) --- */}
-      <div className="5xl:text-xl text-base absolute right-6 top-1/2 w-[28vw] -translate-y-1/2 z-30 pointer-events-auto">
-        <div className="glass-panel rounded-3xl p-4 pb-2 shadow-2xl">
+      <div className="5xl:text-xl text-base h-full absolute right-6 top-4 w-[29vw] z-30 pointer-events-auto">
+        <div className="bg-gray-100 border border-gray-400 rounded-xl p-4 pb-2">
           {/* Header */}
-          <h2 className="text-[1.5rem] font-extrabold text-white text-center mb-4 tracking-wide">
+          <h2 className="text-[1.5rem] font-extrabold text-main-cl text-center mb-4 tracking-wide">
             BẠN SẼ NHẬN ĐƯỢC
           </h2>
 
-          <div className="space-y-4">
+          <div className="flex flex-col items-start space-y-4">
             {/* Bước 4: Sản phẩm thiết kế */}
-            <div className="flex flex-col items-center text-center">
-              <p className="text-white font-bold text-[1em] mb-1">
-                <span className="text-white">4. </span>
+            <div className="flex flex-col items-center">
+              <p className="flex gap-2 text-black font-bold text-[1em] mb-1">
+                <span className="flex items-center justify-center leading-none h-8 min-w-8 bg-main-cl rounded-full text-white">
+                  4.
+                </span>
                 <span className="">Sản phẩm thiết kế từ chính bức ảnh vừa chụp của bạn</span>
               </p>
-              <div className="flex flex-col gap-2 items-center justify-center mb-3">
+              <div className="flex flex-col gap-2 items-center justify-center mb-3 w-full">
                 <img
                   className="w-99"
                   src="/images/design-qr-page/demo-ra-intro-1.png"
@@ -356,12 +361,14 @@ const ScanQRPage = () => {
             </div>
 
             {/* Bước 5: Giữ khoảng cách 8cm */}
-            <div className="flex flex-col items-center text-center">
-              <p className="text-white font-bold text-[1em] mb-2">
-                <span className="text-white">5. </span>
+            <div className="flex flex-col items-center">
+              <p className="flex gap-2 text-black font-bold text-[1em] mb-1">
+                <span className="flex items-center justify-center leading-none h-8 min-w-8 bg-main-cl rounded-full text-white">
+                  5.
+                </span>
                 <span>Chọn 1 sản phẩm thiết kế bạn yêu thích và đặt hàng ngay</span>
               </p>
-              <div className="w-full p-1.5 flex items-center justify-evenly mb-3 pt-12 relative">
+              <div className="w-full p-1.5 flex items-center justify-center mb-3 pt-12 relative">
                 <img
                   className="STYLE-add-to-cart-intro--mockup absolute z-10 w-12 top-0 left-1/2 -translate-x-1/2"
                   src="/images/design-qr-page/tui-tote.png"
@@ -391,7 +398,7 @@ const ScanQRPage = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-26 h-26 text-white"
+                    className="w-26 h-26 text-main-cl"
                   >
                     <circle cx="8" cy="21" r="1" />
                     <circle cx="19" cy="21" r="1" />

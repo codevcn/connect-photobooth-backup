@@ -182,7 +182,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
   useEffect(() => {
     if (!isReady) return
-    startScanning()
+    // startScanning()
     return () => {
       stopCamera()
     }
@@ -225,8 +225,8 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
         {!cameraIsActive && (
           <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-white font-bold text-2xl">
             <SectionLoading
-              message="Đang tải Camera..."
-              classNames={{ message: 'text-white text-xl', shapesContainer: 'text-white' }}
+              message="Đang truy cập Camera..."
+              classNames={{ message: 'text-white text-2xl', shapesContainer: 'text-white' }}
             />
           </div>
         )}

@@ -44,7 +44,15 @@ import { UserIdleTracker } from './components/custom/IdleWarningModal'
 import Dev from './dev/pages/Dev'
 
 const IdleCountdown = () => {
-  return <UserIdleTracker idleTimeout={30} modalTimeout={10} />
+  const getIdleTimeout = (): number => {
+    // nếu là trang /qr thì modal timeout là 20s, còn lại là 10s
+    if (window.location.pathname.includes('/qr')) {
+      return 20
+    }
+    return 10
+  }
+
+  return <UserIdleTracker idleTimeout={30} modalTimeout={getIdleTimeout()} />
   // return <></>
 }
 
