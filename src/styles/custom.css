@@ -195,6 +195,7 @@ html {
 }
 
 .STYLE-add-to-cart-intro--mockup {
+  opacity: 0;
   animation: add-to-cart-intro--mockup 8s ease-out infinite backwards;
 }
 .STYLE-add-to-cart-intro--mockup.STYLE--delay-1 {
