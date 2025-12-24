@@ -153,8 +153,6 @@ export const AddToCartHandler = ({
   const listenAddToCart = () => {
     if (!checkIfValidToCart('add-to-cart')) return
 
-    appLogger.logInfo('User initiated add to cart action', EAppPage.EDIT, EAppFeature.ADD_TO_CART)
-
     useProductUIDataStore.getState().setIsAddingToCart(true)
     useEditedElementStore.getState().cancelSelectingElement()
     // Thu thập visual states của tất cả elements

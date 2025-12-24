@@ -570,6 +570,7 @@ const PaymentPage = () => {
           onHideShow={setShowModal}
           voucherCode={appliedVoucher?.code}
           cartItems={cartItems}
+          show={showModal}
         />
       )}
       {createPortal(

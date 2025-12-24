@@ -193,3 +193,20 @@ html {
   min-height: 100vh;
   min-height: 100dvh;
 }
+
+.STYLE-add-to-cart-intro--mockup {
+  animation: add-to-cart-intro--mockup 8s ease-out infinite backwards;
+}
+.STYLE-add-to-cart-intro--mockup.STYLE--delay-1 {
+  animation-delay: 2s;
+}
+.STYLE-add-to-cart-intro--mockup.STYLE--delay-2 {
+  animation-delay: 4s;
+}
+.STYLE-add-to-cart-intro--mockup.STYLE--delay-3 {
+  animation-delay: 6s;
+}
+
+.STYLE-add-to-cart-intro--cart {
+  animation: add-to-cart-intro--cart 2s ease-out infinite backwards;
+}

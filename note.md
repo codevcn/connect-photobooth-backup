@@ -7,3 +7,9 @@
 2. Server Log:
 
 - Railway acc lthloilth@gmail.com
+
+3. double-check trước khi push code:
+
+- defalut value at shipping info form
+- trang quét qr
+- idle timeout tracker

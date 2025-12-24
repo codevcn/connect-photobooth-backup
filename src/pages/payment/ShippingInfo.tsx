@@ -1,9 +1,9 @@
-import { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { addressService } from '@/services/address.service'
 import { TClientDistrict, TClientProvince, TClientWard } from '@/services/adapter/address.adapter'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { TKeyboardSuggestion } from '@/utils/types/global'
+import { TEndOfPaymentData, TKeyboardSuggestion } from '@/utils/types/global'
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { WarningIcon } from '@/components/custom/icons/WarningIcon'
 import { useQueryFilter } from '@/hooks/extensions'
@@ -16,10 +16,6 @@ type TFormErrors = {
   city?: string
   ward?: string
   address?: string
-}
-
-type TShippingInfoFormProps = {
-  errors: TFormErrors
 }
 
 type TSearchableItem = {
@@ -72,8 +68,13 @@ const fuzzySearchVietnamese = (items: TSearchableItem[], query: string): TSearch
   return results.map((result) => result.item)
 }
 
+type TShippingInfoFormProps = {
+  errors: TFormErrors
+  showPaymentModal: boolean
+}
+
 export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormProps>(
-  ({ errors }, ref) => {
+  ({ errors, showPaymentModal }, ref) => {
     const [provinces, setProvinces] = useState<TClientProvince[]>([])
     const [districts, setDistricts] = useState<TClientDistrict[]>([])
     const [wards, setWards] = useState<TClientWard[]>([])
@@ -88,8 +89,16 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
     const [suggestedDistricts, setSuggestedDistricts] = useState<TSearchableItem[]>([])
     const [suggestedWards, setSuggestedWards] = useState<TSearchableItem[]>([])
 
+    const containerRef = useRef<HTMLDivElement>(null)
+
     const setTypingSuggestions = useKeyboardStore((s) => s.setSuggestions)
     const queryFilter = useQueryFilter()
+
+    useEffect(() => {
+      if (showPaymentModal) {
+        containerRef.current?.querySelector<HTMLInputElement>('#fullName-input')?.focus()
+      }
+    }, [showPaymentModal])
 
     // Fetch provinces on mount
     useEffect(() => {
@@ -353,7 +362,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
         <h3 className="5xl:text-[0.8em] 5xl:pt-8 font-semibold text-gray-900 text-lg">
           Thông tin giao hàng
         </h3>
-        <div className="space-y-3">
+        <div ref={containerRef} className="space-y-3">
           <div>
             <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
               Họ và tên

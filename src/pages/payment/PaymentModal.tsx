@@ -30,9 +30,10 @@ type TPaymentModalProps = {
   onHideShow: (show: boolean) => void
   voucherCode?: string
   cartItems: TPaymentProductItem[]
+  show: boolean
 }
 
-export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: TPaymentModalProps) => {
+export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaymentModalProps) => {
   const [paymentMethod, setPaymentMethod] = useState<TPaymentType>('bank-transfer')
   const [confirming, setConfirming] = useState<boolean>(false)
   const [confirmingMessage, setConfirmingMessage] = useState<string>('Đang xử lý...')
@@ -260,7 +261,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: TPaymentMod
           className="md:px-6 px-4 pb-4 space-y-4 pt-4 relative z-10 overflow-y-auto grow gallery-scroll"
         >
           {/* Shipping Information */}
-          <ShippingInfoForm ref={formRef} errors={errors} />
+          <ShippingInfoForm ref={formRef} errors={errors} showPaymentModal={show} />
 
           <div className="my-1 bg-gray-300 w-full h-px"></div>
 
@@ -295,6 +296,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems }: TPaymentMod
             </button>
           </div>
         </div>
+
         {endOfPayment && (
           <EndOfPayment data={endOfPayment} resetEndOfPaymentData={resetEndOfPaymentData} />
         )}

@@ -264,47 +264,143 @@ const ScanQRPage = () => {
         </div>
       </div>
 
-      {/* 1. HEADER (TOP CENTER) */}
-      <section className="pt-6 flex flex-col h-full items-center gap-4 relative w-full text-center z-20 pointer-events-none">
-        <h1 className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-white drop-shadow-lg uppercase tracking-wide">
-          QUÉT MÃ QR PHOTBOOTH
-        </h1>
-        <p className="smd:px-6 text-white/95 text-base md:text-xl font-bold bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-full inline-block shadow-sm border border-white/20">
-          Đưa mã QR photobooth của bạn vào camera, căn chỉnh để quét QR cho rõ nét!
-        </p>
-        <QRScanner onScanSuccess={handleData} />
+      {/* --- HƯỚNG DẪN QUÉT QR (BÊN TRÁI) --- */}
+      <div className="5xl:text-xl text-base absolute left-6 top-1/2 w-[28vw] -translate-y-1/2 z-30 pointer-events-auto">
+        <div className="glass-panel rounded-3xl p-4 pb-2 shadow-2xl">
+          {/* Header */}
+          <h2 className="text-[1.5rem] font-extrabold text-white text-center mb-4 tracking-wide">
+            HƯỚNG DẪN QUÉT QR
+          </h2>
+
+          {/* Các bước hướng dẫn */}
+          <div className="space-y-4">
+            {/* Bước 1: Hướng QR vào webcam */}
+            <div className="flex flex-col items-center text-center">
+              <p className="text-white font-bold text-[1em] mb-1">
+                <span className="text-white">1. </span>
+                <span className="">Hướng mã QR trên ảnh photobooth vào webcam</span>
+              </p>
+              <div className="flex gap-2 items-center justify-center mb-3">
+                <img className="w-60" src="/images/design-qr-page/front.png" alt="Photobooth" />
+              </div>
+            </div>
+
+            {/* Bước 1: Hướng QR vào webcam */}
+            <div className="flex flex-col items-center text-center">
+              <p className="text-white font-bold text-[1em] mb-1">
+                <span className="text-white">2. </span>
+                <span>Giữ khoảng cách ảnh với camera 8cm</span>
+              </p>
+              <div className="flex gap-2 items-center justify-center mb-3">
+                <img className="w-78" src="/images/design-qr-page/cm8.png" alt="Photobooth" />
+              </div>
+            </div>
+
+            {/* Bước 3: Giữ khoảng cách 8cm */}
+            <div className="flex flex-col items-center text-center">
+              <p className="text-white font-bold text-[1em] mb-1">
+                <span className="text-white">3. </span>
+                <span>Căn chỉnh mã QR của bạn lọt vào khung hình camera</span>
+              </p>
+              <div className="bg-white/30 p-1.5 rounded-2xl flex items-center justify-center mb-3 relative">
+                <img className="w-60" src="/images/design-qr-page/chu-y-qr.png" alt="Ruler" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* HEADER (TOP CENTER) */}
+      <section
+        id="scan-qr-area"
+        className="pt-6 flex flex-col h-full items-center relativ w-full text-center z-20 pointer-events-none"
+      >
+        <div className="flex flex-col h-full items-center gap-4 w-[38vw]">
+          <h1 className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-white drop-shadow-lg uppercase tracking-wide">
+            QUÉT MÃ QR PHOTBOOTH
+          </h1>
+          <p className="smd:px-6 text-white/95 text-base md:text-xl font-bold bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-full inline-block shadow-sm border border-white/20">
+            Đưa mã QR photobooth của bạn vào camera bên dưới, căn chỉnh để quét QR cho rõ nét!
+          </p>
+          <QRScanner onScanSuccess={handleData} />
+        </div>
       </section>
 
-      {/* 3. INSTRUCTIONS (RIGHT SIDE - TOP 58%) */}
-      <div className="smd:flex hidden absolute right-12 text-xl top-[58%] transform -translate-y-1/2 z-40 flex-col gap-4">
-        {/* STEP 1 */}
-        <div className="w-[320px] flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl transform transition-all hover:scale-105 hover:bg-black/60 group cursor-default">
-          <div className="px-4 w-max h-12 rounded-full bg-white text-[#e11d48] flex items-center justify-center font-bold shadow-inner mb-1.5 group-hover:bg-[#e11d48] group-hover:text-white transition-colors duration-300">
-            Bước 1
-          </div>
-          <span className="text-white font-bold text-[1em] text-center leading-normal">
-            Đưa mã QR trên ảnh photobooth của bạn vào Camera để quét
-          </span>
-        </div>
+      {/* --- BẠN SẼ NHẬN ĐƯỢC (BÊN PHẢI) --- */}
+      <div className="5xl:text-xl text-base absolute right-6 top-1/2 w-[28vw] -translate-y-1/2 z-30 pointer-events-auto">
+        <div className="glass-panel rounded-3xl p-4 pb-2 shadow-2xl">
+          {/* Header */}
+          <h2 className="text-[1.5rem] font-extrabold text-white text-center mb-4 tracking-wide">
+            BẠN SẼ NHẬN ĐƯỢC
+          </h2>
 
-        {/* STEP 2 */}
-        <div className="w-[320px] flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl transform transition-all hover:scale-105 hover:bg-black/60 group cursor-default">
-          <div className="px-4 w-max h-12 rounded-full bg-white text-[#e11d48] flex items-center justify-center font-bold shadow-inner mb-1.5 group-hover:bg-[#e11d48] group-hover:text-white transition-colors duration-300">
-            Bước 2
-          </div>
-          <span className="text-white font-bold text-[1em] text-center leading-normal">
-            Xem ảnh photobooth của bạn trên áo thun, ly, túi xách và nhiều hơn thế nữa
-          </span>
-        </div>
+          <div className="space-y-4">
+            {/* Bước 4: Sản phẩm thiết kế */}
+            <div className="flex flex-col items-center text-center">
+              <p className="text-white font-bold text-[1em] mb-1">
+                <span className="text-white">4. </span>
+                <span className="">Sản phẩm thiết kế từ chính bức ảnh vừa chụp của bạn</span>
+              </p>
+              <div className="flex flex-col gap-2 items-center justify-center mb-3">
+                <img
+                  className="w-99"
+                  src="/images/design-qr-page/demo-ra-intro-1.png"
+                  alt="Photobooth"
+                />
+                <img
+                  className="w-99"
+                  src="/images/design-qr-page/demo-ra-intro-2.png"
+                  alt="Photobooth"
+                />
+              </div>
+            </div>
 
-        {/* STEP 3 */}
-        <div className="w-[320px] flex flex-col items-center justify-center bg-black/40 backdrop-blur-xl p-3 rounded-2xl border border-white/20 shadow-2xl transform transition-all hover:scale-105 hover:bg-black/60 group cursor-default">
-          <div className="px-4 w-max h-12 rounded-full bg-white text-[#e11d48] flex items-center justify-center font-bold shadow-inner mb-1.5 group-hover:bg-[#e11d48] group-hover:text-white transition-colors duration-300">
-            Bước 3
+            {/* Bước 5: Giữ khoảng cách 8cm */}
+            <div className="flex flex-col items-center text-center">
+              <p className="text-white font-bold text-[1em] mb-2">
+                <span className="text-white">5. </span>
+                <span>Chọn 1 sản phẩm thiết kế bạn yêu thích và đặt hàng ngay</span>
+              </p>
+              <div className="w-full p-1.5 flex items-center justify-evenly mb-3 pt-12 relative">
+                <img
+                  className="STYLE-add-to-cart-intro--mockup absolute z-10 w-12 top-0 left-1/2 -translate-x-1/2"
+                  src="/images/design-qr-page/tui-tote.png"
+                  alt="Photobooth"
+                />
+                <img
+                  className="STYLE-add-to-cart-intro--mockup STYLE--delay-1 absolute z-10 w-14 top-0 left-1/2 -translate-x-1/2"
+                  src="/images/design-qr-page/ao-thun.png"
+                  alt="Photobooth"
+                />
+                <img
+                  className="STYLE-add-to-cart-intro--mockup STYLE--delay-2 absolute z-10 w-12 top-0 left-1/2 -translate-x-1/2"
+                  src="/images/design-qr-page/khung-tranh.png"
+                  alt="Photobooth"
+                />
+                <img
+                  className="STYLE-add-to-cart-intro--mockup STYLE--delay-3 absolute z-10 w-14 top-0 left-1/2 -translate-x-1/2"
+                  src="/images/design-qr-page/coc.png"
+                  alt="Photobooth"
+                />
+                <div className="STYLE-add-to-cart-intro--cart p-2 relative z-20">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-26 h-26 text-white"
+                  >
+                    <circle cx="8" cy="21" r="1" />
+                    <circle cx="19" cy="21" r="1" />
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                  </svg>
+                </div>
+              </div>
+            </div>
           </div>
-          <span className="text-white font-bold text-[1em] text-center leading-normal">
-            Nhận sản phẩm in ảnh photobooth của bạn bằng cách đặt hàng ngay
-          </span>
         </div>
       </div>
     </div>
