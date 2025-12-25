@@ -266,7 +266,7 @@ const ScanQRPage = () => {
       </div>
 
       {/* --- HƯỚNG DẪN QUÉT QR (BÊN TRÁI) --- */}
-      <div className="5xl:text-xl 5xl:block hidden text-base absolute left-6 top-1/2 -translate-y-1/2 w-[27vw] z-30 pointer-events-auto">
+      <div className="5xl:text-xl 5xl:block hidden text-base absolute left-6 top-1/2 -translate-y-1/2 w-[26vw] z-30 pointer-events-auto">
         <div className="bg-gray-100 border border-gray-400 rounded-xl p-4 pb-2">
           {/* Header */}
           <h2 className="text-[1.5rem] font-extrabold text-main-cl text-center mb-4 tracking-wide">
@@ -284,7 +284,7 @@ const ScanQRPage = () => {
                 <span className="">Hướng mã QR trên ảnh photobooth vào webcam</span>
               </p>
               <div className="flex gap-2 items-center justify-center mb-3 w-full">
-                <img className="w-60" src="/images/design-qr-page/front.png" alt="Photobooth" />
+                <img className="w-56" src="/images/design-qr-page/front.png" alt="Photobooth" />
               </div>
             </div>
 
@@ -311,7 +311,7 @@ const ScanQRPage = () => {
               </p>
               <div className="flex items-center justify-center mb-3 w-full relative">
                 <div className="p-1.5 rounded-2xl w-fit bg-white">
-                  <img className="w-60" src="/images/design-qr-page/chu-y-qr.png" alt="Ruler" />
+                  <img className="w-52" src="/images/design-qr-page/chu-y-qr.png" alt="Ruler" />
                 </div>
               </div>
             </div>
@@ -324,7 +324,7 @@ const ScanQRPage = () => {
         id="scan-qr-area"
         className="5xl:py-6 pt-6 flex flex-col h-full items-center relative w-full text-center z-50"
       >
-        <div className="5xl:justify-center flex flex-col h-full items-center gap-4 5xl:w-[38vw]">
+        <div className="5xl:justify-center 5xl:w-[38vw] 5xl:px-0 5xl:gap-4 gap-2 px-4 flex flex-col h-full items-center w-full">
           <h1
             onClick={() => {
               eventEmitter.emit(EInternalEvents.DO_TEST_PASS_SCAN_QR)
@@ -333,16 +333,15 @@ const ScanQRPage = () => {
           >
             QUÉT MÃ QR PHOTOBOOTH
           </h1>
-          <div className="w-full py-1 rounded-md bg-white/10 px-2 text-sm">
-            Quét mã QR để biến ảnh photobooth của bạn thành sự độc đáo, căn chỉnh để quét QR thật rõ
-            nét nhé
+          <div className="w-full font-bold py-1 rounded-md bg-white/80 px-2 text-sm">
+            Đưa mã QR photobooth của bạn vào camera, căn chỉnh để quét QR thật rõ nét nhé!
           </div>
           <QRScanner onScanSuccess={handleData} />
         </div>
       </section>
 
       {/* --- BẠN SẼ NHẬN ĐƯỢC (BÊN PHẢI) --- */}
-      <div className="5xl:text-xl 5xl:block hidden text-base absolute right-6 top-1/2 -translate-y-1/2 w-[27vw] z-40 pointer-events-auto">
+      <div className="5xl:text-xl 5xl:block hidden text-base absolute right-6 top-1/2 -translate-y-1/2 w-[26vw] z-40 pointer-events-auto">
         <div className="bg-gray-100 border border-gray-400 rounded-xl p-4 pb-2">
           {/* Header */}
           <h2 className="text-[1.5rem] font-extrabold text-main-cl text-center mb-4 tracking-wide">

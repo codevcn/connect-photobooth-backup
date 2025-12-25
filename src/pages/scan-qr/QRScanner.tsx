@@ -237,7 +237,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   // }, [isReady])
 
   return (
-    <div className="smd:px-0 smd:w-fit h-[calc(100vh-250px)] px-4 w-full pointer-events-none">
+    <div className="smd:px-0 smd:w-fit 5xl:px-4 px-0 h-[calc(100vh-250px)] w-full pointer-events-none">
       <div className="NAME-video-wrapper smd:w-fit h-full w-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
         {!cameraIsActive && (
           <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-white font-bold text-2xl">

@@ -1,3 +1,4 @@
+import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { createInitialConstants } from '@/utils/contants'
 import { TPosition } from '@/utils/types/global'
 import { useState, useRef, useEffect } from 'react'
@@ -10,7 +11,8 @@ export const useZoomEditBackground = (
   zoomOutCoefficient: number = 0.8,
   edgesMargin: number = 10
 ) => {
-  const [scale, setScale] = useState(createInitialConstants<number>('ELEMENT_ZOOM'))
+  const scale = useEditAreaStore((state) => state.editAreaScaleValue)
+  const setScale = useEditAreaStore((state) => state.setEditAreaScaleValue)
   const [translate, setTranslate] = useState<TPosition>({ x: 0, y: 0 })
   const allowedPrintAreaRef = useRef<HTMLDivElement>(null)
   const printAreaContainerWrapperRef = useRef<HTMLElement | null>(null)
@@ -46,16 +48,16 @@ export const useZoomEditBackground = (
     if (!allowedPrintArea) return
     const wrapper = printAreaContainerWrapperRef.current
     if (!wrapper) return
-    setScale((prev) =>
+    setScale(
       Math.min(
-        prev * zoomInCoefficient,
+        scale * zoomInCoefficient,
         calculateMaxScaleForAllowedPrintArea(allowedPrintArea, wrapper)
       )
     )
   }
 
   const zoomOut = () => {
-    setScale((prev) => Math.max(prev * zoomOutCoefficient, minZoom))
+    setScale(Math.max(scale * zoomOutCoefficient, minZoom))
   }
 
   const detectCollisionByAllowedPrintArea = () => {

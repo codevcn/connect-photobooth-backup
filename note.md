@@ -13,3 +13,4 @@
 - defalut value at shipping info form
 - trang quét qr
 - idle timeout tracker
+- check-ts.cmd

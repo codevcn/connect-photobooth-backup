@@ -164,6 +164,7 @@ export const LivePreview = ({
       allowedPrintAreaRef.current?.querySelector<HTMLElement>('.NAME-slots-displayer')
     if (!displayer) return
     if (displayer.getAttribute('data-layout-type') === 'full') return
+    const scaleFactor = useEditAreaStore.getState().editAreaScaleValue
     for (const slot of displayer.querySelectorAll<HTMLElement>('.NAME-layout-slot') || []) {
       const { height, width } = slot.getBoundingClientRect()
       let newHeight = height
@@ -173,8 +174,8 @@ export const LivePreview = ({
       } else {
         newWidth = newHeight
       }
-      slot.style.height = `${newHeight}px`
-      slot.style.width = `${newWidth}px`
+      slot.style.height = `${newHeight / scaleFactor}px`
+      slot.style.width = `${newWidth / scaleFactor}px`
     }
     displayer.style.height = 'fit-content'
     displayer.style.width = 'fit-content'
@@ -271,10 +272,6 @@ export const LivePreview = ({
       removeProductChangingModal()
     }, 6000)
   }, [displayedImage.imageURL])
-
-  useEffect(() => {
-    useEditAreaStore.getState().setEditAreaScaleValue(scale)
-  }, [scale])
 
   useEffect(() => {
     if (!pickedLayout || pickedProduct.id !== prevProductIdRef.current) return
