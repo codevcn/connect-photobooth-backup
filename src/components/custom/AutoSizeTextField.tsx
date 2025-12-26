@@ -1,6 +1,8 @@
 import { useEffect, useState, ChangeEvent, KeyboardEvent, useRef } from 'react'
 
 type AutosizeTextareaProps = {} & Partial<{
+  id: string
+  name: string
   value: string
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
   onEnter: (e: KeyboardEvent<HTMLTextAreaElement>) => void
@@ -16,6 +18,8 @@ type AutosizeTextareaProps = {} & Partial<{
 }>
 
 export const AutoSizeTextField = ({
+  id,
+  name,
   value = '',
   onChange,
   onEnter,
@@ -23,7 +27,7 @@ export const AutoSizeTextField = ({
   onSelect,
   onClick,
   placeholder = 'Nhập văn bản...',
-  minHeight = 40,
+  minHeight = 16,
   maxHeight = 300,
   className = '',
   textfieldRef,
@@ -99,6 +103,8 @@ export const AutoSizeTextField = ({
       onSelect={onSelect}
       onClick={onClick}
       placeholder={placeholder}
+      id={id}
+      name={name}
       className={className}
       rows={1}
       style={{
@@ -107,6 +113,6 @@ export const AutoSizeTextField = ({
         overflow: text.length > 0 ? 'auto' : 'hidden',
         resize: 'none',
       }}
-    />
+    ></textarea>
   )
 }

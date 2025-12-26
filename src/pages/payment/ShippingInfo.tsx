@@ -9,6 +9,7 @@ import { useQueryFilter } from '@/hooks/extensions'
 import { useDebouncedCallback } from '@/hooks/use-debounce'
 import { ELocationBoudaryType } from '@/utils/enums'
 import { toast } from 'react-toastify'
+import { AutoSizeTextField } from '@/components/custom/AutoSizeTextField'
 
 type TFormErrors = {
   fullName?: string
@@ -152,6 +153,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
     }, [selectedLocation])
 
     const searchAddress = useDebouncedCallback(async (keyword: string) => {
+      console.log('>>> [dress] search:', keyword)
       if (keyword.trim().length === 0) {
         setLocations([])
         setTypingSuggestions([])
@@ -194,25 +196,45 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       return words.join(' ').trim()
     }
 
-    const setTextFieldValue = (addressTextFieldElement: HTMLInputElement) => {
-      if (!selectedLocation) return
+    const setTextFieldValue = (
+      addressTextFieldElement: HTMLTextAreaElement,
+      pickedLocation: TClientLocationResult
+    ) => {
+      if (!pickedLocation) return
       const currentKeyword = keywordRef.current
+      console.log('>>> [dress] currentKeyword:', currentKeyword)
       if (!currentKeyword || currentKeyword.trim().length === 0) return
-      const fullAddress = getFullAddress(selectedLocation)
-      const displayedText = `${cleanOverlapKeyword(fullAddress, currentKeyword)} ${fullAddress}`
-      addressTextFieldElement.value = displayedText.trim()
-      const len = addressTextFieldElement.value.length
+      const fullAddress = getFullAddress(pickedLocation)
+      const displayedText = `${cleanOverlapKeyword(
+        fullAddress,
+        currentKeyword
+      )} ${fullAddress}`.trim()
+      console.log('>>> [dress] displayedText:', displayedText)
+      // addressTextFieldElement.value = displayedText
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        addressTextFieldElement.constructor.prototype,
+        'value'
+      )?.set
+      if (nativeInputValueSetter) {
+        nativeInputValueSetter.call(addressTextFieldElement, displayedText)
+        // Trigger input event để React nhận biết thay đổi
+        addressTextFieldElement.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+      const len = displayedText.length
       addressTextFieldElement.focus()
       addressTextFieldElement.setSelectionRange(len, len)
     }
 
     const pickLocation = (locationRefId: TClientLocationResult['refId']) => {
-      const selectedLocation = locations.find((loc) => loc.refId === locationRefId) || null
-      setSelectedLocation(selectedLocation)
-      if (selectedLocation) {
-        const addressInput = containerRef.current?.querySelector<HTMLInputElement>('#address-input')
+      const pickedLocation = locations.find((loc) => loc.refId === locationRefId) || null
+      setSelectedLocation(pickedLocation)
+      if (pickedLocation) {
+        const addressInput = containerRef.current?.querySelector<HTMLTextAreaElement>(
+          '.NAME-address-autosize-textfield'
+        )
+        console.log('>>> [dress] dress:', addressInput)
         if (addressInput) {
-          setTextFieldValue(addressInput)
+          setTextFieldValue(addressInput, pickedLocation)
         }
       }
       setLocations([])
@@ -327,10 +349,9 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
                 Địa chỉ nhận hàng của bạn
               </label>
-              <input
+              <AutoSizeTextField
                 id="address-input"
                 name="address"
-                type="text"
                 onChange={(e) => searchAddress(e.target.value)}
                 placeholder={
                   queryFilter.isPhotoism
@@ -339,7 +360,8 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                     ? '70 Hoàng Diệu 2, Linh Chiểu, Thủ Đức, thành phố Hồ Chí Minh'
                     : '125 Nguyễn Văn Tiên, Tân Phong, thành phố Biên Hòa, tỉnh Đồng Nai'
                 }
-                className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
+                className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} NAME-address-autosize-textfield 5xl:text-[0.7em] md:h-11 no-scrollbar h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
+                minHeight={24}
               />
               {errors.address && (
                 <p className="5xl:text-[0.6em] flex items-center gap-1 text-red-600 text-sm mt-0.5 pl-1">
