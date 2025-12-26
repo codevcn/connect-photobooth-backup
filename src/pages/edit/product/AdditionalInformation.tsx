@@ -206,28 +206,32 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
         </div>
       </div>
 
-      <div className="5xl:hidden smd:order-4 border border-red-300 bg-red-50 block text-center text-xs text-gray-600 order-5 smd:p-3 p-2 rounded-lg space-y-2 mt-2">
-        <span className="font-bold">Lưu ý: </span>
-        <span> Dịch vụ này được cung cấp và chịu trách nhiệm bởi </span>
-        <span className="font-extrabold -tracking-[1px] mt-1 leading-tight text-main-cl">
-          Công ty Encycom
-        </span>
-        <span> trên nền tảng ứng dụng chụp ảnh của</span>
-        <span className=" font-bold whitespace-nowrap text-black"> Fun Studio</span>
-        <span>
-          <span>. Bạn nhớ đọc kỹ </span>
-          <span
-            className="underline cursor-pointer text-blue-600 font-bold"
-            onClick={() => setShowTermsModal(true)}
-          >
-            điều khoản dịch vụ
-          </span>
-          <span> nhé.</span>
-        </span>
-      </div>
-
       {(queryFilter.funId || queryFilter.dev) && showTermsModal && (
-        <TermConditions closeModal={() => setShowTermsModal(false)} />
+        <>
+          <div className="5xl:hidden smd:order-4 border border-red-300 bg-red-50 block text-center text-xs text-gray-600 order-5 smd:p-3 p-2 rounded-lg space-y-2 mt-2">
+            <span className="font-bold">Lưu ý: </span>
+            <span> Dịch vụ này được cung cấp và chịu trách nhiệm bởi </span>
+            <span className="font-extrabold -tracking-[1px] mt-1 leading-tight text-main-cl">
+              Công ty Encycom
+            </span>
+            <span> trên nền tảng ứng dụng chụp ảnh của</span>
+            <span className=" font-bold whitespace-nowrap text-black"> Fun Studio</span>
+            <span>
+              <span>. Bạn nhớ đọc kỹ </span>
+              <span
+                className="underline cursor-pointer text-blue-600 font-bold"
+                onClick={() => setShowTermsModal(true)}
+              >
+                điều khoản dịch vụ
+              </span>
+              <span> nhé.</span>
+            </span>
+          </div>
+
+          {(queryFilter.funId || queryFilter.dev) && showTermsModal && (
+            <TermConditions closeModal={() => setShowTermsModal(false)} />
+          )}
+        </>
       )}
     </div>
   )
