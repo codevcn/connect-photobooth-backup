@@ -193,11 +193,10 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
     if (!isReady) {
       toast.warning('Chưa sẵn sàng để xử lý mã QR. Vui lòng thử lại sau.')
       return
-    } else {
-      toast.info('Bắt đầu xử lý mã QR thử nghiệm...')
     }
     setTimeout(() => {
       qrGetter.setDetectFromFileHandler(detectFromFile as any)
+      setIsScanning(true)
       qrGetter
         .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
           setProgress(percentage)
@@ -229,12 +228,12 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   //   doTest()
   // }, [isReady])
 
-  // useEffect(() => {
-  //   eventEmitter.on(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
-  //   return () => {
-  //     eventEmitter.off(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
-  //   }
-  // }, [isReady])
+  useEffect(() => {
+    eventEmitter.on(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
+    return () => {
+      eventEmitter.off(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
+    }
+  }, [isReady])
 
   return (
     <div className="smd:px-0 smd:w-fit 5xl:px-4 px-0 h-[calc(100vh-250px)] w-full pointer-events-none">
