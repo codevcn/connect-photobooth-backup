@@ -431,11 +431,15 @@ const PaymentPage = () => {
                       </div>
                     )}
                     <button
-                      style={{
-                        pointerEvents: acceptedTerms ? 'auto' : 'none',
-                        cursor: acceptedTerms ? 'pointer' : 'not-allowed',
-                        backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
-                      }}
+                      style={
+                        queryFilter.funId || queryFilter.dev
+                          ? {
+                              pointerEvents: acceptedTerms ? 'auto' : 'none',
+                              cursor: acceptedTerms ? 'pointer' : 'not-allowed',
+                              backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
+                            }
+                          : {}
+                      }
                       onClick={proceedToPayment}
                       className="5xl:text-[0.9em] 5xl:h-14 flex items-center justify-center gap-2 w-full mt-3 h-11 bg-main-cl hover:scale-95 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200"
                     >
@@ -500,9 +504,13 @@ const PaymentPage = () => {
               >
                 <button
                   onClick={proceedToPayment}
-                  style={{
-                    backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
-                  }}
+                  style={
+                    queryFilter.funId || queryFilter.dev
+                      ? {
+                          backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
+                        }
+                      : {}
+                  }
                   className="sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
                 >
                   <svg
