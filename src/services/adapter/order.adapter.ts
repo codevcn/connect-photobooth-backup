@@ -70,7 +70,7 @@ export class OrderAdapter {
         phone: shippingInfo.phone,
       },
       shipping_address: {
-        address1: shippingInfo.address + ', ' + shippingInfo.detailedAddressAutocomplete,
+        address1: shippingInfo.address,
         city: shippingInfo.city,
         province: shippingInfo.province,
         postcode: '000000',
