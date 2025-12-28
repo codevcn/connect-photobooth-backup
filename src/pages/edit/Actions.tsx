@@ -1,6 +1,6 @@
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { MockupPreview } from './MockupPreview'
 import { useEffect, useRef, useState } from 'react'
 import { LocalStorageHelper } from '@/utils/localstorage'
@@ -19,11 +19,12 @@ export const Actions = () => {
   const navigate = useNavigate()
   const [showMockupPreview, setShowMockupPreview] = useState(false)
   const pickedSurface = useProductUIDataStore((s) => s.pickedSurface)
+  const pickedProduct = useProductUIDataStore((s) => s.pickedProduct)
   const { collectMockupVisualStates } = useVisualStatesCollector()
+  const mockupId = useSearchParams()[0].get('mockupId')
 
-  const saveEditngDataToStore = () => {
-    const { stickers, printedImages, texts, layoutMode, storedLayouts } =
-      collectMockupVisualStates()
+  const saveEditingDataToStore = () => {
+    const { stickers, printedImages, texts } = collectMockupVisualStates()
     const {
       saveEditedPrintedImageElementsState,
       saveEditedStickerElementsState,
@@ -37,6 +38,10 @@ export const Actions = () => {
     }
     if (printedImages && printedImages.length > 0) {
       saveEditedPrintedImageElementsState(printedImages)
+    }
+    if (pickedProduct) {
+      const noteValue = (getNoteTextFieldValue()?.value || '').trim()
+      useProductUIDataStore.getState().updateProductEditingNote(pickedProduct.id, noteValue || '')
     }
   }
 
@@ -53,46 +58,54 @@ export const Actions = () => {
   }
 
   const beforeNavigateToPaymentHandler = () => {
-    saveEditngDataToStore()
-    recordMockupNote()
+    saveEditingDataToStore()
+    if (mockupId) recordMockupNote(mockupId)
     AppNavigator.navTo(navigate, '/payment')
   }
 
+  const getNoteTextFieldValue = (): HTMLTextAreaElement | null => {
+    return (
+      (document.getElementById(
+        checkIfMobileScreen() ? 'mockup-note-textfield-mobile' : 'mockup-note-textfield'
+      ) as HTMLTextAreaElement | null) || null
+    )
+  }
+
+  const setNoteTextFieldValue = (mockupNote: string) => {
+    const noteTextfield = getNoteTextFieldValue()
+    if (noteTextfield) {
+      noteTextfield.value = mockupNote
+    }
+  }
+
   const initMockupAttachedData = () => {
-    const mockupAttachedData = useProductUIDataStore
-      .getState()
-      .getMockupAttachedData(useProductUIDataStore.getState().getLastestMockupId() || '')
-    console.log('>>> [note] get mockupAttachedData:', {
-      mockupAttachedData,
-      lastestMockupId: useProductUIDataStore.getState().getLastestMockupId(),
-    })
+    if (!pickedProduct) return
+    if (!mockupId) {
+      const editingNote = useProductUIDataStore.getState().getProductEditingNote(pickedProduct.id)
+      if (editingNote) {
+        setNoteTextFieldValue(editingNote)
+      }
+      return
+    }
+    const mockupAttachedData = useProductUIDataStore.getState().getMockupAttachedData(mockupId)
     if (mockupAttachedData) {
       if (mockupAttachedData.mockupNote) {
-        const noteTextfield = document.getElementById(
-          checkIfMobileScreen() ? 'mockup-note-textfield-mobile' : 'mockup-note-textfield'
-        ) as HTMLTextAreaElement | null
-        if (noteTextfield) {
-          noteTextfield.value = mockupAttachedData.mockupNote
-        }
+        setNoteTextFieldValue(mockupAttachedData.mockupNote)
       }
     }
   }
 
   const handleShowMockupPreview = () => {
-    // if (
-    //   document.body.querySelector<HTMLElement>(
-    //     '.NAME-print-area-container .NAME-print-area-allowed[data-is-out-of-bounds="true"]'
-    //   )
-    // ) {
-    //   return toast.error('Chỉnh sửa vượt ra ngoài vùng in cho phép. Vui lòng điều chỉnh lại.')
-    // }
     if (!checkIfValidToCart('mockup-preview')) return
     setShowMockupPreview(true)
   }
 
   useEffect(() => {
-    updateCartCount()
     initMockupAttachedData()
+  }, [pickedProduct?.id])
+
+  useEffect(() => {
+    updateCartCount()
   }, [])
 
   return (

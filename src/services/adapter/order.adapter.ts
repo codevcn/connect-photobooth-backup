@@ -1,4 +1,5 @@
 import { useCommonDataStore } from '@/stores/ui/common-data.store'
+import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { useUserDataStore } from '@/stores/ui/user-data.store'
 import { checkQueryString } from '@/utils/helpers'
 import { LocalStorageHelper } from '@/utils/localstorage'
@@ -48,6 +49,8 @@ export class OrderAdapter {
           items.push({
             variant_id: variant.variantId,
             quantity: mockup.quantity,
+            item_note:
+              useProductUIDataStore.getState().getMockupAttachedData(mockup.id)?.mockupNote || '',
             surfaces: [
               {
                 surface_id: mockup.surfaceInfo.id,

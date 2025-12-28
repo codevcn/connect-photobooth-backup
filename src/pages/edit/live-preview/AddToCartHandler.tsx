@@ -222,9 +222,7 @@ export const AddToCartHandler = ({
       collectMockupVisualStates(printAreaContainerRef.current || undefined),
       (mockupId) => {
         useProductUIDataStore.getState().setIsAddingToCart(false)
-        useProductUIDataStore.getState().setLastestMockupId(mockupId)
-        console.log('>>> [note] mockup id after add to cart:', mockupId)
-        recordMockupNote()
+        recordMockupNote(mockupId)
         appLogger.logInfo(
           'Add to cart completed successfully',
           EAppPage.EDIT,

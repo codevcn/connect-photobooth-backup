@@ -10,6 +10,11 @@ import { useLayoutStore } from './print-layout.store'
 import { TPrintLayout } from '@/utils/types/print-layout'
 import { generateUniqueId } from '@/utils/helpers'
 
+type TProductEditingNote = {
+  productId: TBaseProduct['id']
+  note: string
+}
+
 type TProductUIDataStore = {
   pickedProduct: TBaseProduct | null
   pickedVariant: TClientProductVariant | null
@@ -17,8 +22,8 @@ type TProductUIDataStore = {
   isAddingToCart: boolean
   cartCount: number
   mockupsAttachedData: TMockupAttatchedData[]
+  productEditingNotes: TProductEditingNote[]
   allowedPrintedAreaChangeId: string | null
-  lastestMockupId: TMockupData['id'] | null
   firstProduct: [TBaseProduct, TPrintAreaInfo, TPrintLayout, TClientProductVariant?] | null
   loadedAllowedPrintedArea: boolean
   foundRestoredMockup: boolean
@@ -32,9 +37,9 @@ type TProductUIDataStore = {
     layout: TPrintLayout,
     initialVariant?: TClientProductVariant
   ) => void
-  setLastestMockupId: (mockupId: TMockupData['id']) => void
-  getLastestMockupId: () => TMockupData['id'] | null
   resetAllowedPrintedAreaChangeId: () => void
+  updateProductEditingNote: (productId: TBaseProduct['id'], note: string) => void
+  getProductEditingNote: (productId: TBaseProduct['id']) => string
   addMockupAttachedData: (data: TMockupAttatchedData) => void
   updateMockupAttachedData: (
     mockupId: TMockupData['id'],
@@ -82,11 +87,28 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   cartCount: 0,
   mockupsAttachedData: [],
   allowedPrintedAreaChangeId: null,
-  lastestMockupId: null,
   firstProduct: null,
   loadedAllowedPrintedArea: false,
   foundRestoredMockup: false,
+  productEditingNotes: [],
 
+  updateProductEditingNote: (productId, note) => {
+    const existingNoteIndex = get().productEditingNotes.findIndex((n) => n.productId === productId)
+    if (existingNoteIndex !== -1) {
+      // Cập nhật note nếu đã tồn tại
+      const updatedNotes = [...get().productEditingNotes]
+      updatedNotes[existingNoteIndex].note = note
+      set({ productEditingNotes: updatedNotes })
+    } else {
+      // Thêm mới note nếu chưa tồn tại
+      set({
+        productEditingNotes: [...get().productEditingNotes, { productId, note }],
+      })
+    }
+  },
+  getProductEditingNote: (productId) => {
+    return get().productEditingNotes.find((n) => n.productId === productId)?.note || ''
+  },
   setRestoredMockupFound: (found: boolean) => {
     set({ foundRestoredMockup: found })
   },
@@ -95,12 +117,6 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
   },
   setFirstProduct: (product, printArea, layout, initialVariant) => {
     set({ firstProduct: [product, printArea, layout, initialVariant] })
-  },
-  getLastestMockupId: () => {
-    return get().lastestMockupId
-  },
-  setLastestMockupId: (mockupId) => {
-    set({ lastestMockupId: mockupId })
   },
   resetAllowedPrintedAreaChangeId: () => {
     set({ allowedPrintedAreaChangeId: generateUniqueId() })
@@ -136,7 +152,6 @@ export const useProductUIDataStore = create<TProductUIDataStore>((set, get) => (
 
   updateMockupAttachedData: (mockupId, data) => {
     const attachedDataList = [...(get().mockupsAttachedData || [])]
-    console.log('>>> [note] existingData:', attachedDataList)
     if (attachedDataList.length === 0) {
       set({ mockupsAttachedData: [{ mockupId, ...data }] })
     } else {

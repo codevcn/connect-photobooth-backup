@@ -511,9 +511,7 @@ export const checkIfValidToCart = (type: 'mockup-preview' | 'add-to-cart') => {
   return true
 }
 
-export const recordMockupNote = () => {
-  const mockupId = useProductUIDataStore.getState().getLastestMockupId()
-  if (!mockupId) return
+export const recordMockupNote = (mockupId: TMockupData['id']) => {
   const mockupNote = (
     document.getElementById(
       checkIfMobileScreen() ? 'mockup-note-textfield-mobile' : 'mockup-note-textfield'

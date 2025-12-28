@@ -16,7 +16,7 @@ type TProductNoteProps = {
 const MockupNote = ({ mockupNote }: TProductNoteProps) => {
   return (
     mockupNote && (
-      <div className="mt-3 p-1 bg-gray-100 border-l-4 border-main-cl rounded-md">
+      <div className="text-[1.1em] mt-3 p-1 bg-gray-100 border-l-4 border-main-cl rounded-md">
         <span className="font-bold pl-1">Ghi chú đơn hàng:</span>
         <span className="whitespace-pre-wrap ml-1">{mockupNote}</span>
       </div>
