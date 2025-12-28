@@ -383,7 +383,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               id="address-input"
               name="address"
               type="text"
-              placeholder="Số nhà, tên đường, tòa nhà, xóm/ấp ..."
+              placeholder="Số nhà, tên đường, hoặc thôn, xóm, ấp..."
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
             />
             {errors.address && (
