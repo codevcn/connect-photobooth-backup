@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
 import { addressService } from '@/services/address.service'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
@@ -11,6 +11,7 @@ import {
 import { useKeyboardStore } from '@/stores/keyboard/keyboard.store'
 import { WarningIcon } from '@/components/custom/icons/WarningIcon'
 import { useQueryFilter } from '@/hooks/extensions'
+import { useDebouncedCallback } from '@/hooks/use-debounce'
 
 type TFormErrors = {
   fullName?: string
@@ -72,6 +73,11 @@ const fuzzySearchVietnamese = (items: TSearchableItem[], query: string): TSearch
   return results.map((result) => result.item)
 }
 
+type TSelectedLocation = {
+  provinceName: string
+  districtName: string
+}
+
 type TShippingInfoFormProps = {
   errors: TFormErrors
   showPaymentModal: boolean
@@ -96,6 +102,15 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
 
     const setTypingSuggestions = useKeyboardStore((s) => s.setSuggestions)
     const queryFilter = useQueryFilter()
+
+    const selectedLocation = useMemo<TSelectedLocation>(() => {
+      const province = provinces.find((p) => p.id === selectedProvinceId)
+      const district = districts.find((d) => d.id === selectedDistrictId)
+      return {
+        provinceName: province ? province.name : '',
+        districtName: district ? district.name : '',
+      }
+    }, [selectedProvinceId, selectedDistrictId])
 
     useEffect(() => {
       if (showPaymentModal) {
@@ -133,6 +148,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       }
 
       fetchProvinces()
+      useKeyboardStore.getState().setSuggestionsLoading('fetched')
     }, [])
 
     // Fetch districts when province changes
@@ -158,35 +174,60 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       fetchDistricts()
     }, [selectedProvinceId])
 
-    const handleProvinceChange = (inputTarget: HTMLInputElement) => {
-      const typedProvince = inputTarget.value
-      const suggestedProvinces = fuzzySearchVietnamese(
-        provinces.map((p) => ({ id: `${p.id}`, name: p.name })),
-        typedProvince
-      )
-      setSuggestedProvinces(suggestedProvinces)
-      setTypingSuggestions(
-        suggestedProvinces.map((province) => ({
-          id: province.id,
-          text: province.name,
-        }))
-      )
+    const resetProvinceOnInputChange = () => {
+      setSelectedProvinceId(null)
+      setSelectedDistrictId(null)
+      setSelectedWardCode(null)
+      const districtInput = document.getElementById('city-input') as HTMLInputElement
+      const wardInput = document.getElementById('ward-input') as HTMLInputElement
+      if (districtInput) districtInput.value = ''
+      if (wardInput) wardInput.value = ''
     }
 
-    const handleDistrictChange = (inputTarget: HTMLInputElement) => {
-      const selectedOption = inputTarget.value
-      const suggestedDistricts = fuzzySearchVietnamese(
-        districts.map((d) => ({ id: `${d.id}`, name: d.name })),
-        selectedOption
-      )
-      setSuggestedDistricts(suggestedDistricts)
-      setTypingSuggestions(
-        suggestedDistricts.map((district) => ({
-          id: district.id,
-          text: district.name,
-        }))
-      )
+    const resetDistrictOnInputChange = () => {
+      setSelectedDistrictId(null)
+      setSelectedWardCode(null)
+      const wardInput = document.getElementById('ward-input') as HTMLInputElement
+      if (wardInput) wardInput.value = ''
     }
+
+    const handleProvinceChange = useDebouncedCallback(
+      (inputTarget: HTMLInputElement, resetProvince?: boolean) => {
+        const typedProvince = inputTarget.value
+        const suggestedProvinces = fuzzySearchVietnamese(
+          provinces.map((p) => ({ id: `${p.id}`, name: p.name })),
+          typedProvince
+        )
+        if (resetProvince) resetProvinceOnInputChange()
+        setSuggestedProvinces(suggestedProvinces)
+        setTypingSuggestions(
+          suggestedProvinces.map((province) => ({
+            id: province.id,
+            text: province.name,
+          }))
+        )
+      },
+      300
+    )
+
+    const handleDistrictChange = useDebouncedCallback(
+      (inputTarget: HTMLInputElement, resetDistrict?: boolean) => {
+        const selectedOption = inputTarget.value
+        const suggestedDistricts = fuzzySearchVietnamese(
+          districts.map((d) => ({ id: `${d.id}`, name: d.name })),
+          selectedOption
+        )
+        if (resetDistrict) resetDistrictOnInputChange()
+        setSuggestedDistricts(suggestedDistricts)
+        setTypingSuggestions(
+          suggestedDistricts.map((district) => ({
+            id: district.id,
+            text: district.name,
+          }))
+        )
+      },
+      300
+    )
 
     const pickProvince = (province: TSearchableItem) => {
       const fullProvince = provinces.find((p) => p.id === parseInt(province.id))
@@ -364,10 +405,16 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 Tỉnh/Thành phố
               </label>
               <input
-                id="province-input"
-                name="province"
                 type="text"
-                onChange={(e) => handleProvinceChange(e.target)}
+                name="province"
+                value={selectedLocation.provinceName}
+                readOnly
+                className="hidden"
+              />
+              <input
+                id="province-input"
+                type="text"
+                onChange={(e) => handleProvinceChange(e.target, true)}
                 onFocus={onProvinceFocusInput}
                 placeholder={isLoadingProvinces ? 'Đang tải...' : 'Nhập tên tỉnh/thành phố'}
                 className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} NAME-province 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
@@ -375,7 +422,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 autoComplete="off"
               />
               {!queryFilter.isPhotoism && suggestedProvinces.length > 0 && (
-                <ul className="NAME-provinces-suggestion absolute z-50 w-full bg-white border border-gray-300 rounded-xl mt-1 max-h-60 overflow-y-auto shadow-lg">
+                <ul className="NAME-provinces-suggestion STYLE-styled-scrollbar absolute z-50 w-full bg-white border border-gray-300 rounded-xl mt-1 max-h-60 overflow-y-auto shadow-lg">
                   {suggestedProvinces.map((province) => {
                     return (
                       <li
@@ -404,10 +451,16 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 Quận/Huyện
               </label>
               <input
-                id="city-input"
-                name="city"
                 type="text"
-                onChange={(e) => handleDistrictChange(e.target)}
+                name="city"
+                value={selectedLocation.districtName}
+                readOnly
+                className="hidden"
+              />
+              <input
+                id="city-input"
+                type="text"
+                onChange={(e) => handleDistrictChange(e.target, true)}
                 onFocus={onDistrictFocusInput}
                 placeholder={
                   !selectedProvinceId
@@ -421,7 +474,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 autoComplete="off"
               />
               {!queryFilter.isPhotoism && suggestedDistricts.length > 0 && (
-                <ul className="NAME-districts-suggestion absolute z-50 w-full bg-white border border-gray-300 rounded-xl mt-1 max-h-60 overflow-y-auto shadow-lg">
+                <ul className="NAME-districts-suggestion STYLE-styled-scrollbar absolute z-50 w-full bg-white border border-gray-300 rounded-xl mt-1 max-h-60 overflow-y-auto shadow-lg">
                   {suggestedDistricts.map((district) => {
                     return (
                       <li

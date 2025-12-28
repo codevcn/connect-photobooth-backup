@@ -63,9 +63,9 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
       setErrors({
         fullName: name ? undefined : 'Họ và tên là bắt buộc',
         phone: phone ? undefined : 'Số điện thoại là bắt buộc',
-        province: province ? undefined : 'Thiếu tỉnh / thành phố',
-        city: city ? undefined : 'Thiếu quận / huyện',
-        address: address ? undefined : 'Thiếu địa chỉ chi tiết',
+        province: province ? undefined : 'Vui lòng chọn tỉnh/thành phố',
+        city: city ? undefined : 'Vui lòng chọn quận/huyện',
+        address: address ? undefined : 'Vui lòng nhập địa chỉ chi tiết',
       })
       isValid = false
     }
