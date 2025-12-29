@@ -1,4 +1,4 @@
-import { TLogEntry } from './global'
+import { TLocalBlobURLsCache, TLogEntry } from './global'
 import { TRestoreMockupBodySchema } from './restore-mockup'
 
 export type TBase64WorkerInput = Partial<{
@@ -14,4 +14,6 @@ export type TBase64WorkerOutput = Partial<{
 
 export type TLoggingWorkerInput = TLogEntry
 
-export type TRestoreMockupWorkerInput = TRestoreMockupBodySchema
+export type TRestoreMockupWorkerInput = TRestoreMockupBodySchema & {
+  localBlobURLsCache: TLocalBlobURLsCache
+}

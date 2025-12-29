@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useMemo } from 'react'
 import { type Crop } from 'react-image-crop'
 import { TUserInputImage } from '@/utils/types/global'
 import { createCommonConstants } from '@/utils/contants'
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
 
 type UseCropImageOptions = {
   imageData?: TUserInputImage
@@ -198,7 +199,7 @@ export const useImageCrop = ({ imageData, onCropComplete }: UseCropImageOptions 
               setIsCropping(false)
               resolve({
                 blob,
-                url: URL.createObjectURL(blob),
+                url: useCommonDataStore.getState().createLocalBlobURL(blob),
               })
             },
             format,

@@ -8,6 +8,7 @@ import { createPortal } from 'react-dom'
 import { CropImageElementModal } from '../../elements/CropImageElementModal'
 import { useQueryFilter } from '@/hooks/extensions'
 import { toast } from 'react-toastify'
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
 
 type ImageProps = {
   img: TPrintedImage
@@ -104,7 +105,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
     const printedImage = showCropImageModal.printdImage
     if (!printedImage) return
     const clonedImage = { ...printedImage }
-    clonedImage.url = URL.createObjectURL(imageBlob)
+    clonedImage.url = useCommonDataStore.getState().createLocalBlobURL(imageBlob)
     if (!clonedImage) return
     addPrintedImageToLayout(clonedImage)
   }
@@ -201,8 +202,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
         </div>
       </div>
 
-      {!checkIfMobileScreen() &&
-        showCropImageModal.showModal &&
+      {showCropImageModal.showModal &&
         showCropImageModal.printdImage &&
         createPortal(
           <CropImageElementModal

@@ -6,6 +6,7 @@ import { TUserInputImage } from '@/utils/types/global'
 import { toast } from 'react-toastify'
 import { SectionLoading } from '@/components/custom/Loading'
 import { useImageCrop } from '@/hooks/use-image-crop'
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
 
 type TCropElementModalProps = {
   imageUrl: string
@@ -120,7 +121,7 @@ export const CropImageElementModal = ({
         canvas.toBlob(
           (blob) => {
             if (blob) {
-              const rotatedUrl = URL.createObjectURL(blob)
+              const rotatedUrl = useCommonDataStore.getState().createLocalBlobURL(blob)
               setRotatedImageUrl(rotatedUrl)
             }
           },

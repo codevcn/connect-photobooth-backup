@@ -1,5 +1,5 @@
 import {
-  TClippedElements,
+  TMockupData,
   TPrintedImageVisualState,
   TStickerVisualState,
   TTextVisualState,
@@ -30,8 +30,15 @@ export type TMockupConfig = {
 type TAllowedPrintArea = {
   width: number // in pixels
   height: number // in pixels
-  offsetX: number // in pixels
-  offsetY: number // in pixels
+  x: number // in pixels
+  y: number // in pixels
+}
+
+type TPrintAreaContainerWrapper = {
+  width: number // in pixels
+  height: number // in pixels
+  x: number // in pixels
+  y: number // in pixels
 }
 
 // ============================================
@@ -49,22 +56,18 @@ type TProductInfo = {
   }
 }
 
-type TPrintAreaContainerWrapper = {
-  width: number // in pixels
-  height: number // in pixels
-}
-
 // ============================================
 // MAIN SCHEMA
 // ============================================
 
 export type TRestoreMockupBodySchema = {
+  mockupId: TMockupData['id']
   printAreaContainerWrapper: TPrintAreaContainerWrapper
 
   /**
    * Thông tin sản phẩm (optional - để reference/logging)
    */
-  product?: TProductInfo
+  product: TProductInfo
 
   /**
    * Cấu hình print area - REQUIRED

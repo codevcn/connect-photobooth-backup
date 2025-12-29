@@ -10,6 +10,7 @@ import { useEditedElementStore } from '@/stores/element/element.store'
 import { createPortal } from 'react-dom'
 import { getEditedElementByElementId } from '@/utils/helpers'
 import { CropImageElementModal } from './CropImageElementModal'
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
 
 type TCropImageElementProps = {}
 
@@ -19,7 +20,7 @@ export const CropImageElement = ({}: TCropImageElementProps) => {
 
   const handleCropComplete = (imageBlob: Blob) => {
     if (!selectedElement) return
-    const url = URL.createObjectURL(imageBlob)
+    const url = useCommonDataStore.getState().createLocalBlobURL(imageBlob)
     const img = new Image()
     img.onload = () => {
       const imgSize = {

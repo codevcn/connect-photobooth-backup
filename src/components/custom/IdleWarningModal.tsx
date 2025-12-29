@@ -1,5 +1,6 @@
 import { useOnRouteChange } from '@/hooks/use-route'
-import { removeQueryString } from '@/utils/helpers'
+import { useScreenSizeChange } from '@/hooks/use-screen-size'
+import { checkIfMobileScreen, removeQueryString } from '@/utils/helpers'
 import { createQueryStringInURL } from '@/utils/navigator'
 import { useState, useEffect, useRef } from 'react'
 
@@ -218,9 +219,9 @@ export const UserIdleTracker = ({
   }
 
   useOnRouteChange((path) => {
-    if (!removeQueryString(path).split('/')[1]) {
-      disableIdleTrackingRef.current = true
+    if (path === '/' || checkIfMobileScreen()) {
       // nếu là trang chủ thì disable tính năng idle
+      disableIdleTrackingRef.current = true
       disableTimers()
     } else {
       // không phải trang chủ thì reset timer

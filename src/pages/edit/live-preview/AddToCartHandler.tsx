@@ -23,14 +23,17 @@ import { toast } from 'react-toastify'
 import {
   checkIfValidToCart,
   cleanPrintAreaOnExtractMockupImage,
+  getMockupByVariantAndSurface,
   recordMockupNote,
 } from '../helpers'
 import { appLogger } from '@/logging/Logger'
 import { EAppFeature, EAppPage } from '@/utils/enums'
 import { restoreMockupWorkerController } from '@/workers/restore-mockup.worker-controller'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
 
 const prepareRestoreMockupData = (
+  mockupId: TMockupData['id'],
   sessionId: string,
   transparentPrintAreaContainer: HTMLElement,
   clonedAllowedPrintArea: HTMLElement,
@@ -38,22 +41,25 @@ const prepareRestoreMockupData = (
   stickerElements?: TStickerVisualState[],
   textElements?: TTextVisualState[]
 ) => {
-  const { pickedSurface, pickedProduct } = useProductUIDataStore.getState()
-  if (!pickedSurface || !pickedProduct) return
+  const { pickedSurface, pickedProduct, pickedVariant } = useProductUIDataStore.getState()
+  if (!pickedSurface || !pickedProduct || !pickedVariant) return
   const { layoutMode, pickedLayout } = useLayoutStore.getState()
   const printAreaContainerWrapperRect = transparentPrintAreaContainer.getBoundingClientRect()
   const clonedAllowedPrintAreaRect = clonedAllowedPrintArea.getBoundingClientRect()
   restoreMockupWorkerController.sendRestoreMockupData({
+    mockupId,
     layoutMode,
     allowedPrintArea: {
       width: clonedAllowedPrintAreaRect.width,
       height: clonedAllowedPrintAreaRect.height,
-      offsetX: clonedAllowedPrintAreaRect.left - printAreaContainerWrapperRect.left,
-      offsetY: clonedAllowedPrintAreaRect.top - printAreaContainerWrapperRect.top,
+      x: clonedAllowedPrintAreaRect.left,
+      y: clonedAllowedPrintAreaRect.top,
     },
     printAreaContainerWrapper: {
       width: printAreaContainerWrapperRect.width,
       height: printAreaContainerWrapperRect.height,
+      x: printAreaContainerWrapperRect.left,
+      y: printAreaContainerWrapperRect.top,
     },
     printedImageElements,
     stickerElements,
@@ -69,9 +75,12 @@ const prepareRestoreMockupData = (
       surfaceId: pickedSurface.id,
       mockup: {
         id: pickedSurface.id,
-        imageURL: pickedSurface.imageUrl,
+        imageURL:
+          getMockupByVariantAndSurface(pickedProduct, pickedVariant.id, pickedSurface.id)
+            ?.imageUrl || '',
       },
     },
+    localBlobURLsCache: useCommonDataStore.getState().localBlobURLsCache,
   })
 }
 
@@ -163,7 +172,6 @@ export const AddToCartHandler = ({
           },
           elementsVisualState
         )
-        removeMockPrintArea()
         productService
           .preSendMockupImage(
             allowedPrintAreaImageData,
@@ -193,15 +201,19 @@ export const AddToCartHandler = ({
         useProductUIDataStore.getState().setCartCount(LocalStorageHelper.countSavedMockupImages())
         onDoneAdd(mockupId)
 
-        // if (!allowedPrintArea) return
-        // prepareRestoreMockupData(
-        //   sessionId,
-        //   transparentPrintAreaContainer,
-        //   allowedPrintArea,
-        //   elementsVisualState.printedImages,
-        //   elementsVisualState.stickers,
-        //   elementsVisualState.texts
-        // )
+        if (allowedPrintArea) {
+          prepareRestoreMockupData(
+            mockupId,
+            sessionId,
+            transparentPrintAreaContainer,
+            allowedPrintArea,
+            elementsVisualState.printedImages,
+            elementsVisualState.stickers,
+            elementsVisualState.texts
+          )
+        }
+
+        removeMockPrintArea()
       },
       (error) => {
         removeMockPrintArea()

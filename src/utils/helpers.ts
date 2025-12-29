@@ -651,3 +651,23 @@ export function extractIntegerFromString(str: string): number | null {
 export function normalizeSpaces(text: string): string {
   return text.trim().replace(/\s+/g, ' ')
 }
+
+export const convertBlobTypeToFileExtension = (blobType: string): string => {
+  // Normalize the MIME type (remove parameters like charset)
+  const normalizedType = blobType.split(';')[0].trim().toLowerCase()
+
+  switch (normalizedType) {
+    // Images
+    case 'image/png':
+      return '.png'
+    case 'image/jpeg':
+    case 'image/jpg':
+      return '.jpg'
+    case 'image/webp':
+      return '.webp'
+    case 'image/avif':
+      return '.avif'
+    default:
+      return ''
+  }
+}

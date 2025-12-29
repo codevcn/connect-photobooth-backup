@@ -7,7 +7,7 @@ import { AddToCartHandler } from './AddToCartHandler'
 import { adjustNearF3F4F6, getFinalColorValue } from '@/utils/helpers'
 import { SectionLoading } from '@/components/custom/Loading'
 import { useZoomEditBackground } from '@/hooks/use-zoom-edit-background'
-import { cancelSelectingZoomingImages } from '../helpers'
+import { cancelSelectingZoomingImages, getMockupByVariantAndSurface } from '../helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
@@ -218,9 +218,10 @@ export const LivePreview = ({
     usePrintArea(printAreaInfo, handlePrintAreaUpdated, scale, pickedProduct.id, pickedLayout?.id)
 
   const displayedImage = useMemo<TDisplayedImage>(() => {
-    const variantSurface = pickedProduct.printAreaList.find(
-      (variantSurface) =>
-        variantSurface.variantId === editedVariantId && variantSurface.id === pickedSurfaceId
+    const variantSurface = getMockupByVariantAndSurface(
+      pickedProduct,
+      editedVariantId,
+      pickedSurfaceId
     )
     return {
       surfaceId: pickedSurfaceId,

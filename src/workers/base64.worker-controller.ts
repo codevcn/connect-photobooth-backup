@@ -21,4 +21,4 @@ class Base64WorkerHelper {
   }
 }
 
-export const base64WorkerHelper = new Base64WorkerHelper()
+// export const base64WorkerHelper = new Base64WorkerHelper()

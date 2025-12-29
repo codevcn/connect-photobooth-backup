@@ -11,6 +11,7 @@ import { checkIfLargeScreen } from '@/utils/helpers'
 import { appLogger } from '@/logging/Logger'
 import { EAppFeature, EAppPage, ELogLevel } from '@/utils/enums'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
 
 type QRScannerProps = {
   onScanSuccess: (result: TUserInputImage[]) => Promise<void>
@@ -59,7 +60,9 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
                 onScanSuccess(
                   images.map((img) => ({
                     ...img,
-                    url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
+                    url: img.isOriginalImage
+                      ? img.url
+                      : useCommonDataStore.getState().createLocalBlobURL(img.blob),
                   }))
                 )
               }
@@ -202,7 +205,9 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
             onScanSuccess(
               images.map((img) => ({
                 ...img,
-                url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
+                url: img.isOriginalImage
+                  ? img.url
+                  : useCommonDataStore.getState().createLocalBlobURL(img.blob),
               }))
             )
           }
@@ -219,13 +224,13 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   //   doTest()
   // }, [isReady])
 
-  // useEffect(() => {
-  //   if (!isReady) return
-  //   eventEmitter.on(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
-  //   return () => {
-  //     eventEmitter.off(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
-  //   }
-  // }, [isReady])
+  useEffect(() => {
+    if (!isReady) return
+    eventEmitter.on(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
+    return () => {
+      eventEmitter.off(EInternalEvents.DO_TEST_PASS_SCAN_QR, doTest)
+    }
+  }, [isReady])
 
   return (
     <div className="smd:px-0 smd:w-fit 5xl:px-4 px-0 h-[calc(100vh-250px)] w-full pointer-events-none">

@@ -1,10 +1,13 @@
 import { hardCodedPrintTemplates } from '@/configs/print-template/templates-data'
 import { createInitialConstants } from '@/utils/contants'
 import {
+  TBaseProduct,
+  TClientProductVariant,
   TMockupData,
   TPlacedImage,
   TPlacedImageMetaData,
   TPosition,
+  TPrintAreaInfo,
   TPrintedImage,
   TPrintTemplate,
   TShapeOrientationType,
@@ -522,4 +525,14 @@ export const recordMockupNote = (mockupId: TMockupData['id']) => {
   } else {
     useProductUIDataStore.getState().updateMockupAttachedData(mockupId, { mockupNote: '' })
   }
+}
+
+export const getMockupByVariantAndSurface = (
+  product: TBaseProduct,
+  variantId: TClientProductVariant['id'],
+  surfaceId: TPrintAreaInfo['id']
+) => {
+  return product.printAreaList.find(
+    (variantSurface) => variantSurface.variantId === variantId && variantSurface.id === surfaceId
+  )
 }

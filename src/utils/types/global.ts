@@ -211,7 +211,13 @@ export type TElementVisualBaseState = {
   scale: number
   angle: number
   zindex: number
-}
+} & Partial<{
+  height: number
+  width: number
+  clippath: string
+  mountType: TElementMountType
+  matchOrientation: TMatchOrientation
+}>
 
 export type TTextVisualState = TElementVisualBaseState & {
   id: string
@@ -222,11 +228,6 @@ export type TTextVisualState = TElementVisualBaseState & {
   mountType?: TElementMountType
   clippath?: string
 } & Partial<{
-    mountType: TElementMountType
-    height: number
-    width: number
-    matchOrientation: TMatchOrientation
-    clippath: string
     fontSize: number
   }>
 
@@ -236,12 +237,7 @@ export type TStickerVisualState = TElementVisualBaseState & {
   id: string
   path: string
 } & Partial<{
-    mountType: TElementMountType
-    height: number
-    width: number
-    matchOrientation: TMatchOrientation
     grayscale: number // 0-100 percentage
-    clippath: string
   }>
 
 export type TPrintedImageVisualState = TStickerVisualState &
@@ -596,3 +592,7 @@ export type TClippedElements = {
     polygon: string | null
   }
 }
+
+export type TURL = string
+export type TBase64 = string
+export type TLocalBlobURLsCache = Record<TURL, Blob>

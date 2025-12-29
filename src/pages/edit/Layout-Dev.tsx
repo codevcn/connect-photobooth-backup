@@ -9,8 +9,9 @@ import { TPrintedImage, TUserInputImage } from '@/utils/types/global'
 import { generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
 import { useFastBoxes } from '@/hooks/use-fast-boxes'
-import { qrGetter } from '@/configs/brands/photoism/qr-getter-Dev'
 import { AppNavigator } from '@/utils/navigator'
+import { useCommonDataStore } from '@/stores/ui/common-data.store'
+import { qrGetter } from '@/configs/brands/photoism/qr-getter'
 
 const LayoutDev = () => {
   const [error, setError] = useState<string | null>(null)
@@ -66,7 +67,9 @@ const LayoutDev = () => {
             for (const img of images) {
               userInputImages.push({
                 ...img,
-                url: img.isOriginalImage ? img.url : URL.createObjectURL(img.blob),
+                url: img.isOriginalImage
+                  ? img.url
+                  : useCommonDataStore.getState().createLocalBlobURL(img.blob),
               })
             }
             onScanSuccess(userInputImages)

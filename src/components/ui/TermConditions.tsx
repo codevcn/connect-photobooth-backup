@@ -101,7 +101,7 @@ const TermsOfServiceContent = () => {
     <>
       {/* Thông tin công ty */}
       <section className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <h4 className="text-lg font-bold text-main-cl mb-4">THÔNG TIN BÊN BÁN</h4>
+        {/* <h4 className="text-lg font-bold text-main-cl mb-4">THÔNG TIN BÊN BÁN</h4> */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div className="col-span-1 md:col-span-2">
             <span className="font-semibold text-gray-900">Đơn vị vận hành:</span> CÔNG TY TNHH
