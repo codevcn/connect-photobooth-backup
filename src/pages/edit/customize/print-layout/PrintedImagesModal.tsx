@@ -201,8 +201,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
         </div>
       </div>
 
-      {!checkIfMobileScreen() &&
-        showCropImageModal.showModal &&
+      {showCropImageModal.showModal &&
         showCropImageModal.printdImage &&
         createPortal(
           <CropImageElementModal
