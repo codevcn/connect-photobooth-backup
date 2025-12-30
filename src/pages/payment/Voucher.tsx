@@ -4,6 +4,7 @@ import { TVoucher, TPaymentProductItem } from '@/utils/types/global'
 import { TCheckVoucherReq } from '@/utils/types/api'
 import { ETextFieldNameForKeyBoard } from '@/providers/GlobalKeyboardProvider'
 import { useVoucherStore } from '@/stores/voucher/product.store'
+import { AvailableVouchers } from './AvailableVouchers'
 
 type VoucherSectionProps = {
   cartItems: TPaymentProductItem[]
@@ -42,12 +43,17 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
   }
 
   // Hàm áp dụng voucher
-  const applyVoucher = async () => {
-    const discountCode = voucherInputRef.current?.value || ''
+  const applyVoucher = async (voucherCode?: string) => {
+    const discountCode = voucherCode || voucherInputRef.current?.value || ''
     console.log('>>> discountCode:', discountCode)
     if (!discountCode.trim()) {
       setDiscountMessage({ message: 'Vui lòng nhập mã giảm giá', status: 'error' })
       return
+    }
+
+    // Set value to input if voucherCode is provided
+    if (voucherCode && voucherInputRef.current) {
+      voucherInputRef.current.value = voucherCode
     }
 
     setIsApplyingVoucher(true)
@@ -118,6 +124,13 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
         <h2 className="5xl:text-[0.9em] font-semibold text-gray-900">Mã giảm giá</h2>
       </div>
 
+      {/* Available Vouchers List */}
+      {!appliedVoucher && (
+        <div className="mb-4">
+          <AvailableVouchers onVoucherSelect={applyVoucher} disabled={isApplyingVoucher} />
+        </div>
+      )}
+
       {/* Applied Voucher Display */}
       {appliedVoucher && (
         <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-xl">
@@ -133,20 +146,18 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
             </div>
             <button
               onClick={removeVoucher}
-              className="p-1 text-green-600 hover:text-green-800 transition"
+              className="text-green-600 hover:text-green-800 transition"
               aria-label="Xóa voucher"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-x-icon lucide-x"
+                className="lucide lucide-x-icon lucide-x w-4 h-4 4xl:w-6 4xl:h-6"
               >
                 <path d="M18 6 6 18" />
                 <path d="m6 6 12 12" />
@@ -166,7 +177,7 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
           className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.8em] md:h-10 h-9 flex-1 w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed`}
         />
         <button
-          onClick={applyVoucher}
+          onClick={() => applyVoucher()}
           disabled={!!appliedVoucher || isApplyingVoucher}
           className="5xl:text-[0.8em] 5xl:h-12 h-8 px-6 bg-main-cl text-white font-medium rounded-xl active:scale-95 transition shadow-sm w-max disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
