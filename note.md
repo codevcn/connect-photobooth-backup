@@ -14,3 +14,4 @@
 - trang quét qr
 - idle timeout tracker
 - check-ts.cmd
+- nút OK ở component LivePreview
