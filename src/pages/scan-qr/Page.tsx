@@ -6,6 +6,8 @@ import { generateUniqueId } from '@/utils/helpers'
 import { toast } from 'react-toastify'
 import { AppNavigator } from '@/utils/navigator'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
+import { useState } from 'react'
+import { TutorialForMobile } from './Tutorial-ForMobile'
 
 // --- Cấu hình Animation & Style ---
 const FloatingStyles = () => (
@@ -75,7 +77,7 @@ const ScanQRPage = () => {
 
   return (
     // Container chính - Quay lại Gradient Hồng Đỏ tươi sáng
-    <div className="relative h-screen w-screen overflow-hidden bg-white">
+    <div className="relative smd:h-screen h-dvh w-screen overflow-hidden bg-white">
       <FloatingStyles />
 
       {/* --- BACKGROUND DECORATION & FLOATING ICONS --- */}
@@ -324,7 +326,7 @@ const ScanQRPage = () => {
         id="scan-qr-area"
         className="5xl:py-6 pt-6 flex flex-col h-full items-center relative w-full text-center z-50"
       >
-        <div className="5xl:justify-center 5xl:w-[38vw] 5xl:px-0 5xl:gap-4 gap-2 px-4 flex flex-col h-full items-center w-full">
+        <div className="5xl:justify-center 5xl:w-[38vw] 5xl:px-0 5xl:gap-4 gap-4 px-4 flex flex-col h-full items-center w-full">
           <h1
             onClick={() => {
               eventEmitter.emit(EInternalEvents.DO_TEST_PASS_SCAN_QR)
@@ -421,6 +423,8 @@ const ScanQRPage = () => {
           </div>
         </div>
       </div>
+
+      <TutorialForMobile />
     </div>
   )
 }

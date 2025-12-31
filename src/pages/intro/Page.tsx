@@ -4,40 +4,8 @@ import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QRCode from 'qrcode'
 import { appLogger } from '@/logging/Logger'
-import { EAppFeature, EAppPage, ELogLevel } from '@/utils/enums'
-
-type TStarProps = {
-  top?: string
-  left?: string
-  right?: string
-  bottom?: string
-  index: number
-}
-
-const Star = ({ top, left, right, bottom, index }: TStarProps) => {
-  return (
-    <div
-      style={{
-        top: top,
-        left: left,
-        right: right,
-        bottom: bottom,
-      }}
-      className={`NAME-intro-star NAME-intro-star-${index} absolute w-14 h-14`}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <path
-          stroke="#fff"
-          fill="#e60076"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1"
-          d="m12 3 2.036 5.162c.188.476.282.714.425.915.128.178.284.334.462.462.2.143.439.237.915.425L21 12l-5.162 2.036c-.476.188-.714.282-.915.425a1.998 1.998 0 0 0-.462.462c-.143.2-.237.439-.425.915L12 21l-2.036-5.162c-.188-.476-.282-.714-.425-.915a1.999 1.999 0 0 0-.462-.462c-.2-.143-.439-.237-.915-.425L3 12l5.162-2.036c.476-.188.714-.282.915-.425a2 2 0 0 0 .462-.462c.143-.2.237-.439.425-.915L12 3Z"
-        />
-      </svg>
-    </div>
-  )
-}
+import { EAppFeature, EAppPage } from '@/utils/enums'
+import { CTAButtonStar } from '@/components/custom/CTAButtonStar'
 
 const IntroPage = () => {
   const navigate = useNavigate()
@@ -121,11 +89,11 @@ const IntroPage = () => {
             onClick={clickOnCTAButton}
             className="NAME-intro-CTA-button relative bg-white border-main-cl border-b-6 px-14 py-6 text-main-cl font-black text-5xl rounded-full cursor-pointer tracking-wider flex items-center gap-3"
           >
-            <Star index={1} top="-12px" left="-12px" />
-            <Star index={2} top="-12px" right="-12px" />
-            <Star index={3} bottom="-26px" left="30px" />
-            <Star index={4} bottom="-26px" right="12px" />
-            <Star index={5} top="-26px" right="32px" />
+            <CTAButtonStar index={1} top="-12px" left="-12px" />
+            <CTAButtonStar index={2} top="-12px" right="-12px" />
+            <CTAButtonStar index={3} bottom="-26px" left="30px" />
+            <CTAButtonStar index={4} bottom="-26px" right="12px" />
+            <CTAButtonStar index={5} top="-26px" right="32px" />
 
             {/* <!-- Vùng chứa text sẽ được xử lý JS --> */}
             <span className="relative z-10 flex">

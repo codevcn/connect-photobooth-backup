@@ -33,7 +33,7 @@ import ScanQRPage from './pages/scan-qr/Page'
 import { AppRootProvider } from './providers/RootProvider'
 import { useEffect } from 'react'
 import IntroPage from './pages/intro/Page'
-import { isHomePage } from './utils/helpers'
+import { checkIfMobileScreen, isHomePage } from './utils/helpers'
 import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
 import MaintainPage from './pages/maintain/Page'
@@ -80,7 +80,7 @@ function AppRoutes() {
 
   // Routes cho Photoism
   if (queryFilter.isPhotoism) {
-    if (queryFilter.isMobileDevice) {
+    if (queryFilter.isMobileDevice || checkIfMobileScreen()) {
       return (
         <>
           {/* <IdleCountdown /> */}

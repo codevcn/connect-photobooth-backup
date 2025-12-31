@@ -104,49 +104,47 @@ export const CropImageElementModal = ({
     img.onload = () => {
       // Chỉ xoay nếu màn hình nhỏ hơn 662px và ảnh ngang
       if (window.innerWidth < 662 && img.naturalWidth > img.naturalHeight * 1.5) {
-        // Ảnh ngang cần xoay 90 độ
-        const canvas = document.createElement('canvas')
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-
-        // Đảo kích thước canvas
-        canvas.width = img.naturalHeight
-        canvas.height = img.naturalWidth
-
-        // Xoay và vẽ ảnh
-        ctx.translate(canvas.width / 2, canvas.height / 2)
-        ctx.rotate(-Math.PI / 2)
-        ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2)
-
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              const rotatedUrl = useCommonDataStore.getState().createLocalBlobURL(blob)
-              setRotatedImageUrl(rotatedUrl)
-            }
-          },
-          'image/jpeg',
-          1
-        )
+        // // Ảnh ngang cần xoay 90 độ
+        // const canvas = document.createElement('canvas')
+        // const ctx = canvas.getContext('2d')
+        // if (!ctx) return
+        // // Đảo kích thước canvas
+        // canvas.width = img.naturalHeight
+        // canvas.height = img.naturalWidth
+        // // Xoay và vẽ ảnh
+        // ctx.translate(canvas.width / 2, canvas.height / 2)
+        // ctx.rotate(-Math.PI / 2)
+        // ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2)
+        // canvas.toBlob(
+        //   (blob) => {
+        //     if (blob) {
+        //       const rotatedUrl = useCommonDataStore.getState().createLocalBlobURL(blob)
+        //       setRotatedImageUrl(rotatedUrl)
+        //     }
+        //   },
+        //   'image/jpeg',
+        //   1
+        // )
       } else {
         // Không cần xoay
-        const rotateImgContainer = document.body.querySelector<HTMLElement>(
-          '.NAME-rotate-image-container'
-        )
-        rotateImgContainer?.style.setProperty('flex-direction', 'column')
-        rotateImgContainer?.style.setProperty('align-items', 'center')
-        rotateImgContainer
-          ?.querySelector<HTMLElement>('.NAME-sub-rotate-image-container')
-          ?.style.setProperty('height', 'fit-content')
-        setMaxCropSizeHeight(320)
-        rotateImgContainer
-          ?.querySelector<HTMLElement>('.NAME-sub-image-crop')
-          ?.style.setProperty('height', 'fit-content')
-        rotateImgContainer
-          ?.querySelector<HTMLElement>('.NAME-sub-form-image-edit')
-          ?.style.setProperty('width', '100%')
-        setRotatedImageUrl(imageUrl)
+        // const rotateImgContainer = document.body.querySelector<HTMLElement>(
+        //   '.NAME-rotate-image-container'
+        // )
+        // rotateImgContainer?.style.setProperty('flex-direction', 'column')
+        // rotateImgContainer?.style.setProperty('align-items', 'center')
+        // rotateImgContainer
+        //   ?.querySelector<HTMLElement>('.NAME-sub-rotate-image-container')
+        //   ?.style.setProperty('height', 'fit-content')
+        // setMaxCropSizeHeight(320)
+        // rotateImgContainer
+        //   ?.querySelector<HTMLElement>('.NAME-sub-image-crop')
+        //   ?.style.setProperty('height', 'fit-content')
+        // rotateImgContainer
+        //   ?.querySelector<HTMLElement>('.NAME-sub-form-image-edit w-full')
+        //   ?.style.setProperty('width', '100%')
+        // setRotatedImageUrl(imageUrl)
       }
+      setRotatedImageUrl(imageUrl)
     }
     img.src = imageUrl
   }
@@ -213,9 +211,9 @@ export const CropImageElementModal = ({
     >
       <div className="absolute inset-0 bg-black/50 z-10" onClick={onClose}></div>
       <div className="relative z-20 w-full max-w-7xl">
-        <div className="NAME-rotate-image-container flex gap-2.5 items-stretch max-h-[90vh] pr-2 bg-gray-100 rounded-lg px-6 pt-4 pb-2 overflow-y-auto overflow-x-hidden w-full">
-          <div className="NAME-sub-rotate-image-container flex items-center justify-center w-2/3 max-w-2/3 h-[calc(90vh-32px)]">
-            <div className="NAME-sub-image-crop flex items-start justify-center w-full h-full overflow-hidden">
+        <div className="NAME-rotate-image-container flex items-center flex-col gap-2.5 max-h-[90vh] bg-gray-100 rounded-l px-4 pt-4 pb-2 overflow-y-auto overflow-x-hidden w-full">
+          <div className="NAME-sub-rotate-image-container max-h-[calc(90vh-180px)] flex items-center justify-center w-full max-w-full">
+            <div className="NAME-sub-image-crop flex items-start justify-center w-full h-full max-h-full overflow-hidden">
               {rotatedImageUrl ? (
                 <ReactCrop
                   crop={crop}
@@ -229,15 +227,15 @@ export const CropImageElementModal = ({
                     alt="Ảnh để crop"
                     src={rotatedImageUrl}
                     onLoad={onImageLoad}
-                    className="NAME-root-crop-image object-contain max-h-full max-w-full"
-                    style={{ maxHeight: maxCropSizeHeight }}
+                    className="NAME-root-crop-image object-contain max-h-[calc(90vh-180px)] max-w-full"
+                    style={{ maxHeight: 'calc(90vh - 180px)' }}
                     crossOrigin="anonymous"
                   />
                 </ReactCrop>
               ) : (
                 <SectionLoading
                   classNames={{
-                    container: 'w-fit h-full',
+                    container: 'w-40 h-40',
                   }}
                   message="Đang tải ảnh..."
                 />
@@ -245,7 +243,7 @@ export const CropImageElementModal = ({
             </div>
           </div>
 
-          <div className="NAME-sub-form-image-edit min-w-[200px] flex flex-col items-stretch w-1/3 max-h-[calc(90vh-0px)] overflow-y-auto p-3 bg-white rounded-lg text-gray-600">
+          <div className="NAME-sub-form-image-edit w-full min-w-[200px] flex flex-col items-stretch max-h-[calc(90vh-0px)] overflow-y-auto pt-3 text-gray-600">
             {/* <div className="p-2 bg-gray-100 rounded-lg">
               <h3 className="5xl:text-[1em] text-sm font-semibold text-gray-800">
                 Kích thước vùng cắt
@@ -280,9 +278,9 @@ export const CropImageElementModal = ({
               </div>
             </div> */}
 
-            <div className="mt-auto">
+            <div className="md:mt-auto">
               <div className="5xl:text-2xl flex gap-y-2 gap-x-2 flex-col">
-                <div className="flex gap-3 items-stretch">
+                <div className="md:flex-row flex-col flex gap-2 items-stretch">
                   <button
                     className="5xl:h-12 flex items-center justify-center gap-2 w-full h-8 rounded cursor-pointer bg-main-cl text-white font-bold active:scale-90 transition disabled:opacity-50"
                     onClick={handleCrop}
@@ -342,7 +340,7 @@ export const CropImageElementModal = ({
                       onClick={handleNoCrop}
                       className="5xl:h-12 flex items-center justify-center gap-2 w-full h-8 rounded cursor-pointer bg-main-cl text-white font-bold active:scale-90 transition disabled:opacity-50"
                     >
-                      Không Cắt Ảnh
+                      Không cắt ảnh
                     </button>
                   )}
                 </div>

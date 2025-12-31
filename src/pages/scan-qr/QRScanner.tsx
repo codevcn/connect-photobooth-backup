@@ -151,25 +151,9 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
   const startScanning = () => {
     qrGetter.setDetectFromFileHandler(detectFromFile as any)
-    const videoElement = videoRef.current
-    if (videoElement) {
-      const videoWrapper = videoElement.closest<HTMLElement>('.NAME-video-wrapper')
-      if (videoWrapper) {
-        // const { width, height } = videoElement.getBoundingClientRect()
-        // if (width > height) {
-        //   videoElement.style.width = `${height}px`
-        //   videoWrapper.style.width = `${height}px`
-        //   videoWrapper.style.height = `${height}px`
-        // } else {
-        //   videoElement.style.height = `${width}px`
-        //   videoWrapper.style.height = `${width}px`
-        //   videoWrapper.style.width = `${width}px`
-        // }
-        requestAnimationFrame(() => {
-          initializeScanner()
-        })
-      }
-    }
+    requestAnimationFrame(() => {
+      initializeScanner()
+    })
     if (error) {
       stopCamera()
     }
@@ -192,7 +176,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
       qrGetter.setDetectFromFileHandler(detectFromFile as any)
       setIsScanning(true)
       qrGetter
-        .handleImageData('https://qr.seobuk.kr/s/IMfkz6.', (percentage, images, error) => {
+        .handleImageData('https://qr.seobuk.kr/s/~TINAyw', (percentage, images, error) => {
           setProgress(percentage)
           if (error) {
             console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
@@ -234,18 +218,18 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
 
   return (
     <div className="smd:px-0 smd:w-fit 5xl:px-4 px-0 h-[calc(100vh-250px)] w-full pointer-events-none">
-      <div className="NAME-video-wrapper smd:w-fit h-full w-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
+      <div className="NAME-video-wrapper smd:w-fit smd:h-full w-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
         {!cameraIsActive && (
           <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-white font-bold text-2xl">
             <SectionLoading
               message="Đang truy cập Camera..."
-              classNames={{ message: 'text-white text-2xl', shapesContainer: 'text-white' }}
+              classNames={{ message: '5xl:text-2xl text-white text-lg', shapesContainer: 'text-white' }}
             />
           </div>
         )}
         <video
           ref={videoRef}
-          className="max-h-full max-w-full w-full h-full aspect-square object-cover transition-transform duration-300"
+          className="max-h-full max-w-full w-full aspect-square object-cover transition-transform duration-300"
           playsInline
         />
         {error ? (
