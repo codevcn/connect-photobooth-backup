@@ -7,13 +7,13 @@ type AvailableVouchersProps = {
 
 // Mock data - có thể thay bằng API call thực tế
 const AVAILABLE_VOUCHERS: TVoucher[] = [
-  {
-    code: 'ENCYCOM-HELLO',
-    description: 'Giảm 10% cho đơn hàng của bạn',
-    discountType: 'percentage',
-    discountValue: 10,
-    minOrderValue: 0,
-  },
+  // {
+  //   code: 'ENCYCOM-HELLO',
+  //   description: 'Giảm 10% cho đơn hàng của bạn',
+  //   discountType: 'percentage',
+  //   discountValue: 10,
+  //   minOrderValue: 0,
+  // },
 ]
 
 export const AvailableVouchers = ({ onVoucherSelect, disabled }: AvailableVouchersProps) => {

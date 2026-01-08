@@ -75,7 +75,6 @@ const PaymentPage = () => {
   const navigate = useNavigate()
   const [selectedImage, setSelectedImage] = useState<string>()
   const products = useProductStore((s) => s.products)
-  const queryFilter = useQueryFilter()
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [showTermsModal, setShowTermsModal] = useState<boolean>(false)
   const proceedToPaymentRef = useRef<HTMLDivElement>(null)
@@ -241,19 +240,11 @@ const PaymentPage = () => {
   }
 
   const backToEditPage = () => {
-    if (queryFilter.isPhotoism) {
-      AppNavigator.navTo(navigate, '/edit', { mockupId: undefined })
-    } else {
-      AppNavigator.navTo(navigate, '/', { mockupId: undefined })
-    }
+    AppNavigator.navTo(navigate, '/', { mockupId: undefined })
   }
 
   const handleEditMockup = (mockupDataId: string) => {
-    if (queryFilter.isPhotoism) {
-      AppNavigator.navTo(navigate, `/edit`, { mockupId: mockupDataId })
-    } else {
-      AppNavigator.navTo(navigate, `/`, { mockupId: mockupDataId })
-    }
+    AppNavigator.navTo(navigate, `/`, { mockupId: mockupDataId })
   }
 
   const [subtotal, discount, total] = useMemo(() => {
@@ -301,6 +292,11 @@ const PaymentPage = () => {
   const proceedToPayment = () => {
     appLogger.logInfo('User proceeded to payment', EAppPage.PAYMENT, EAppFeature.PAYMENT_PROCEED)
     setShowModal(true)
+  }
+
+  const tickTerms = (e: React.MouseEvent<HTMLElement>) => {
+    if (!(e.target as Element).classList.contains('NAME-terms-clickable'))
+      setAcceptedTerms((pre) => !pre)
   }
 
   return (
@@ -407,39 +403,33 @@ const PaymentPage = () => {
 
                   {/* Checkout Button - Desktop (in summary) */}
                   <div className="hidden md:block mt-3 md:mt-4">
-                    {(queryFilter.funId || queryFilter.dev) && (
-                      <div className="flex gap-2 w-full text-sm text-gray-600">
-                        <input
-                          type="checkbox"
-                          id="terms-and-conditions"
-                          checked={acceptedTerms}
-                          onChange={handleTickTerms}
-                          className="text-main-cl border border-main-cl h-6 w-6 rounded"
-                        />
-                        <div>
-                          <span>Tôi đã đọc và đồng ý với </span>
-                          <span
-                            onClick={(e) => {
-                              setShowTermsModal(true)
-                            }}
-                            className="NAME-terms-clickable text-blue-600 underline cursor-pointer"
-                          >
-                            Chính sách & Điều khoản dịch vụ
-                          </span>
-                          <span> của công ty.</span>
-                        </div>
+                    <div className="flex gap-2 w-full text-sm text-gray-600">
+                      <input
+                        type="checkbox"
+                        id="terms-and-conditions"
+                        checked={acceptedTerms}
+                        onChange={handleTickTerms}
+                        className="text-main-cl border border-main-cl h-6 w-6 rounded"
+                      />
+                      <div onClick={tickTerms}>
+                        <span>Tôi đã đọc và đồng ý với </span>
+                        <span
+                          onClick={(e) => {
+                            setShowTermsModal(true)
+                          }}
+                          className="NAME-terms-clickable text-blue-600 underline cursor-pointer"
+                        >
+                          Chính sách & Điều khoản dịch vụ
+                        </span>
+                        <span> của công ty.</span>
                       </div>
-                    )}
+                    </div>
                     <button
-                      style={
-                        queryFilter.funId || queryFilter.dev
-                          ? {
-                              pointerEvents: acceptedTerms ? 'auto' : 'none',
-                              cursor: acceptedTerms ? 'pointer' : 'not-allowed',
-                              backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
-                            }
-                          : {}
-                      }
+                      style={{
+                        pointerEvents: acceptedTerms ? 'auto' : 'none',
+                        cursor: acceptedTerms ? 'pointer' : 'not-allowed',
+                        backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
+                      }}
                       onClick={proceedToPayment}
                       className="5xl:text-[0.9em] 5xl:h-14 flex items-center justify-center gap-2 w-full mt-3 h-11 bg-main-cl hover:scale-95 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition duration-200"
                     >
@@ -468,53 +458,39 @@ const PaymentPage = () => {
           {/* Fixed Checkout Button - Mobile only */}
           <div className="md:hidden px-2 w-full pb-32">
             <div className="w-full rounded-2xl p-3 py-4 bg-white shadow-md">
-              {(queryFilter.funId || queryFilter.dev) && (
-                <div className="flex gap-2 w-full text-sm text-gray-600">
-                  <input
-                    type="checkbox"
-                    id="terms-and-conditions"
-                    checked={acceptedTerms}
-                    onChange={handleTickTerms}
-                    className="text-main-cl border border-main-cl h-6 w-6 rounded"
-                  />
-                  <div>
-                    <span>Tôi đã đọc và đồng ý với </span>
-                    <span
-                      onClick={(e) => {
-                        setShowTermsModal(true)
-                      }}
-                      className="NAME-terms-clickable text-blue-600 underline cursor-pointer"
-                    >
-                      Chính sách & Điều khoản dịch vụ
-                    </span>
-                    <span> của công ty.</span>
-                  </div>
+              <div className="flex gap-2 w-full text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  id="terms-and-conditions"
+                  checked={acceptedTerms}
+                  onChange={handleTickTerms}
+                  className="text-main-cl border border-main-cl h-6 w-6 rounded"
+                />
+                <div onClick={tickTerms}>
+                  <span>Tôi đã đọc và đồng ý với </span>
+                  <span
+                    onClick={(e) => {
+                      setShowTermsModal(true)
+                    }}
+                    className="NAME-terms-clickable text-blue-600 underline cursor-pointer"
+                  >
+                    Chính sách & Điều khoản dịch vụ
+                  </span>
+                  <span> của công ty.</span>
                 </div>
-              )}
+              </div>
               <div
-                style={
-                  queryFilter.funId || queryFilter.dev
-                    ? {
-                        pointerEvents: acceptedTerms ? 'auto' : 'none',
-                        cursor: acceptedTerms ? 'pointer' : 'not-allowed',
-                      }
-                    : {
-                        marginTop: 0,
-                      }
-                }
+                style={{
+                  pointerEvents: acceptedTerms ? 'auto' : 'none',
+                  cursor: acceptedTerms ? 'pointer' : 'not-allowed',
+                }}
                 className="w-full mt-3"
               >
                 <button
                   onClick={proceedToPayment}
-                  style={
-                    queryFilter.funId || queryFilter.dev
-                      ? {
-                          backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
-                        }
-                      : {
-                          backgroundColor: 'var(--vcn-main-cl)',
-                        }
-                  }
+                  style={{
+                    backgroundColor: acceptedTerms ? 'var(--vcn-main-cl)' : 'lightgray',
+                  }}
                   className="sm:h-[45px] h-[38px] flex items-center justify-center gap-2 w-full text-white font-bold text-lg rounded-xl shadow-lg active:scale-95 transition duration-200"
                 >
                   <svg
@@ -616,9 +592,7 @@ const PaymentPage = () => {
         <ProductImageModal imgSrc={selectedImage} onClose={handleCloseProductImageModal} />,
         document.body
       )}
-      {(queryFilter.funId || queryFilter.dev) && showTermsModal && (
-        <TermConditions closeModal={() => setShowTermsModal(false)} />
-      )}
+      {showTermsModal && <TermConditions closeModal={() => setShowTermsModal(false)} />}
     </div>
   )
 }

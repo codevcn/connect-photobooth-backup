@@ -125,11 +125,11 @@ export const VoucherSection = ({ cartItems, onVoucherApplied }: VoucherSectionPr
       </div>
 
       {/* Available Vouchers List */}
-      {!appliedVoucher && (
+      {/* {!appliedVoucher && (
         <div className="mb-4">
           <AvailableVouchers onVoucherSelect={applyVoucher} disabled={isApplyingVoucher} />
         </div>
-      )}
+      )} */}
 
       {/* Applied Voucher Display */}
       {appliedVoucher && (
