@@ -572,12 +572,7 @@ export const checkQueryString = () => {
 
 export const fillQueryStringToURL = (): string => {
   const params = checkQueryString()
-  if (params.isPhotoism) {
-    return '?q=ptm'
-  } else if (params.funstudio) {
-    return `?funstudio=${params.funstudio || 'unknown'}`
-  }
-  return '?dev=123'
+  return `?funstudio=${params.funstudio || 'unknown'}`
 }
 
 export const getEditedElementByElementId = (elementId: string): HTMLElement | null => {

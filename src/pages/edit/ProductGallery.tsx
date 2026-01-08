@@ -491,7 +491,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
         <span>/</span>
         {products.length}
       </div>
-      <ConfirmExitModal
+      {/* <ConfirmExitModal
         show={showExitModal}
         onConfirm={handleConfirmExit}
         onCancel={handleCancelExit}
@@ -513,7 +513,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
           <path d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z" />
         </svg>
         <span className="5xl:inline 5xl:text-2xl smd:text-lg">Quay về</span>
-      </button>
+      </button> */}
       <h2 className="5xl:text-[1.3em] smd:text-[0.9em] text-[1em] py-2 px-2 w-full text-center font-bold text-gray-800">
         Chọn sản phẩm
         <span className="smd:inline hidden font-light">

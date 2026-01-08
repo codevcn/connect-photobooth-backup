@@ -370,6 +370,16 @@ export type TEndOfPaymentData = {
     total: number
     voucherCode?: string
   }
+  shippingInfo?: {
+    name: string
+    phone: string
+    email?: string
+    province: string
+    city: string
+    ward?: string
+    address: string
+    message?: string
+  }
   bankTransferInfo?: {
     bankName: string
     accountNumber: string

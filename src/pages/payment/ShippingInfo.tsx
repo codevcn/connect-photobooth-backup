@@ -5,6 +5,7 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import {
   TClientDistrict,
   TClientProvince,
+  TClientWard,
   TEndOfPaymentData,
   TKeyboardSuggestion,
 } from '@/utils/types/global'
@@ -77,6 +78,7 @@ const fuzzySearchVietnamese = (items: TSearchableItem[], query: string): TSearch
 type TSelectedLocation = {
   provinceName: string
   districtName: string
+  wardName: string
 }
 
 type TShippingInfoFormProps = {
@@ -88,6 +90,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
   ({ errors, showPaymentModal }, ref) => {
     const [provinces, setProvinces] = useState<TClientProvince[]>([])
     const [districts, setDistricts] = useState<TClientDistrict[]>([])
+    const [wards, setWards] = useState<TClientWard[]>([])
     const [selectedProvinceId, setSelectedProvinceId] = useState<number | null>(null)
     const [selectedDistrictId, setSelectedDistrictId] = useState<number | null>(null)
     const [selectedWardCode, setSelectedWardCode] = useState<string | null>(null)
@@ -107,11 +110,13 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
     const selectedLocation = useMemo<TSelectedLocation>(() => {
       const province = provinces.find((p) => p.id === selectedProvinceId)
       const district = districts.find((d) => d.id === selectedDistrictId)
+      const ward = wards.find((w) => w.code === selectedWardCode)
       return {
         provinceName: province ? province.name : '',
         districtName: district ? district.name : '',
+        wardName: ward ? ward.name : '',
       }
-    }, [selectedProvinceId, selectedDistrictId])
+    }, [selectedProvinceId, selectedDistrictId, selectedWardCode, provinces, districts, wards])
 
     useEffect(() => {
       if (showPaymentModal) {
@@ -175,6 +180,29 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       fetchDistricts()
     }, [selectedProvinceId])
 
+    // Fetch wards when district changes
+    useEffect(() => {
+      if (!selectedDistrictId) {
+        setWards([])
+        return
+      }
+
+      const fetchWards = async () => {
+        setIsLoadingWards(true)
+        try {
+          const data = await addressService.fetchWards(selectedDistrictId)
+          setWards(data)
+        } catch (error) {
+          console.error('Failed to fetch wards:', error)
+          setWards([])
+        } finally {
+          setIsLoadingWards(false)
+        }
+      }
+
+      fetchWards()
+    }, [selectedDistrictId])
+
     const resetProvinceOnInputChange = () => {
       setSelectedProvinceId(null)
       setSelectedDistrictId(null)
@@ -190,6 +218,10 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       setSelectedWardCode(null)
       const wardInput = document.getElementById('ward-input') as HTMLInputElement
       if (wardInput) wardInput.value = ''
+    }
+
+    const resetWardOnInputChange = () => {
+      setSelectedWardCode(null)
     }
 
     const handleProvinceChange = useDebouncedCallback(
@@ -230,6 +262,25 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       300
     )
 
+    const handleWardChange = useDebouncedCallback(
+      (inputTarget: HTMLInputElement, resetWard?: boolean) => {
+        const selectedOption = inputTarget.value
+        const suggestedWards = fuzzySearchVietnamese(
+          wards.map((w) => ({ id: w.code, name: w.name })),
+          selectedOption
+        )
+        if (resetWard) resetWardOnInputChange()
+        setSuggestedWards(suggestedWards)
+        setTypingSuggestions(
+          suggestedWards.map((ward) => ({
+            id: ward.id,
+            text: ward.name,
+          }))
+        )
+      },
+      300
+    )
+
     const pickProvince = (province: TSearchableItem) => {
       const fullProvince = provinces.find((p) => p.id === parseInt(province.id))
       const input = document.getElementById('province-input') as HTMLInputElement
@@ -264,12 +315,26 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       }
     }
 
+    const pickWard = (ward: TSearchableItem) => {
+      const fullWard = wards.find((w) => w.code === ward.id)
+      const input = document.getElementById('ward-input') as HTMLInputElement
+      if (input && fullWard) {
+        input.value = ward.name
+        setSelectedWardCode(fullWard.code)
+        setSuggestedWards([])
+      }
+    }
+
     const onProvinceFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
       handleProvinceChange(e.target)
     }
 
     const onDistrictFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
       handleDistrictChange(e.target)
+    }
+
+    const onWardFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
+      handleWardChange(e.target)
     }
 
     useEffect(() => {
@@ -311,6 +376,18 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
           }
           setSuggestedDistricts([])
         }
+
+        // Đóng wards dropdown nếu click bên ngoài
+        if (!target.closest('.NAME-wards-suggestion') && !closestWardInput) {
+          const value = (document.getElementById('ward-input') as HTMLInputElement)?.value || ''
+          const found = wards.find((w) => w.name === value)
+          if (found) {
+            setSelectedWardCode(found.code)
+          } else {
+            setSelectedWardCode(null)
+          }
+          setSuggestedWards([])
+        }
       }
 
       document.body.addEventListener('pointerdown', handleClickOutside)
@@ -318,13 +395,15 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       return () => {
         document.body.removeEventListener('pointerdown', handleClickOutside)
       }
-    }, [provinces, districts])
+    }, [provinces, districts, wards])
 
     const listenKeyboardSuggestionPicked = (suggestion: TKeyboardSuggestion, type: string) => {
       if (type === 'province') {
         pickProvince({ id: suggestion.id, name: suggestion.text })
       } else if (type === 'district') {
         pickDistrict({ id: suggestion.id, name: suggestion.text })
+      } else if (type === 'ward') {
+        pickWard({ id: suggestion.id, name: suggestion.text })
       }
     }
 
@@ -333,7 +412,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       return () => {
         eventEmitter.off(EInternalEvents.KEYBOARD_SUGGESTION_PICKED, listenKeyboardSuggestionPicked)
       }
-    }, [provinces, districts])
+    }, [provinces, districts, wards])
 
     return (
       <form className="5xl:text-3xl md:text-base text-sm space-y-2" ref={ref}>
@@ -498,6 +577,57 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 </p>
               )}
             </div>
+          </div>
+
+          <div className={`relative ${selectedDistrictId ? '' : 'pointer-events-none opacity-60'}`}>
+            <label className="5xl:text-[0.7em] block text-sm font-medium text-gray-700 mb-1">
+              Phường/Xã
+            </label>
+            <input
+              type="text"
+              name="ward"
+              value={selectedLocation.wardName}
+              readOnly
+              className="hidden"
+            />
+            <input
+              id="ward-input"
+              type="text"
+              onChange={(e) => handleWardChange(e.target, true)}
+              onFocus={onWardFocusInput}
+              placeholder={
+                !selectedDistrictId
+                  ? 'Chọn quận/huyện trước'
+                  : isLoadingWards
+                  ? 'Đang tải...'
+                  : 'Nhập tên phường/xã'
+              }
+              className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} NAME-ward 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
+              disabled={!selectedDistrictId || isLoadingWards}
+              autoComplete="off"
+            />
+            {(queryFilter.isPhotoism ? checkIfMobileScreen() : true) &&
+              suggestedWards.length > 0 && (
+                <ul className="NAME-wards-suggestion STYLE-styled-scrollbar absolute z-50 w-full bg-white border border-gray-300 rounded-xl mt-1 max-h-60 overflow-y-auto shadow-lg">
+                  {suggestedWards.map((ward) => {
+                    return (
+                      <li
+                        key={ward.id}
+                        onClick={() => pickWard(ward)}
+                        className="px-4 py-2 hover:bg-main-cl hover:text-white cursor-pointer transition-colors text-sm"
+                      >
+                        {ward.name}
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            {errors.ward && (
+              <p className="5xl:text-[0.6em] flex items-center gap-1 text-red-600 text-sm mt-0.5 pl-1">
+                <WarningIcon className="w-4 h-4" />
+                {errors.ward}
+              </p>
+            )}
           </div>
 
           <div>

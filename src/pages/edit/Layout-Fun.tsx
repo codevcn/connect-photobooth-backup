@@ -100,6 +100,12 @@ const LayoutFUN = () => {
     fetchDataToEdit()
   }, [])
 
+  const reloadPageWithoutMockupId = () => {
+    const url = new URL(window.location.href)
+    url.searchParams.delete('mockupId')
+    window.location.href = url.toString()
+  }
+
   return error ? (
     <div className="flex flex-col items-center justify-center w-screen h-screen p-6">
       <svg
@@ -120,16 +126,16 @@ const LayoutFUN = () => {
       </svg>
       <p className="text-main-cl text-lg text-center font-bold mt-2">{error}</p>
       <button
-        onClick={() => AppNavigator.navTo(navigate, '/')}
-        className="bg-main-cl text-white text-lg font-bold px-4 py-2 rounded mt-4"
+        onClick={reloadPageWithoutMockupId}
+        className="bg-main-cl text-white text-lg font-bold px-4 py-2 rounded mt-4 mobile-touch"
       >
-        Quay lại trang chủ
+        Tải lại trang web
       </button>
     </div>
   ) : products.length > 0 && printedImages.length > 0 ? (
     <EditPage products={products} printedImages={printedImages} />
   ) : (
-    <PageLoading message="Đang tải dữ liệu..." />
+    <PageLoading message="Đang tải dữ liệu ảnh và sản phẩm..." />
   )
 }
 

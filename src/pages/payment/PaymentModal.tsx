@@ -55,17 +55,19 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
       message: formData.get('message')?.toString().trim() || '',
       detailedAddressAutocomplete:
         formData.get('detailed-address-autocomplete')?.toString().trim() || '',
+      ward: formData.get('ward')?.toString().trim() || '',
     }
     console.log('>>> [dress] shippingInfo:', shippingInfo)
     const { name, phone, email, province, city, ward, address } = shippingInfo
     setErrors({})
-    if (!name || !phone || !province || !city || !address) {
+    if (!name || !phone || !province || !city || !ward || !address) {
       setErrors({
         fullName: name ? undefined : 'Họ và tên là bắt buộc',
         phone: phone ? undefined : 'Số điện thoại là bắt buộc',
         province: province ? undefined : 'Vui lòng chọn tỉnh/thành phố',
         city: city ? undefined : 'Vui lòng chọn quận/huyện',
         address: address ? undefined : 'Vui lòng nhập địa chỉ chi tiết',
+        ward: ward ? undefined : 'Vui lòng chọn phường/xã',
       })
       isValid = false
     }
@@ -155,6 +157,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
             },
             orderHashCode: order.hash_code,
             paymentDetails,
+            shippingInfo,
           })
         } else {
           appLogger.logError(
@@ -176,6 +179,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
           },
           orderHashCode: order.hash_code,
           paymentDetails,
+          shippingInfo,
         })
       }
     } catch (error) {

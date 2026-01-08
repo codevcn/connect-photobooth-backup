@@ -15,10 +15,10 @@ export default function NotFound() {
       <div className="relative z-10 max-w-2xl w-full">
         {/* 404 Number */}
         <div className="text-center mb-8">
-          <h1 className="text-[12rem] font-black leading-none bg-linear-to-br from-main-cl via-main-hover-cl to-dark-main-cl bg-clip-text text-transparent drop-shadow-2xl animate-pulse-slow select-none">
+          <h1 className="text-[6rem] xs:text-[7rem] sm:text-[8rem] md:text-[10rem] lg:text-[12rem] font-black leading-none bg-linear-to-br from-main-cl via-main-hover-cl to-dark-main-cl bg-clip-text text-transparent drop-shadow-2xl animate-pulse-slow select-none">
             404
           </h1>
-          <div className="relative -mt-20">
+          <div className="relative -mt-10">
             <div className="relative bg-white/60 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20">
               <h2 className="text-2xl font-bold text-gray-800 mb-3">Oops! Trang không tồn tại</h2>
               <p className="text-gray-600 text-lg mb-8 leading-relaxed">
@@ -49,9 +49,9 @@ export default function NotFound() {
                   <span className="5xl:text-2xl">Back</span>
                 </button>
 
-                <Link
-                  to={'/' + fillQueryStringToURL()}
-                  className="group flex items-center justify-center gap-2 px-8 py-4 bg-main-cl hover:bg-dark-main-cl text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 active:scale-95"
+                <a
+                  href={'/' + fillQueryStringToURL()}
+                  className="group flex items-center justify-center gap-2 px-8 py-4 bg-main-cl hover:bg-dark-main-cl text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-200 active:scale-95"
                 >
                   <svg
                     className="5xl:w-8 5xl:h-8 w-5 h-5 group-hover:scale-110 transition-transform"
@@ -67,7 +67,7 @@ export default function NotFound() {
                     />
                   </svg>
                   <span className="5xl:text-2xl">Home</span>
-                </Link>
+                </a>
               </div>
             </div>
           </div>

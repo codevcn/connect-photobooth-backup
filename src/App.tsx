@@ -18,27 +18,18 @@ window.cancelIdleCallback =
     clearTimeout(id)
   }
 
-if (new URLSearchParams(window.location.search).get('q') === 'ptm') {
-  document.documentElement.style.setProperty('--vcn-main-cl', 'var(--vcn-submain-cl)')
-}
-
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
-import EditPagePTM from '@/pages/edit/Layout-Ptm'
 import EditPageFUN from '@/pages/edit/Layout-Fun'
-import EditPageDev from '@/pages/edit/Layout-Dev'
 import NotFound from '@/pages/NotFound'
 import { LocalStorageHelper } from './utils/localstorage'
 import { ToastContainer } from 'react-toastify'
-import ScanQRPage from './pages/scan-qr/Page'
 import { AppRootProvider } from './providers/RootProvider'
 import { useEffect } from 'react'
-import IntroPage from './pages/intro/Page'
 import { checkIfMobileScreen, isHomePage } from './utils/helpers'
 import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
 import MaintainPage from './pages/maintain/Page'
 import { AppTempContainer } from './components/custom/TempContainer'
-import { GlobalKeyboardProvider } from './providers/GlobalKeyboardProvider'
 import { useQueryFilter } from './hooks/extensions'
 import { UserIdleTracker } from './components/custom/IdleWarningModal'
 import Dev from './dev/pages/Dev'
@@ -78,39 +69,6 @@ function AppRoutes() {
     }
   }, [])
 
-  // Routes cho Photoism
-  if (queryFilter.isPhotoism) {
-    if (queryFilter.isMobileDevice || checkIfMobileScreen()) {
-      return (
-        <>
-          {/* <IdleCountdown /> */}
-          <IdleCountdown />
-          <Routes>
-            <Route path="/" element={<ScanQRPage />} />
-            <Route path="/edit" element={<EditPagePTM />} />
-            <Route path="/payment" element={<PaymentPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <GlobalKeyboardProvider />
-        </>
-      )
-    }
-    return (
-      <>
-        {/* <IdleCountdown /> */}
-        <IdleCountdown />
-        <Routes>
-          <Route path="/" element={<IntroPage />} />
-          <Route path="/qr" element={<ScanQRPage />} />
-          <Route path="/edit" element={<EditPagePTM />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <GlobalKeyboardProvider />
-      </>
-    )
-  }
-
   // Routes cho Fun Studio
   if (queryFilter.funId) {
     return (
@@ -119,22 +77,6 @@ function AppRoutes() {
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    )
-  }
-
-  // Routes cho Dev mode
-  if (queryFilter.dev) {
-    return (
-      <>
-        {/* <IdleCountdown /> */}
-        <Routes>
-          <Route path="/" element={<EditPageDev />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/dev" element={<Dev />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <GlobalKeyboardProvider />
-      </>
     )
   }
 

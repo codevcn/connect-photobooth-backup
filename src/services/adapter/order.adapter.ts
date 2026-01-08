@@ -73,7 +73,7 @@ export class OrderAdapter {
         phone: shippingInfo.phone,
       },
       shipping_address: {
-        address1: shippingInfo.address,
+        address1: shippingInfo.address + ', ' + shippingInfo.ward,
         city: shippingInfo.city,
         province: shippingInfo.province,
         postcode: '000000',

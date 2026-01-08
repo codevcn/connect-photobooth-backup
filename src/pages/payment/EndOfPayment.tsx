@@ -17,6 +17,7 @@ import { AppNavigator } from '@/utils/navigator'
 import { QRCanvas } from '@/components/custom/QRCanvas'
 import { appLogger } from '@/logging/Logger'
 import { EAppFeature, EAppPage } from '@/utils/enums'
+import { CustomerDetails } from './CustomerDetails'
 
 const getColorByPaymentMethod = (method: TPaymentType): string => {
   switch (method) {
@@ -36,18 +37,19 @@ type TPaymentStatus = {
   reason?: string
 }
 
-interface EndOfPaymentProps {
+type TEndOfPaymentProps = {
   data: TEndOfPaymentData
   resetEndOfPaymentData: () => void
 }
 
-export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaymentData }) => {
+export const EndOfPayment = ({ data, resetEndOfPaymentData }: TEndOfPaymentProps) => {
   const {
     countdownInSeconds,
     QRCode,
     paymentMethod,
     orderHashCode,
     paymentDetails,
+    shippingInfo,
     bankTransferInfo,
   } = data
   const { method, title } = paymentMethod
@@ -75,6 +77,7 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
       if (remaining <= 0) {
         countdownEl.textContent = '00:00'
         clearInterval(interval)
+        resetEndOfPaymentData()
         return
       }
 
@@ -359,6 +362,8 @@ export const EndOfPayment: React.FC<EndOfPaymentProps> = ({ data, resetEndOfPaym
                     </div>
                   )}
                 </div>
+
+                {shippingInfo && <CustomerDetails shippingInfo={shippingInfo} />}
               </div>
             </div>
           )
