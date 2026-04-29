@@ -11,6 +11,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { CustomScrollbar } from '@/components/custom/CustomScrollbar'
 import { ProductColors } from './ProductColors'
+import { STICKER_PRODUCT_ID } from '@/utils/patching'
 
 type TDisplayVariantInfoType = 'display-in-product-details' | 'display-in-middle-info-section'
 
@@ -183,6 +184,7 @@ type TVariantInfoProps = {
 }
 
 export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfoProps) => {
+  const pickedProductId = pickedProduct.id
   const [showSizeChart, setShowSizeChart] = useState(false)
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
   const [selectedImageToPreview, setSelectedImageToPreview] = useState<string>()
@@ -356,36 +358,38 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
 
   const colorsCount = Object.keys(mergedAttributes.uniqueColors).length
 
+  const detailImagesToShow = pickedProduct.detailImages
+  console.log('>>> picked product:', pickedProduct)
+
   return (
     <div className="smd:order-4 mt-1 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3 w-full">
-      <div className="mb-4">
-        <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">
-          Danh mục hình ảnh sản phẩm
-        </h3>
-        <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
-          {pickedProduct.detailImages.length > 0 ? (
-            pickedProduct.detailImages.slice(1).map((imgURL) => (
+      {detailImagesToShow.length > 1 && (
+        <div className="mb-4">
+          <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">
+            Danh mục hình ảnh sản phẩm
+          </h3>
+          <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
+            {pickedProductId !== STICKER_PRODUCT_ID && detailImagesToShow.length > 0 ? (
+              detailImagesToShow.slice(1).map((imgURL) => (
+                <div
+                  key={imgURL}
+                  className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
+                  onClick={() => setSelectedImageToPreview(imgURL)}
+                >
+                  <img src={imgURL} alt="Ảnh sản phẩm" />
+                </div>
+              ))
+            ) : (
               <div
-                key={imgURL}
+                onClick={() => setSelectedImageToPreview(pickedProduct.url)}
                 className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
-                onClick={() => setSelectedImageToPreview(imgURL)}
               >
-                <img src={imgURL} alt="Danh mục ảnh sản phẩm" />
+                <img src={pickedProduct.url} alt="Ảnh mockup sản phẩm" />
               </div>
-            ))
-          ) : (
-            <div
-              onClick={() => setSelectedImageToPreview(pickedProduct.url)}
-              className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
-            >
-              <img src={pickedProduct.url} alt="Ảnh đại diện sản phẩm" />
-            </div>
-          )}
+            )}
+          </div>
         </div>
-        {/* <p className="5xl:text-[0.4em] flex justify-center items-center w-full text-gray-600 font-bold text-[0.9em] mt-3 italic">
-          Hiển thị hình ảnh người mặc áo
-        </p> */}
-      </div>
+      )}
 
       {/* Material Section */}
       {mergedAttributes.uniqueMaterials.length > 0 &&
