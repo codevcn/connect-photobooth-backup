@@ -31,7 +31,6 @@ const LayoutFUN = () => {
     const json = await data.json()
     LocalStorageHelper.setPtbid(json.ptbid)
     console.log('>>> json:', json)
-
     return await new Promise<TPrintedImage[]>((resolve, reject) => {
       const handleData = async (imageDataList: string[]) => {
         const imagesToAdd: TPrintedImage[] = []
@@ -46,6 +45,7 @@ const LayoutFUN = () => {
             })
             if (imagesToAdd.length === imageDataList.length) {
               imagesToAdd.sort((a, b) => b.width * b.height - a.width * a.height) // ảnh có kích thước lớn nhất PHẢI ở đầu tiên trong danh sách
+              console.log('>>> images to add after sorting:', imagesToAdd)
               imagesToAdd[0].isOriginalImage = true
               const largestSizeImage = imagesToAdd[0]
               const largestArea = largestSizeImage.width * largestSizeImage.height
@@ -54,7 +54,6 @@ const LayoutFUN = () => {
                   img.isOriginalImage = true
                 }
               }
-              console.log('>>> img sss:', imagesToAdd)
               resolve(imagesToAdd)
             }
           }

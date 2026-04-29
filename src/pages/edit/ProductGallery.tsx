@@ -95,7 +95,7 @@ const Product = ({
     } else if (productId === 7) {
       return 'Áo thun'
     }
-    return ''
+    return product.name
   }
 
   const { printAreaContainerRef } = usePrintArea(firstPrintAreaInProduct, buildInitialLayout)

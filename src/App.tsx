@@ -25,27 +25,11 @@ import { LocalStorageHelper } from './utils/localstorage'
 import { ToastContainer } from 'react-toastify'
 import { AppRootProvider } from './providers/RootProvider'
 import { useEffect } from 'react'
-import { checkIfMobileScreen, isHomePage } from './utils/helpers'
+import { isHomePage } from './utils/helpers'
 import PaymentPage from './pages/payment/Page'
 import { usePrintedImageStore } from './stores/printed-image/printed-image.store'
-import MaintainPage from './pages/maintain/Page'
 import { AppTempContainer } from './components/custom/TempContainer'
 import { useQueryFilter } from './hooks/extensions'
-import { UserIdleTracker } from './components/custom/IdleWarningModal'
-import Dev from './dev/pages/Dev'
-
-const IdleCountdown = () => {
-  const getIdleTimeout = (): number => {
-    // nếu là trang /qr thì modal timeout là 20s, còn lại là 10s
-    if (window.location.pathname.includes('/qr')) {
-      return 20
-    }
-    return 10
-  }
-
-  return <UserIdleTracker idleTimeout={30} modalTimeout={getIdleTimeout()} />
-  // return <></>
-}
 
 // Component để quản lý routes dựa trên query string
 function AppRoutes() {

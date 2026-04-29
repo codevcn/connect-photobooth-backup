@@ -26,12 +26,16 @@ const ProductImagePreview = ({ imageURL, onClose }: TProductImagePreviewProps) =
       title="Ảnh sản phẩm"
       classNames={{
         contentContainer: 'p-0 overflow-hidden w-fit',
-        rootModal: 'z-99',
+        rootModal: 'z-999',
         titleContainer: 'py-1',
       }}
     >
       <div className="bg-white w-fit flex justify-center relative overflow-hidden">
-        <img src={imageURL} alt="Ảnh sản phẩm" className="h-[calc(95vh-48px)] object-contain" />
+        <img
+          src={imageURL}
+          alt="Ảnh sản phẩm"
+          className="h-[calc(95vh-48px)] max-h-[calc(95dvh-48px)] object-contain"
+        />
       </div>
     </Modal>
   )
@@ -153,8 +157,8 @@ const SizesComponent = ({
                 isDisabled
                   ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed`
                   : isSelected
-                  ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
-                  : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
+                    ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
+                    : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
               }`}
             >
               {size}
@@ -354,7 +358,7 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
 
   return (
     <div className="smd:order-4 mt-1 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3 w-full">
-      {/* <div className="smd:block hidden mb-4">
+      <div className="mb-4">
         <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">
           Danh mục hình ảnh sản phẩm
         </h3>
@@ -378,10 +382,10 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
             </div>
           )}
         </div>
-        <p className="5xl:text-[0.4em] flex justify-center items-center w-full text-gray-600 font-bold text-[0.9em] mt-3 italic">
+        {/* <p className="5xl:text-[0.4em] flex justify-center items-center w-full text-gray-600 font-bold text-[0.9em] mt-3 italic">
           Hiển thị hình ảnh người mặc áo
-        </p>
-      </div> */}
+        </p> */}
+      </div>
 
       {/* Material Section */}
       {mergedAttributes.uniqueMaterials.length > 0 &&
@@ -433,8 +437,8 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
                     isDisabled
                       ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
                       : isSelected
-                      ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
-                      : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
+                        ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
+                        : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
                   }`}
                 >
                   {scent}
