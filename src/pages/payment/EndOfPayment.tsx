@@ -18,6 +18,7 @@ import { QRCanvas } from '@/components/custom/QRCanvas'
 import { appLogger } from '@/logging/Logger'
 import { EAppFeature, EAppPage } from '@/utils/enums'
 import { CustomerDetails } from './CustomerDetails'
+import { userTracker } from '@/utils/firebase'
 
 const getColorByPaymentMethod = (method: TPaymentType): string => {
   switch (method) {
@@ -88,6 +89,7 @@ export const EndOfPayment = ({ data, resetEndOfPaymentData }: TEndOfPaymentProps
   }
 
   const backToEditPage = () => {
+    userTracker.trackEventSafe(EAppFeature.BACK_TO_EDIT)
     const queryFilter = checkQueryString()
     if (queryFilter.isPhotoism) {
       AppNavigator.navTo(navigate, '/edit')
@@ -98,17 +100,17 @@ export const EndOfPayment = ({ data, resetEndOfPaymentData }: TEndOfPaymentProps
 
   const handlePaymentStatusUpdate = (statusData: TOrderStatusRes) => {
     if (statusData.is_paid) {
-      appLogger.logInfo('Payment completed', EAppPage.PAYMENT, EAppFeature.PAYMENT_SUCCESS)
-
       setPaymentStatus({ status: 'completed' })
       setTransactionCode(statusData.id.toString())
-    } else if (statusData.status === 'cancelled') {
-      appLogger.logInfo('Payment completed', EAppPage.PAYMENT, EAppFeature.PAYMENT_CANCEL)
 
+      userTracker.trackEventSafe(EAppFeature.COMPLETE_PAYMENT)
+    } else if (statusData.status === 'cancelled') {
       setPaymentStatus({
         status: 'failed',
         reason: 'Đơn hàng đã bị hủy',
       })
+
+      userTracker.trackEventSafe(EAppFeature.CANCEL_PAYMENT)
     }
   }
 

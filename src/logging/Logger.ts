@@ -35,23 +35,24 @@ class AppLogger {
     appFeature: EAppFeature,
     causedElement?: Element
   ): void => {
-    const timestamp = new Date().toISOString()
-    setTimeout(() => {
-      const entry = this.createLogEntry(
-        ELogLevel.INFO,
-        message,
-        appPage,
-        appFeature,
-        timestamp,
-        causedElement
-          ? {
-              className: causedElement.className,
-              id: causedElement.id,
-            }
-          : undefined
-      )
-      this.worker.postMessage(typeToObject<TLoggingWorkerInput>(entry))
-    }, 0)
+    console.log('>>> app log info')
+    // const timestamp = new Date().toISOString()
+    // setTimeout(() => {
+    //   const entry = this.createLogEntry(
+    //     ELogLevel.INFO,
+    //     message,
+    //     appPage,
+    //     appFeature,
+    //     timestamp,
+    //     causedElement
+    //       ? {
+    //           className: causedElement.className,
+    //           id: causedElement.id,
+    //         }
+    //       : undefined
+    //   )
+    //   this.worker.postMessage(typeToObject<TLoggingWorkerInput>(entry))
+    // }, 0)
   }
 
   logError = (
@@ -61,24 +62,25 @@ class AppLogger {
     appFeature: EAppFeature,
     causedElement?: Element
   ): void => {
-    const timestamp = new Date().toISOString()
-    setTimeout(() => {
-      const entry = this.createLogEntry(
-        ELogLevel.ERROR,
-        message,
-        appPage,
-        appFeature,
-        timestamp,
-        causedElement
-          ? {
-              className: causedElement.className,
-              id: causedElement.id,
-            }
-          : undefined,
-        error
-      )
-      this.worker.postMessage(typeToObject<TLoggingWorkerInput>(entry))
-    }, 0)
+    console.log('>>> app log error')
+    // const timestamp = new Date().toISOString()
+    // setTimeout(() => {
+    //   const entry = this.createLogEntry(
+    //     ELogLevel.ERROR,
+    //     message,
+    //     appPage,
+    //     appFeature,
+    //     timestamp,
+    //     causedElement
+    //       ? {
+    //           className: causedElement.className,
+    //           id: causedElement.id,
+    //         }
+    //       : undefined,
+    //     error
+    //   )
+    //   this.worker.postMessage(typeToObject<TLoggingWorkerInput>(entry))
+    // }, 0)
   }
 
   private createLogEntry = (

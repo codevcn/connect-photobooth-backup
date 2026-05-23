@@ -28,6 +28,26 @@ export enum EAppFeature {
   PAYMENT_CANCEL = 'payment-cancel',
   // Common features
   VIRTUAL_KEYBOARD = 'virtual-keyboard',
+
+  // User Behavior Tracking
+  SELECT_PRODUCT = 'select-product',
+  SELECT_VARIANT = 'select-variant',
+  ADD_STICKER = 'add-sticker',
+  ADD_TEXT = 'add-text',
+  CHANGE_FRAME = 'change-frame',
+  PICK_PRINTED_IMAGE = 'pick-printed-image',
+  PREVIEW_MOCKUP = 'preview-mockup',
+  VIEW_CART = 'view-cart',
+  UPDATE_QUANTITY = 'update-quantity',
+  REMOVE_CART_ITEM = 'remove-cart-item',
+  APPLY_VOUCHER = 'apply-voucher',
+  ACCEPT_TERMS = 'accept-terms',
+  EDIT_MOCKUP = 'edit-mockup',
+  START_PROCESS_PAYMENT = 'start-process-payment',
+  START_PAYMENT_QR = 'start-payment-qr',
+  COMPLETE_PAYMENT = 'complete-payment',
+  CANCEL_PAYMENT = 'cancel-payment',
+  BACK_TO_EDIT = 'back-to-edit',
 }
 
 export enum ELocationBoudaryType {

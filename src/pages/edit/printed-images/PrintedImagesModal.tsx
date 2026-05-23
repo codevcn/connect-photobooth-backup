@@ -4,6 +4,8 @@ import { getNaturalSizeOfImage } from '@/utils/helpers'
 import { TPrintedImage, TTemplateFrame } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
+import { userTracker } from '@/utils/firebase'
+import { EAppFeature } from '@/utils/enums'
 
 type ImageProps = {
   img: TPrintedImage
@@ -84,6 +86,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
   }
 
   const handlePickPrintedImage = (printedImg: TPrintedImage) => {
+    userTracker.trackEventSafe(EAppFeature.PICK_PRINTED_IMAGE)
     handleAddPrintedImageToFrame(printedImg)
   }
 

@@ -11,6 +11,7 @@ import { SectionLoading } from '@/components/custom/Loading'
 import { EndOfPayment } from './EndOfPayment'
 import { appLogger } from '@/logging/Logger'
 import { EAppFeature, EAppPage } from '@/utils/enums'
+import { userTracker } from '@/utils/firebase'
 
 type TShippingInfo = {
   name: string
@@ -93,11 +94,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
   }
 
   const processPayment = async () => {
-    appLogger.logInfo(
-      'User initiated payment processing',
-      EAppPage.PAYMENT,
-      EAppFeature.PAYMENT_PROCESS
-    )
+    userTracker.trackEventSafe(EAppFeature.START_PROCESS_PAYMENT)
 
     const form = formRef.current
     if (!form) return
@@ -159,13 +156,13 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
             paymentDetails,
             shippingInfo,
           })
+
+          userTracker.trackEventSafe(EAppFeature.START_PAYMENT_QR, {
+            method: paymentMethod,
+            price: paymentDetails.total,
+            order_id: order.id.toString(),
+          })
         } else {
-          appLogger.logError(
-            new Error('No payment instructions received from server'),
-            'No payment instructions received from server',
-            EAppPage.PAYMENT,
-            EAppFeature.PAYMENT_PROCESS
-          )
           throw new Error('Không nhận được thông tin thanh toán từ server')
         }
       } else {
@@ -184,16 +181,6 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
       }
     } catch (error) {
       console.error('>>> Payment error:', error)
-      appLogger.logError(
-        error instanceof Error
-          ? error
-          : typeof error === 'string'
-          ? new Error(error)
-          : new Error('Unknown error'),
-        'Error occurred during payment processing',
-        EAppPage.PAYMENT,
-        EAppFeature.PAYMENT_PROCESS
-      )
       toast.error('Có lỗi xảy ra khi xử lý thanh toán')
     } finally {
       setConfirming(false)

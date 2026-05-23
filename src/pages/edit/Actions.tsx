@@ -13,6 +13,8 @@ import { toast } from 'react-toastify'
 import { AppNavigator } from '@/utils/navigator'
 import { useVisualStatesCollector } from '@/hooks/use-visual-states-collector'
 import { useEditedElementStore } from '@/stores/element/element.store'
+import { userTracker } from '@/utils/firebase'
+import { EAppFeature } from '@/utils/enums'
 
 export const Actions = () => {
   const cartCount = useProductUIDataStore((s) => s.cartCount)
@@ -54,10 +56,12 @@ export const Actions = () => {
   }
 
   const beforeAddToCartHandler = () => {
+    userTracker.trackEventSafe(EAppFeature.ADD_TO_CART)
     addToCart()
   }
 
   const beforeNavigateToPaymentHandler = () => {
+    userTracker.trackEventSafe(EAppFeature.VIEW_CART)
     saveEditingDataToStore()
     if (mockupId) recordMockupNote(mockupId)
     AppNavigator.navTo(navigate, '/payment')
@@ -97,6 +101,7 @@ export const Actions = () => {
 
   const handleShowMockupPreview = () => {
     if (!checkIfValidToCart('mockup-preview')) return
+    userTracker.trackEventSafe(EAppFeature.PREVIEW_MOCKUP)
     setShowMockupPreview(true)
   }
 

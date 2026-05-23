@@ -24,6 +24,7 @@ import { TermConditions } from '../../components/ui/TermConditions'
 import { useVoucherStore } from '@/stores/voucher/product.store'
 import { appLogger } from '@/logging/Logger'
 import { EAppFeature, EAppPage } from '@/utils/enums'
+import { useTrackPageView, userTracker } from '@/utils/firebase'
 
 type IPaymentModalProps = {
   imgSrc?: string
@@ -79,6 +80,7 @@ const PaymentPage = () => {
   const [showTermsModal, setShowTermsModal] = useState<boolean>(false)
   const proceedToPaymentRef = useRef<HTMLDivElement>(null)
   const voucherContainerRef = useRef<HTMLDivElement>(null)
+  useTrackPageView(EAppPage.PAYMENT)
 
   // Hàm tính subtotal (tổng tiền trước giảm giá voucher)
   const calculateSubtotal = (): number => {
@@ -90,6 +92,7 @@ const PaymentPage = () => {
 
   // Handler khi voucher được apply/remove
   const handleVoucherApplied = (voucher: TVoucher | null, discount: number) => {
+    userTracker.trackEventSafe(EAppFeature.APPLY_VOUCHER)
     setAppliedVoucher(voucher)
     setVoucherDiscount(discount)
   }
@@ -100,6 +103,7 @@ const PaymentPage = () => {
     mockupId: TMockupData['id'],
     amount: number
   ) => {
+    userTracker.trackEventSafe(EAppFeature.UPDATE_QUANTITY, { quantity_amount: amount })
     if (!sessionId) return
     for (const item of cartItems) {
       if (item.mockupData.id === mockupId) {
@@ -215,6 +219,7 @@ const PaymentPage = () => {
     productVariantId: TClientProductVariant['id'],
     mockupId: TMockupData['id']
   ) => {
+    userTracker.trackEventSafe(EAppFeature.REMOVE_CART_ITEM)
     if (!sessionId) return
     setCartItems((items) =>
       items.filter((item) => {
@@ -244,6 +249,9 @@ const PaymentPage = () => {
   }
 
   const handleEditMockup = (mockupDataId: string) => {
+    userTracker.trackEventSafe(EAppFeature.EDIT_MOCKUP, {
+      item_id: mockupDataId,
+    })
     AppNavigator.navTo(navigate, `/`, { mockupId: mockupDataId })
   }
 
@@ -286,17 +294,21 @@ const PaymentPage = () => {
   }, [cartItems.length])
 
   const handleTickTerms = () => {
+    userTracker.trackEventSafe(EAppFeature.ACCEPT_TERMS, { checked: !acceptedTerms })
     setAcceptedTerms((pre) => !pre)
   }
 
   const proceedToPayment = () => {
+    userTracker.trackEventSafe(EAppFeature.PAYMENT_PROCEED)
     appLogger.logInfo('User proceeded to payment', EAppPage.PAYMENT, EAppFeature.PAYMENT_PROCEED)
     setShowModal(true)
   }
 
   const tickTerms = (e: React.MouseEvent<HTMLElement>) => {
-    if (!(e.target as Element).classList.contains('NAME-terms-clickable'))
+    if (!(e.target as Element).classList.contains('NAME-terms-clickable')) {
+      userTracker.trackEventSafe(EAppFeature.ACCEPT_TERMS, { checked: !acceptedTerms })
       setAcceptedTerms((pre) => !pre)
+    }
   }
 
   return (

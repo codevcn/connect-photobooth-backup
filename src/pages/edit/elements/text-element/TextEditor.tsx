@@ -9,6 +9,8 @@ import { createPortal } from 'react-dom'
 import { calculateInitialTextElementPosition } from '../helpers'
 import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { TextElementMenuForDesktop } from './Menu-ForDesktop'
+import { userTracker } from '@/utils/firebase'
+import { EAppFeature } from '@/utils/enums'
 
 type TEditorModalProps = {
   onClose: () => void
@@ -19,6 +21,7 @@ const EditorModal = ({ onClose }: TEditorModalProps) => {
 
   const handleAddText = () => {
     if (text.trim()) {
+      userTracker.trackEventSafe(EAppFeature.ADD_TEXT)
       const elementId = generateUniqueId()
       const scaleFactor = useEditAreaStore.getState().editAreaScaleValue
       const fontSize = createInitialConstants<number>('ELEMENT_TEXT_FONT_SIZE')

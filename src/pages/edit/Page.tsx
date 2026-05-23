@@ -31,7 +31,8 @@ import { MiddleInfoSection } from './MiddleInfoSection'
 import { useQueryFilter } from '@/hooks/extensions'
 import { useUserDataStore } from '@/stores/ui/user-data.store'
 import { AppLoading } from '@/components/custom/Loading'
-
+import { useTrackPageView } from '@/utils/firebase'
+import { EAppPage } from '@/utils/enums'
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const { elementId, elementType, elementURL } = selectedElement || {}
@@ -233,6 +234,7 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
   const mockupId = useSearchParams()[0].get('mockupId')
   const queryFilter = useQueryFilter()
   const firstRenderRef = useRef(true)
+  useTrackPageView(EAppPage.EDIT)
 
   const initDeviceId = () => {
     const searchParams = new URLSearchParams(window.location.search)

@@ -12,6 +12,8 @@ import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
 import { CustomScrollbar } from '@/components/custom/CustomScrollbar'
 import { ProductColors } from './ProductColors'
 import { STICKER_PRODUCT_ID } from '@/utils/patching'
+import { userTracker } from '@/utils/firebase'
+import { EAppFeature } from '@/utils/enums'
 
 type TDisplayVariantInfoType = 'display-in-product-details' | 'display-in-middle-info-section'
 
@@ -188,7 +190,12 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
   const [showSizeChart, setShowSizeChart] = useState(false)
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
   const [selectedImageToPreview, setSelectedImageToPreview] = useState<string>()
-  const handlePickVariant = useProductUIDataStore((s) => s.handlePickVariant)
+  const storeHandlePickVariant = useProductUIDataStore((s) => s.handlePickVariant)
+
+  const handlePickVariant = (variant: TClientProductVariant) => {
+    userTracker.trackEventSafe(EAppFeature.SELECT_VARIANT, { item_id: variant.id?.toString() })
+    storeHandlePickVariant(variant)
+  }
 
   const initSelectedAttributesOnPickedVariantChange = () => {
     const attrs: Record<string, string> = {}
