@@ -9,7 +9,7 @@ import { useEditAreaStore } from '@/stores/ui/edit-area.store'
 import { calculateInitialImageElementPosition } from '../helpers'
 import { StickerElementMenuForDesktop } from './Menu-ForDesktop'
 import { userTracker } from '@/utils/firebase'
-import { EAppFeature } from '@/utils/enums'
+import { EAppFeature, ETrackingUserEvents } from '@/utils/enums'
 
 type TStickerGroup = {
   name: string
@@ -95,7 +95,7 @@ const StickersModal = ({ onClose }: TStickersModalProps) => {
 
   // Xử lý chọn sticker
   const handleSelectSticker = (path: string) => {
-    userTracker.trackEventSafe(EAppFeature.ADD_STICKER)
+    userTracker.trackEventSafe(ETrackingUserEvents.ADD_STICKER)
     const elementId = generateUniqueId()
     getNaturalSizeOfImage(
       path,

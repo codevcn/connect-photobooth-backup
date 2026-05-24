@@ -13,7 +13,7 @@ import { CustomScrollbar } from '@/components/custom/CustomScrollbar'
 import { ProductColors } from './ProductColors'
 import { STICKER_PRODUCT_ID } from '@/utils/patching'
 import { userTracker } from '@/utils/firebase'
-import { EAppFeature } from '@/utils/enums'
+import { EAppFeature, ETrackingUserEvents } from '@/utils/enums'
 
 type TDisplayVariantInfoType = 'display-in-product-details' | 'display-in-middle-info-section'
 
@@ -193,7 +193,9 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
   const storeHandlePickVariant = useProductUIDataStore((s) => s.handlePickVariant)
 
   const handlePickVariant = (variant: TClientProductVariant) => {
-    userTracker.trackEventSafe(EAppFeature.SELECT_VARIANT, { item_id: variant.id?.toString() })
+    userTracker.trackEventSafe(ETrackingUserEvents.SELECT_VARIANT, {
+      item_id: variant.id?.toString(),
+    })
     storeHandlePickVariant(variant)
   }
 

@@ -14,6 +14,8 @@ import { WarningIcon } from '@/components/custom/icons/WarningIcon'
 import { useQueryFilter } from '@/hooks/extensions'
 import { useDebouncedCallback } from '@/hooks/use-debounce'
 import { checkIfMobileScreen } from '@/utils/helpers'
+import { userTracker } from '@/utils/firebase'
+import { ETrackingUserEvents } from '@/utils/enums'
 
 type TFormErrors = {
   fullName?: string
@@ -414,6 +416,15 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
       }
     }, [provinces, districts, wards])
 
+    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setTimeout(() => {
+        const { name } = e.target
+        userTracker.trackEventSafe(ETrackingUserEvents.SHIPPING_FORM_CHANGE, {
+          shipping_form_field: name,
+        })
+      }, 0)
+    }
+
     return (
       <form className="5xl:text-3xl md:text-base text-sm space-y-2" ref={ref}>
         <h3 className="5xl:text-[0.8em] 5xl:pt-8 font-semibold text-gray-900 text-lg">
@@ -429,6 +440,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               name="fullName"
               type="text"
               placeholder="Nguyễn Văn A"
+              onChange={handleFormChange}
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
             />
             {errors.fullName && (
@@ -449,6 +461,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 name="phone"
                 type="tel"
                 placeholder="09xx xxx xxx"
+                onChange={handleFormChange}
                 className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
               />
               {errors.phone && (
@@ -468,6 +481,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 name="email"
                 type="email"
                 placeholder="email@domain.com"
+                onChange={handleFormChange}
                 className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
               />
               {errors.email && (
@@ -494,7 +508,10 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               <input
                 id="province-input"
                 type="text"
-                onChange={(e) => handleProvinceChange(e.target, true)}
+                onChange={(e) => {
+                  handleProvinceChange(e.target, true)
+                  handleFormChange(e)
+                }}
                 onFocus={onProvinceFocusInput}
                 placeholder={isLoadingProvinces ? 'Đang tải...' : 'Nhập tên tỉnh/thành phố'}
                 className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} NAME-province 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
@@ -541,14 +558,17 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               <input
                 id="city-input"
                 type="text"
-                onChange={(e) => handleDistrictChange(e.target, true)}
+                onChange={(e) => {
+                  handleDistrictChange(e.target, true)
+                  handleFormChange(e)
+                }}
                 onFocus={onDistrictFocusInput}
                 placeholder={
                   !selectedProvinceId
                     ? 'Chọn tỉnh/thành phố trước'
                     : isLoadingDistricts
-                    ? 'Đang tải...'
-                    : 'Nhập tên quận/huyện'
+                      ? 'Đang tải...'
+                      : 'Nhập tên quận/huyện'
                 }
                 className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} NAME-district 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
                 disabled={!selectedProvinceId || isLoadingDistricts}
@@ -593,14 +613,17 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
             <input
               id="ward-input"
               type="text"
-              onChange={(e) => handleWardChange(e.target, true)}
+              onChange={(e) => {
+                handleWardChange(e.target, true)
+                handleFormChange(e)
+              }}
               onFocus={onWardFocusInput}
               placeholder={
                 !selectedDistrictId
                   ? 'Chọn quận/huyện trước'
                   : isLoadingWards
-                  ? 'Đang tải...'
-                  : 'Nhập tên phường/xã'
+                    ? 'Đang tải...'
+                    : 'Nhập tên phường/xã'
               }
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} NAME-ward 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
               disabled={!selectedDistrictId || isLoadingWards}
@@ -639,6 +662,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               name="address"
               type="text"
               placeholder="Số nhà, tên đường, phường/xã..."
+              onChange={handleFormChange}
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] md:h-11 h-9 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
             />
             {errors.address && (
@@ -657,6 +681,7 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               id="message-input"
               name="message"
               placeholder="Nhập lời nhắn của bạn..."
+              onChange={handleFormChange}
               rows={2}
               className={`${ETextFieldNameForKeyBoard.VIRLTUAL_KEYBOARD_TEXTFIELD} 5xl:text-[0.7em] py-2 w-full px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-cl focus:border-transparent transition-all`}
             ></textarea>

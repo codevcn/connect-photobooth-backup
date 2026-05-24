@@ -2,6 +2,8 @@ import { FAQContent } from '@/components/ui/FAQ'
 import { TermConditions } from '@/components/ui/TermConditions'
 import { useQueryFilter } from '@/hooks/extensions'
 import { useState } from 'react'
+import { userTracker } from '@/utils/firebase'
+import { ETrackingUserEvents } from '@/utils/enums'
 
 type TTabType = 'description' | 'shipping' | 'personalization' | 'faq'
 
@@ -15,7 +17,23 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
   const [showTermsModal, setShowTermsModal] = useState(false)
   const queryFilter = useQueryFilter()
 
+  const sendTrackingUserEvent = (tab: TTabType) => {
+    switch (tab) {
+      case 'description':
+        userTracker.trackEventSafe(ETrackingUserEvents.VIEW_PRODUCT_DESCRIPTION_TAB)
+        break
+      case 'shipping':
+        userTracker.trackEventSafe(ETrackingUserEvents.VIEW_RETURN_POLICY_TAB)
+        break
+      case 'faq':
+        userTracker.trackEventSafe(ETrackingUserEvents.VIEW_FAQ_TAB)
+        break
+    }
+  }
+
   const handlePickTab = (tab: TTabType) => {
+    sendTrackingUserEvent(tab)
+
     if (tab === activeTab) {
       setActiveTab(undefined)
     } else {

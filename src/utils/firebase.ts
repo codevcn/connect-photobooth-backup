@@ -1,7 +1,8 @@
 import { initializeApp, FirebaseApp } from 'firebase/app'
 import { getAnalytics, Analytics, logEvent, setUserId, setUserProperties } from 'firebase/analytics'
-import { EAppPage, EAppFeature } from './enums'
+import { EAppPage, EAppFeature, ETrackingUserEvents } from './enums'
 import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 // Firebase Config
 const firebaseConfig = {
@@ -24,11 +25,16 @@ export interface EventParams {
   currency?: string
   quantity_amount?: number
   order_id?: string
+  layout_id?: string
+  layout_type?: string
+  printed_image_id?: string
+  faq_question?: string
+  shipping_form_field?: string
   [key: string]: any
 }
 
 // Ensure proper typing for event names
-export type AppEventName = 'page_view' | EAppFeature
+export type AppEventName = ETrackingUserEvents
 
 function generateUUID() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -46,6 +52,7 @@ class UserBehaviorTracker {
   private isEnabled: boolean = import.meta.env.VITE_ENABLE_TRACKING === 'true'
   private accessId: string = ''
   private sessionId: string = ''
+  private brand: string = 'fun-studio'
 
   private constructor() {
     const storedAccessId = localStorage.getItem('access_id')
@@ -91,11 +98,12 @@ class UserBehaviorTracker {
   public trackEventSafe(eventName: AppEventName, params?: EventParams): void {
     if (!this.isEnabled) return
     try {
-      const enhancedParams = { 
-        ...params, 
-        access_id: this.accessId, 
+      const enhancedParams = {
+        ...params,
+        access_id: this.accessId,
         session_id: this.sessionId,
-        current_path: window.location.pathname
+        current_path: window.location.pathname,
+        brand: this.brand,
       }
       if (this.analytics) {
         logEvent(this.analytics, eventName as string, enhancedParams)
@@ -126,7 +134,8 @@ class UserBehaviorTracker {
 export const userTracker = UserBehaviorTracker.getInstance()
 
 export const useTrackPageView = (pageName: EAppPage | string) => {
+  const location = useLocation()
   useEffect(() => {
-    userTracker.trackEventSafe('page_view', { page_title: pageName })
-  }, [pageName])
+    userTracker.trackEventSafe(ETrackingUserEvents.PAGE_VIEW, { page_title: pageName })
+  }, [location])
 }

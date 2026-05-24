@@ -18,7 +18,7 @@ import { useVisualStatesCollector } from '@/hooks/use-visual-states-collector'
 import { checkIfMobileScreen, resetAllStores } from '@/utils/helpers'
 import { AppNavigator } from '@/utils/navigator'
 import { userTracker } from '@/utils/firebase'
-import { EAppFeature } from '@/utils/enums'
+import { EAppFeature, ETrackingUserEvents } from '@/utils/enums'
 
 const createInitialLayout = (): TPrintLayout => {
   return {
@@ -309,7 +309,10 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
     firstPrintAreaInProduct: TPrintAreaInfo,
     initialVariant?: TClientProductVariant
   ) => {
-    userTracker.trackEventSafe(EAppFeature.SELECT_PRODUCT, { item_id: product.id?.toString(), item_name: product.name })
+    userTracker.trackEventSafe(ETrackingUserEvents.SELECT_PRODUCT, {
+      item_id: product.id?.toString(),
+      item_name: product.name,
+    })
     if (!pickedProduct) return
     if (pickedProduct.id === product.id) return
     saveAndRecoverProductVisualState(pickedProduct, product, initialLayout)

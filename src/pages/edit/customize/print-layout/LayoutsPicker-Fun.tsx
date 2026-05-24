@@ -3,6 +3,8 @@ import React, { useEffect, useMemo, useRef } from 'react'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { TLayoutSlotConfig, TLayoutType, TPrintLayout } from '@/utils/types/print-layout'
+import { userTracker } from '@/utils/firebase'
+import { ETrackingUserEvents } from '@/utils/enums'
 
 type TAddImageIconProps = {}
 
@@ -99,11 +101,16 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
   }, [allLayouts])
 
   const handlePickLayout = (layout: TPrintLayout) => {
+    userTracker.trackEventSafe(ETrackingUserEvents.PICK_LAYOUT, {
+      layout_id: layout.id,
+      layout_type: layout.layoutType,
+    })
     useLayoutStore.getState().pickLayout({ ...layout, mountType: 'picked' })
     useEditedElementStore.getState().resetData()
   }
 
   const handlePickNoLayout = () => {
+    userTracker.trackEventSafe(ETrackingUserEvents.PICK_NO_LAYOUT)
     useLayoutStore.getState().pickNoLayout()
   }
 

@@ -1,3 +1,5 @@
+import { ETrackingUserEvents } from '@/utils/enums'
+import { userTracker } from '@/utils/firebase'
 import { useState } from 'react'
 
 type TFAQItem = {
@@ -77,12 +79,21 @@ const faqItems: TFAQItem[] = [
 export const FAQContent = () => {
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null)
 
+  const handlePickQuestion = (faqItem: TFAQItem) => {
+    userTracker.trackEventSafe(ETrackingUserEvents.EXPAND_FAQ_QUESTION, {
+      faq_question: faqItem.question,
+    })
+    setExpandedFAQ(expandedFAQ === faqItem.id ? null : faqItem.id)
+  }
+
   return (
     <div className="px-2 py-2 space-y-2">
       {faqItems.map((faq) => (
         <div key={faq.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <button
-            onClick={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
+            onClick={() => {
+              handlePickQuestion(faq)
+            }}
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors text-left"
           >
             <div className="flex items-start gap-3 flex-1">

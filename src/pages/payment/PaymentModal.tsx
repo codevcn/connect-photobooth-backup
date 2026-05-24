@@ -9,8 +9,7 @@ import { ShippingInfoForm, TFormErrors } from './ShippingInfo'
 import { LocalStorageHelper } from '@/utils/localstorage'
 import { SectionLoading } from '@/components/custom/Loading'
 import { EndOfPayment } from './EndOfPayment'
-import { appLogger } from '@/logging/Logger'
-import { EAppFeature, EAppPage } from '@/utils/enums'
+import { ETrackingUserEvents } from '@/utils/enums'
 import { userTracker } from '@/utils/firebase'
 
 type TShippingInfo = {
@@ -94,7 +93,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
   }
 
   const processPayment = async () => {
-    userTracker.trackEventSafe(EAppFeature.START_PROCESS_PAYMENT)
+    userTracker.trackEventSafe(ETrackingUserEvents.START_PROCESS_PAYMENT)
 
     const form = formRef.current
     if (!form) return
@@ -157,7 +156,7 @@ export const PaymentModal = ({ onHideShow, voucherCode, cartItems, show }: TPaym
             shippingInfo,
           })
 
-          userTracker.trackEventSafe(EAppFeature.START_PAYMENT_QR, {
+          userTracker.trackEventSafe(ETrackingUserEvents.START_PAYMENT_QR, {
             method: paymentMethod,
             price: paymentDetails.total,
             order_id: order.id.toString(),

@@ -28,8 +28,10 @@ export enum EAppFeature {
   PAYMENT_CANCEL = 'payment-cancel',
   // Common features
   VIRTUAL_KEYBOARD = 'virtual-keyboard',
+}
 
-  // User Behavior Tracking
+// User Behavior Tracking
+export enum ETrackingUserEvents {
   SELECT_PRODUCT = 'select-product',
   SELECT_VARIANT = 'select-variant',
   ADD_STICKER = 'add-sticker',
@@ -48,6 +50,16 @@ export enum EAppFeature {
   COMPLETE_PAYMENT = 'complete-payment',
   CANCEL_PAYMENT = 'cancel-payment',
   BACK_TO_EDIT = 'back-to-edit',
+  PICK_LAYOUT = 'pick-layout',
+  PICK_NO_LAYOUT = 'pick-no-layout',
+  VIEW_PRODUCT_DESCRIPTION_TAB = 'view-product-description-tab',
+  VIEW_RETURN_POLICY_TAB = 'view-return-policy-tab',
+  VIEW_FAQ_TAB = 'view-faq-tab',
+  EXPAND_FAQ_QUESTION = 'expand-faq-question',
+  SHIPPING_FORM_CHANGE = 'shipping-form-change',
+  PAGE_VIEW = 'page-view',
+  PAYMENT_PROCEED = 'payment-proceed',
+  ADD_TO_CART = 'add-to-cart',
 }
 
 export enum ELocationBoudaryType {
