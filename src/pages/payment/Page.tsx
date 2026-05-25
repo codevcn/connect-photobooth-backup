@@ -78,8 +78,6 @@ const PaymentPage = () => {
   const products = useProductStore((s) => s.products)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [showTermsModal, setShowTermsModal] = useState<boolean>(false)
-  const proceedToPaymentRef = useRef<HTMLDivElement>(null)
-  const voucherContainerRef = useRef<HTMLDivElement>(null)
   useTrackPageView(EAppPage.PAYMENT)
 
   // Hàm tính subtotal (tổng tiền trước giảm giá voucher)
@@ -300,7 +298,6 @@ const PaymentPage = () => {
 
   const proceedToPayment = () => {
     userTracker.trackEventSafe(ETrackingUserEvents.PAYMENT_PROCEED)
-    appLogger.logInfo('User proceeded to payment', EAppPage.PAYMENT, EAppFeature.PAYMENT_PROCEED)
     setShowModal(true)
   }
 

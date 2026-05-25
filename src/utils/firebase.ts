@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseApp } from 'firebase/app'
 import { getAnalytics, Analytics, logEvent, setUserId, setUserProperties } from 'firebase/analytics'
-import { EAppPage, EAppFeature, ETrackingUserEvents } from './enums'
+import { EAppPage, ETrackingUserEvents } from './enums'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -19,8 +19,8 @@ export interface EventParams {
   page_title?: string
   page_location?: string
   method?: string
-  item_id?: string
-  item_name?: string
+  product_id?: string
+  product_name?: string
   price?: number
   currency?: string
   quantity_amount?: number
@@ -98,12 +98,15 @@ class UserBehaviorTracker {
   public trackEventSafe(eventName: AppEventName, params?: EventParams): void {
     if (!this.isEnabled) return
     try {
+      const funstudioValue =
+        new URLSearchParams(window.location.search).get('funstudio') || undefined
       const enhancedParams = {
         ...params,
         access_id: this.accessId,
         session_id: this.sessionId,
         current_path: window.location.pathname,
         brand: this.brand,
+        funstudioId: funstudioValue,
       }
       if (this.analytics) {
         logEvent(this.analytics, eventName as string, enhancedParams)

@@ -299,6 +299,9 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
         const wardInput = document.getElementById('ward-input') as HTMLInputElement
         if (districtInput) districtInput.value = ''
         if (wardInput) wardInput.value = ''
+        userTracker.trackEventSafe(ETrackingUserEvents.SHIPPING_FORM_CHANGE, {
+          shipping_form_field: 'tỉnh/thành phố',
+        })
       }
     }
 
@@ -314,6 +317,9 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
         // Reset ward
         const wardInput = document.getElementById('ward-input') as HTMLInputElement
         if (wardInput) wardInput.value = ''
+        userTracker.trackEventSafe(ETrackingUserEvents.SHIPPING_FORM_CHANGE, {
+          shipping_form_field: 'quận/huyện',
+        })
       }
     }
 
@@ -324,6 +330,9 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
         input.value = ward.name
         setSelectedWardCode(fullWard.code)
         setSuggestedWards([])
+        userTracker.trackEventSafe(ETrackingUserEvents.SHIPPING_FORM_CHANGE, {
+          shipping_form_field: 'phường/xã',
+        })
       }
     }
 
@@ -510,7 +519,6 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 type="text"
                 onChange={(e) => {
                   handleProvinceChange(e.target, true)
-                  handleFormChange(e)
                 }}
                 onFocus={onProvinceFocusInput}
                 placeholder={isLoadingProvinces ? 'Đang tải...' : 'Nhập tên tỉnh/thành phố'}
@@ -560,7 +568,6 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
                 type="text"
                 onChange={(e) => {
                   handleDistrictChange(e.target, true)
-                  handleFormChange(e)
                 }}
                 onFocus={onDistrictFocusInput}
                 placeholder={
@@ -615,7 +622,6 @@ export const ShippingInfoForm = forwardRef<HTMLFormElement, TShippingInfoFormPro
               type="text"
               onChange={(e) => {
                 handleWardChange(e.target, true)
-                handleFormChange(e)
               }}
               onFocus={onWardFocusInput}
               placeholder={
