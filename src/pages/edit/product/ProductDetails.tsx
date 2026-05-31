@@ -32,6 +32,7 @@ export const ProductDetails = ({ pickedProduct, pickedVariant }: TProductDetails
           pickedProduct={pickedProduct}
           pickedVariant={pickedVariant}
           type="display-in-product-details"
+          parentRefClass="NAME-variant-info-area--product-details"
         />
       )}
     </div>

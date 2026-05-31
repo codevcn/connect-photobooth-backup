@@ -233,55 +233,57 @@ export const Actions = () => {
             ></textarea>
           </div>
 
-          <button
-            onClick={handleShowMockupPreview}
-            className="NAME-mockup-preview-action-btn w-full cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
-          >
-            <span>Xem trước bản mockup</span>
-          </button>
-          <button
-            onClick={beforeAddToCartHandler}
-            className="w-full cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
-          >
-            <span>Thêm vào giỏ hàng</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-5 h-5"
+          <div className="NAME-edit-actions-area space-y-2">
+            <button
+              onClick={handleShowMockupPreview}
+              className="NAME-mockup-preview-action-btn w-full cursor-pointer border-main-cl border-2 active:bg-main-hover-cl text-main-cl font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
             >
-              <path d="M20 6 9 17l-5-5" />
-            </svg>
-          </button>
-          <button
-            onClick={beforeNavigateToPaymentHandler}
-            className="w-full relative cursor-pointer bg-white mobile-touch text-main-cl border-2 border-main-cl font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
-          >
-            <span className="inline-block">Xem giỏ hàng</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-5 h-5"
+              <span>Xem trước bản mockup</span>
+            </button>
+            <button
+              onClick={beforeAddToCartHandler}
+              className="w-full cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
             >
-              <circle cx="8" cy="21" r="1" />
-              <circle cx="19" cy="21" r="1" />
-              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-            </svg>
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-main-cl text-white text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </button>
+              <span>Thêm vào giỏ hàng</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </button>
+            <button
+              onClick={beforeNavigateToPaymentHandler}
+              className="w-full relative cursor-pointer bg-white mobile-touch text-main-cl border-2 border-main-cl font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
+            >
+              <span className="inline-block">Xem giỏ hàng</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
+              >
+                <circle cx="8" cy="21" r="1" />
+                <circle cx="19" cy="21" r="1" />
+                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+              </svg>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-main-cl text-white text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

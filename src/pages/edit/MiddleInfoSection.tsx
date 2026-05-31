@@ -34,6 +34,7 @@ export const MiddleInfoSection = ({ pickedProduct, pickedVariant }: TProductDeta
           pickedProduct={pickedProduct}
           pickedVariant={pickedVariant}
           type="display-in-middle-info-section"
+          parentRefClass="NAME-variant-info-area--middle-info-section"
         />
       )}
     </div>

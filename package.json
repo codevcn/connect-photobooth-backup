@@ -12,6 +12,7 @@
   "dependencies": {
     "@yudiel/react-qr-scanner": "^2.4.1",
     "clsx": "^2.1.1",
+    "driver.js": "^1.4.0",
     "firebase": "^12.13.0",
     "html2canvas": "^1.4.1",
     "html5-qrcode": "^2.3.8",

@@ -11,7 +11,7 @@ import { ProductDetails } from './product/ProductDetails'
 import { Customization } from './customize/Customization'
 import { LivePreview } from './live-preview/LivePreview'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { use, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useEditedElementStore } from '@/stores/element/element.store'
 import { AdditionalInformation } from './product/AdditionalInformation'
 import { Actions } from './Actions'
@@ -33,6 +33,9 @@ import { useUserDataStore } from '@/stores/ui/user-data.store'
 import { AppLoading } from '@/components/custom/Loading'
 import { useTrackPageView } from '@/utils/firebase'
 import { EAppPage } from '@/utils/enums'
+import { TourWelcomePopup } from '@/components/ui/TourWelcomePopup'
+import { TourGuideBtn } from '@/dev/components/TourGuideBtn'
+
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
   const { elementId, elementType, elementURL } = selectedElement || {}
@@ -323,6 +326,8 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       }}
       className="NAME-edit-page-root spmd:grid-cols-[1fr_6fr] xl:gap-4 smd:grid-rows-[1fr_6fr] grid-cols-1 font-sans grid h-screen z-10 relative"
     >
+      <TourGuideBtn />
+      <TourWelcomePopup />
       <AddingToCartLoadingModal />
       <ProductGallery products={products} printedImages={printedImages} />
       {pickedProduct && pickedVariant && (

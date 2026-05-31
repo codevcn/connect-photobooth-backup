@@ -183,9 +183,15 @@ type TVariantInfoProps = {
   pickedProduct: TBaseProduct
   pickedVariant: TBaseProduct['variants'][0]
   type: TDisplayVariantInfoType
+  parentRefClass?: string
 }
 
-export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfoProps) => {
+export const VariantInfo = ({
+  pickedProduct,
+  pickedVariant,
+  type,
+  parentRefClass,
+}: TVariantInfoProps) => {
   const pickedProductId = pickedProduct.id
   const [showSizeChart, setShowSizeChart] = useState(false)
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({})
@@ -369,179 +375,185 @@ export const VariantInfo = ({ pickedProduct, pickedVariant, type }: TVariantInfo
 
   const detailImagesToShow = pickedProduct.detailImages
   console.log('>>> picked product:', pickedProduct)
+  console.log('>>> parent ref class:', parentRefClass)
 
   return (
-    <div className="smd:order-4 mt-1 order-1 bg-gray-100 border-border rounded-lg overflow-hidden p-3 w-full">
-      {detailImagesToShow.length > 1 && (
-        <div className="mb-4">
-          <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">
-            Danh mục hình ảnh sản phẩm
-          </h3>
-          <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
-            {pickedProductId !== STICKER_PRODUCT_ID && detailImagesToShow.length > 0 ? (
-              detailImagesToShow.slice(1).map((imgURL) => (
-                <div
-                  key={imgURL}
-                  className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
-                  onClick={() => setSelectedImageToPreview(imgURL)}
-                >
-                  <img src={imgURL} alt="Ảnh sản phẩm" />
-                </div>
-              ))
-            ) : (
-              <div
-                onClick={() => setSelectedImageToPreview(pickedProduct.url)}
-                className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
-              >
-                <img src={pickedProduct.url} alt="Ảnh mockup sản phẩm" />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Material Section */}
-      {mergedAttributes.uniqueMaterials.length > 0 &&
-        mergedAttributes.uniqueMaterials[0] !== 'null' && (
-          <div className="NAME-material-variant-section mb-4">
-            <h3 className="5xl:text-[0.5em] text-sm text-slate-800 font-bold mb-2">
-              {mergedAttributes.uniqueMaterialTitles[0]}
+    <div
+      className={`smd:order-4 order-1 mt-1 w-full`}
+    >
+      <div className="NAME-variant-info-area overflow-hidden p-3 w-full bg-gray-100 border-border rounded-lg">
+        {detailImagesToShow.length > 1 && (
+          <div className="mb-4">
+            <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">
+              Danh mục hình ảnh sản phẩm
             </h3>
-            <div className="5xl:text-[0.4em] smd:text-base text-sm flex flex-wrap gap-2">
-              {mergedAttributes.uniqueMaterials.map((material) => {
-                const isSelected = selectedAttributes.material === material
-                return (
-                  <button
-                    key={material}
-                    onClick={() => pickMaterial(material)}
-                    className={`5xl:py-3 px-2 py-1 font-bold rounded-lg transition-all mobile-touch ${
-                      isSelected
-                        ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
-                        : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
-                    }`}
+            <div className="flex overflow-x-auto gap-2 w-full mt-2 gallery-scroll">
+              {pickedProductId !== STICKER_PRODUCT_ID && detailImagesToShow.length > 0 ? (
+                detailImagesToShow.slice(1).map((imgURL) => (
+                  <div
+                    key={imgURL}
+                    className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
+                    onClick={() => setSelectedImageToPreview(imgURL)}
                   >
-                    {material}
-                  </button>
-                )
-              })}
+                    <img src={imgURL} alt="Ảnh sản phẩm" />
+                  </div>
+                ))
+              ) : (
+                <div
+                  onClick={() => setSelectedImageToPreview(pickedProduct.url)}
+                  className="bg-white mobile-touch cursor-pointer min-w-20 w-20 max-w-20 aspect-square"
+                >
+                  <img src={pickedProduct.url} alt="Ảnh mockup sản phẩm" />
+                </div>
+              )}
             </div>
           </div>
         )}
 
-      {/* Scent Section */}
-      {mergedAttributes.uniqueScents.length > 0 && mergedAttributes.uniqueScents[0] !== 'null' && (
-        <div className="NAME-scent-variant-section mb-4">
-          <h3 className="5xl:text-[0.5em] text-sm text-slate-800 font-bold mb-2">
-            {mergedAttributes.uniqueScentTitles[0]}
-          </h3>
-          <div className=" 5xl:text-[0.4em] smd:text-base text-sm flex flex-wrap gap-2">
-            {mergedAttributes.uniqueScents.map((scent) => {
-              const isSelected = selectedAttributes.scent === scent
-              const isDisabled =
-                !mergedAttributes.groups?.[selectedAttributes.material ?? 'null']?.[
-                  selectedAttributes.scent ?? 'null'
-                ]
-              return (
-                <button
-                  key={scent}
-                  onClick={() => pickScent(isDisabled, scent)}
-                  disabled={isDisabled}
-                  className={`5xl:py-2 px-2 py-1 font-bold rounded-lg transition-all mobile-touch ${
-                    isDisabled
-                      ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
-                      : isSelected
-                        ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
-                        : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
-                  }`}
-                >
-                  {scent}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      <ProductColors
-        colorsCount={colorsCount}
-        mergedAttributes={mergedAttributes}
-        selectedAttributes={selectedAttributes}
-        pickColor={pickColor}
-      />
-
-      {/* Size Section */}
-      {sortedSizes.length > 0 && sortedSizes[0] !== 'null' && (
-        <div className="NAME-size-variant-section">
-          <div className="flex justify-between w-full mb-2">
-            <label className="5xl:text-[0.5em] text-sm block font-bold text-slate-900">
-              {mergedAttributes.uniqueSizeTitles[0]}
-            </label>
-            {firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
-              <button
-                onClick={() => setShowSizeChart(true)}
-                className="5xl:text-[0.4em] text-sm cursor-pointer mobile-touch text-main-cl underline font-medium hover:text-secondary-cl"
-              >
-                Bảng size
-              </button>
-            )}
-          </div>
-
-          {type === 'display-in-middle-info-section' ? (
-            // <CustomScrollbar
-            //   classNames={{
-            //     container: 'flex flex-nowrap gap-2 w-full',
-            //     content: '5xl:text-[0.4em] smd:text-base text-sm flex flex-col pb-2 gap-1',
-            //   }}
-            //   ids={{ content: 'NAME-middle-scrollable-sizes-component' }}
-            // >
-            //   <SizesComponent
-            //     mergedAttributes={mergedAttributes}
-            //     pickSize={pickSize}
-            //     selectedAttributes={selectedAttributes}
-            //     sortedSizes={sortedSizes}
-            //     sizesByPrefix={sizesByPrefix}
-            //     displayVariantInfoType={type}
-            //   />
-            // </CustomScrollbar>
-            <div className="STYLE-styled-scrollbar 5xl:text-[0.4em] text-base flex flex-wrap max-h-40 overflow-y-auto pr-1">
-              <SizesComponent
-                mergedAttributes={mergedAttributes}
-                pickSize={pickSize}
-                selectedAttributes={selectedAttributes}
-                sortedSizes={sortedSizes}
-                sizesByPrefix={sizesByPrefix}
-                displayVariantInfoType={type}
-              />
-            </div>
-          ) : (
-            <div className="STYLE-styled-scrollbar 5xl:text-[0.4em] text-base flex flex-wrap max-h-80 overflow-y-auto pr-1">
-              <SizesComponent
-                mergedAttributes={mergedAttributes}
-                pickSize={pickSize}
-                selectedAttributes={selectedAttributes}
-                sortedSizes={sortedSizes}
-                sizesByPrefix={sizesByPrefix}
-                displayVariantInfoType={type}
-              />
+        {/* Material Section */}
+        {mergedAttributes.uniqueMaterials.length > 0 &&
+          mergedAttributes.uniqueMaterials[0] !== 'null' && (
+            <div className="NAME-material-variant-section mb-4">
+              <h3 className="5xl:text-[0.5em] text-sm text-slate-800 font-bold mb-2">
+                {mergedAttributes.uniqueMaterialTitles[0]}
+              </h3>
+              <div className="5xl:text-[0.4em] smd:text-base text-sm flex flex-wrap gap-2">
+                {mergedAttributes.uniqueMaterials.map((material) => {
+                  const isSelected = selectedAttributes.material === material
+                  return (
+                    <button
+                      key={material}
+                      onClick={() => pickMaterial(material)}
+                      className={`5xl:py-3 px-2 py-1 font-bold rounded-lg transition-all mobile-touch ${
+                        isSelected
+                          ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
+                          : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
+                      }`}
+                    >
+                      {material}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           )}
-        </div>
-      )}
 
-      <PrintSurface printSurfaces={pickedProduct.printSurfaces} pickedVariant={pickedVariant} />
+        {/* Scent Section */}
+        {mergedAttributes.uniqueScents.length > 0 &&
+          mergedAttributes.uniqueScents[0] !== 'null' && (
+            <div className="NAME-scent-variant-section mb-4">
+              <h3 className="5xl:text-[0.5em] text-sm text-slate-800 font-bold mb-2">
+                {mergedAttributes.uniqueScentTitles[0]}
+              </h3>
+              <div className=" 5xl:text-[0.4em] smd:text-base text-sm flex flex-wrap gap-2">
+                {mergedAttributes.uniqueScents.map((scent) => {
+                  const isSelected = selectedAttributes.scent === scent
+                  const isDisabled =
+                    !mergedAttributes.groups?.[selectedAttributes.material ?? 'null']?.[
+                      selectedAttributes.scent ?? 'null'
+                    ]
+                  return (
+                    <button
+                      key={scent}
+                      onClick={() => pickScent(isDisabled, scent)}
+                      disabled={isDisabled}
+                      className={`5xl:py-2 px-2 py-1 font-bold rounded-lg transition-all mobile-touch ${
+                        isDisabled
+                          ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
+                          : isSelected
+                            ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
+                            : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
+                      }`}
+                    >
+                      {scent}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
-      {showSizeChart && firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
-        <SizeChartPreview
-          setShowSizeChart={setShowSizeChart}
-          sizeChartImageURL={firstProductImageURL}
+        <ProductColors
+          colorsCount={colorsCount}
+          mergedAttributes={mergedAttributes}
+          selectedAttributes={selectedAttributes}
+          pickColor={pickColor}
         />
-      )}
-      {selectedImageToPreview && (
-        <ProductImagePreview
-          imageURL={selectedImageToPreview}
-          onClose={() => setSelectedImageToPreview(undefined)}
-        />
-      )}
+
+        {/* Size Section */}
+        {sortedSizes.length > 0 && sortedSizes[0] !== 'null' && (
+          <div className="NAME-size-variant-section">
+            <div className="flex justify-between w-full mb-2">
+              <label className="5xl:text-[0.5em] text-sm block font-bold text-slate-900">
+                {mergedAttributes.uniqueSizeTitles[0]}
+              </label>
+              {firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
+                <button
+                  onClick={() => setShowSizeChart(true)}
+                  className="5xl:text-[0.4em] text-sm cursor-pointer mobile-touch text-main-cl underline font-medium hover:text-secondary-cl"
+                >
+                  Bảng size
+                </button>
+              )}
+            </div>
+
+            {type === 'display-in-middle-info-section' ? (
+              // <CustomScrollbar
+              //   classNames={{
+              //     container: 'flex flex-nowrap gap-2 w-full',
+              //     content: '5xl:text-[0.4em] smd:text-base text-sm flex flex-col pb-2 gap-1',
+              //   }}
+              //   ids={{ content: 'NAME-middle-scrollable-sizes-component' }}
+              // >
+              //   <SizesComponent
+              //     mergedAttributes={mergedAttributes}
+              //     pickSize={pickSize}
+              //     selectedAttributes={selectedAttributes}
+              //     sortedSizes={sortedSizes}
+              //     sizesByPrefix={sizesByPrefix}
+              //     displayVariantInfoType={type}
+              //   />
+              // </CustomScrollbar>
+              <div className="STYLE-styled-scrollbar 5xl:text-[0.4em] text-base flex flex-wrap max-h-40 overflow-y-auto pr-1">
+                <SizesComponent
+                  mergedAttributes={mergedAttributes}
+                  pickSize={pickSize}
+                  selectedAttributes={selectedAttributes}
+                  sortedSizes={sortedSizes}
+                  sizesByPrefix={sizesByPrefix}
+                  displayVariantInfoType={type}
+                />
+              </div>
+            ) : (
+              <div className="STYLE-styled-scrollbar 5xl:text-[0.4em] text-base flex flex-wrap max-h-80 overflow-y-auto pr-1">
+                <SizesComponent
+                  mergedAttributes={mergedAttributes}
+                  pickSize={pickSize}
+                  selectedAttributes={selectedAttributes}
+                  sortedSizes={sortedSizes}
+                  sizesByPrefix={sizesByPrefix}
+                  displayVariantInfoType={type}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        <PrintSurface printSurfaces={pickedProduct.printSurfaces} pickedVariant={pickedVariant} />
+
+        {showSizeChart && firstProductImageURL && firstProductImageURL !== hintForSizeChart && (
+          <SizeChartPreview
+            setShowSizeChart={setShowSizeChart}
+            sizeChartImageURL={firstProductImageURL}
+          />
+        )}
+        {selectedImageToPreview && (
+          <ProductImagePreview
+            imageURL={selectedImageToPreview}
+            onClose={() => setSelectedImageToPreview(undefined)}
+          />
+        )}
+      </div>
     </div>
   )
 }
