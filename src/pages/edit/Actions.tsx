@@ -242,7 +242,7 @@ export const Actions = () => {
             </button>
             <button
               onClick={beforeAddToCartHandler}
-              className="w-full cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
+              className="NAME-add-to-cart-action-btn w-full cursor-pointer bg-main-cl mobile-touch text-white font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
             >
               <span>Thêm vào giỏ hàng</span>
               <svg
@@ -260,7 +260,7 @@ export const Actions = () => {
             </button>
             <button
               onClick={beforeNavigateToPaymentHandler}
-              className="w-full relative cursor-pointer bg-white mobile-touch text-main-cl border-2 border-main-cl font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
+              className="NAME-go-checkout-btn w-full relative cursor-pointer bg-white mobile-touch text-main-cl border-2 border-main-cl font-bold h-10 px-4 rounded shadow-lg flex items-center justify-center gap-2 text-base"
             >
               <span className="inline-block">Xem giỏ hàng</span>
               <svg

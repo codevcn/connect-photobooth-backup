@@ -1,19 +1,11 @@
 1
-"D:\D-Downloads\tiktok-beta-japan\luot_va_chon_san_pham_ban_muon_thiet_ke_chung_7b14738d-7e4a-4bbe-9374-aca02e2f3b3a.wav"
-0.9s
+"D:\D-Downloads\tiktok-beta-japan\luot_va_chon_san_pham_ban_muon_thiet_ke_chung_8bd38bfc-4532-48d5-8d7f-d19f042ae702.wav"
+1s
 
 2
-"D:\D-Downloads\tiktok-beta-japan\tuy_chinh_mau_sac_kich_thuoc_san_pham_huong_e806f3be-f21e-4eb6-a463-6438aa7138c6.wav"
-0.9s
+"D:\D-Downloads\tiktok-beta-japan\san_pham_ma_ban_chon_se_duoc_hien_thi_tai_day_3fd8200f-a0bd-4e5d-9b41-0d49c02eb10b.wav"
+1s
 
 3
-"D:\D-Downloads\tiktok-beta-japan\ban_co_the_them_cac_layout_van_ban_nhan_dan_9f27a5b8-09d1-4c82-ad2b-f12c2e83a378.wav"
-0.9s
-
-4
-"D:\D-Downloads\tiktok-beta-japan\khi_da_ung_y_hay_nhan_xem_truoc_mockup_de_xem_e7cf5ccf-2695-44ec-b5d4-ff3b43af9f54.wav"
-0.9s
-
-5
-"D:\D-Downloads\tiktok-beta-japan\gio_thi_hay_tu_tay_tao_ra_san_pham_tuyet_voi_cua_cc09a9a8-0e90-4ea1-bff5-9bf22e55a3c6.wav"
-0.9s
+"D:\D-Downloads\tiktok-beta-japan\ban_co_the_chon_chat_lieu_mong_muon_cho_san_pham_6095d2e4-63c2-487f-8c95-0ef3e0005d9f.wav"
+1s

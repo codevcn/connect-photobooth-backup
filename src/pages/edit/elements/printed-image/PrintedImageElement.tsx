@@ -200,7 +200,7 @@ export const PrintedImageElement = ({
 
       {createPortal(
         <div
-          className="NAME-element-interactive-buttons hidden fixed z-99 bg-transparent shadow-[0_0_0_2px_var(--vcn-main-cl)] touch-none"
+          className="NAME-simulated-drag-target--drag-drop-element NAME-element-interactive-buttons hidden fixed z-99 bg-transparent shadow-[0_0_0_2px_var(--vcn-main-cl)] touch-none"
           style={{
             ...updateInteractiveButtonsVisualDirectly(),
             transform: `rotate(${angle}deg)`,

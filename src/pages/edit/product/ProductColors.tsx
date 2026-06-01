@@ -3,6 +3,8 @@ import { getContrastColor } from '@/utils/helpers'
 import { TMergedAttributes } from '@/utils/types/global'
 import { useMemo } from 'react'
 
+const COLOR_INDEX_TO_SIMULATE_CLICK: number = 4
+
 type ProductColorsProps = {
   colorsCount: number
   mergedAttributes: TMergedAttributes
@@ -101,10 +103,11 @@ export const ProductColors = ({
           classNames={{
             container:
               '5xl:text-[0.4em] smd:text-base text-sm font-bold py-2 w-full overflow-x-hidden',
-            content: '5xl:gap-6 flex flex-nowrap gap-3 overflow-x-auto no-scrollbar p-1 pb-2',
+            content:
+              'NAME-simulated-swipe-target--color--variant-selection 5xl:gap-6 flex flex-nowrap gap-3 overflow-x-auto no-scrollbar p-1 pb-2',
           }}
         >
-          {sortedColors.map((color) => {
+          {sortedColors.map((color, index) => {
             const isSelected = selectedAttributes.color === color
             const material = selectedAttributes.material ?? 'null'
             const scent = selectedAttributes.scent ?? 'null'
@@ -118,7 +121,7 @@ export const ProductColors = ({
                   disabled={isDisabled}
                   className={`5xl:py-2 flex flex-col items-center rounded-full focus:outline-none transition active:scale-90 ${
                     isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
+                  } ${index === COLOR_INDEX_TO_SIMULATE_CLICK ? 'NAME-simulated-click-target--color--variant-selection' : ''}`}
                   title={color}
                 >
                   <div
@@ -127,8 +130,8 @@ export const ProductColors = ({
                       isDisabled
                         ? 'ring-1 ring-gray-300 ring-offset-2 grayscale'
                         : isSelected
-                        ? 'ring-2 ring-main-cl ring-offset-2 shadow-lg'
-                        : 'ring-1 ring-gray-300 ring-offset-2 hover:ring-secondary-cl hover:shadow-md'
+                          ? 'ring-2 ring-main-cl ring-offset-2 shadow-lg'
+                          : 'ring-1 ring-gray-300 ring-offset-2 hover:ring-secondary-cl hover:shadow-md'
                     } 5xl:h-14 5xl:w-14 h-10 w-10 rounded-full`}
                   >
                     {isSelected && !isDisabled && (
@@ -175,8 +178,8 @@ export const ProductColors = ({
                     isDisabled
                       ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed opacity-50'
                       : isSelected
-                      ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
-                      : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
+                        ? 'bg-main-cl border-2 border-main-cl text-white shadow-md'
+                        : 'bg-white border-2 border-gray-300 text-slate-700 hover:border-secondary-cl hover:text-secondary-cl'
                   }`}
                 >
                   {color}

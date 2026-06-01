@@ -35,6 +35,7 @@ import { useTrackPageView } from '@/utils/firebase'
 import { EAppPage } from '@/utils/enums'
 import { TourWelcomePopup } from '@/components/ui/TourWelcomePopup'
 import { TourGuideBtn } from '@/dev/components/TourGuideBtn'
+import { SimulatedPointer } from '@/components/ui/SimulatedPointer'
 
 const TemplateFrameMenuResponsive = () => {
   const selectedElement = useEditedElementStore((s) => s.selectedElement)
@@ -328,12 +329,13 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
     >
       <TourGuideBtn />
       <TourWelcomePopup />
+      <SimulatedPointer />
       <AddingToCartLoadingModal />
       <ProductGallery products={products} printedImages={printedImages} />
       {pickedProduct && pickedVariant && (
         <MiddleInfoSection pickedProduct={pickedProduct} pickedVariant={pickedVariant} />
       )}
-      <div className="NAME-main-parent xl:gap-4 spmd:h-screen spmd:min-h-auto md:grid-cols-[3fr_2fr] smd:grid-cols-[3fr_2.5fr] smd:min-h-0 smd:w-auto w-full grid-cols-1 grid gap-2">
+      <div className="NAME-biggest-editing-container NAME-main-parent xl:gap-4 spmd:h-screen spmd:min-h-auto md:grid-cols-[3fr_2fr] smd:grid-cols-[3fr_2.5fr] smd:min-h-0 smd:w-auto w-full grid-cols-1 grid gap-2">
         {pickedProduct && pickedVariant && pickedSurface ? (
           <LivePreview
             pickedProduct={pickedProduct}

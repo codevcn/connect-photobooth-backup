@@ -38,6 +38,7 @@ export const SlotsDisplayer = ({ layout, scrollable = true }: TFramesDisplayerPr
             layoutId={layout.id}
             slotsCount={slotConfigs.length}
             layoutType={layout.layoutType}
+            slotIndex={idx}
           />
         ))}
       </div>

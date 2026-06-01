@@ -1,19 +1,15 @@
-import {
-  checkIfMobileScreen,
-  extractIntegerFromString,
-  getContrastColor,
-  sortSizes,
-} from '@/utils/helpers'
+import { extractIntegerFromString } from '@/utils/helpers'
 import { TBaseProduct, TClientProductVariant } from '@/utils/types/global'
 import { PrintSurface } from '../print-surface/PrintSurface'
 import { Modal } from '@/components/custom/common/Modal'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
-import { CustomScrollbar } from '@/components/custom/CustomScrollbar'
 import { ProductColors } from './ProductColors'
 import { STICKER_PRODUCT_ID } from '@/utils/patching'
 import { userTracker } from '@/utils/firebase'
-import { EAppFeature, ETrackingUserEvents } from '@/utils/enums'
+import { ETrackingUserEvents } from '@/utils/enums'
+
+const SIZE_INDEX_TO_SIMULATE_CLICK: number = 2
 
 type TDisplayVariantInfoType = 'display-in-product-details' | 'display-in-middle-info-section'
 
@@ -144,7 +140,7 @@ const SizesComponent = ({
   //   : undefined
   return sizesByPrefix.map((sizesGroup) => (
     <div className={`flex-wrap w-max flex gap-2`} key={sizesGroup[0]}>
-      {sizesGroup.map((size) => {
+      {sizesGroup.map((size, index) => {
         const isSelected = selectedAttributes.size?.toUpperCase() === size.toUpperCase()
         const isScopeDisabled = !mergedAttributes.groups?.[selectedAttributes.material ?? 'null']?.[
           selectedAttributes.scent ?? 'null'
@@ -156,7 +152,7 @@ const SizesComponent = ({
               key={size}
               onClick={() => pickSize(isDisabled, size)}
               disabled={isDisabled}
-              className={`5xl:py-2 5xl:px-4 px-3 min-w-max py-1 font-bold rounded-lg mobile-touch ${
+              className={`${index === SIZE_INDEX_TO_SIMULATE_CLICK ? 'NAME-simulated-click-target--size--variant-selection' : ''} 5xl:py-2 5xl:px-4 px-3 min-w-max py-1 font-bold rounded-lg mobile-touch ${
                 isDisabled
                   ? `bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed`
                   : isSelected
@@ -378,10 +374,8 @@ export const VariantInfo = ({
   console.log('>>> parent ref class:', parentRefClass)
 
   return (
-    <div
-      className={`smd:order-4 order-1 mt-1 w-full`}
-    >
-      <div className="NAME-variant-info-area overflow-hidden p-3 w-full bg-gray-100 border-border rounded-lg">
+    <div className={`smd:order-4 order-1 mt-1 w-full`}>
+      <div className="NAME-simulated-scroll-target--variant-selection NAME-variant-info-area overflow-hidden p-3 w-full bg-gray-100 border-border rounded-lg">
         {detailImagesToShow.length > 1 && (
           <div className="mb-4">
             <h3 className="5xl:text-[0.5em] block text-sm font-bold text-slate-900">

@@ -1,5 +1,5 @@
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { checkIfMobileScreen, getNaturalSizeOfImage } from '@/utils/helpers'
+import { getNaturalSizeOfImage } from '@/utils/helpers'
 import { TPrintedImage } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
@@ -7,16 +7,18 @@ import { useLayoutStore } from '@/stores/ui/print-layout.store'
 import { createPortal } from 'react-dom'
 import { CropImageElementModal } from '../../elements/CropImageElementModal'
 import { useQueryFilter } from '@/hooks/extensions'
-import { toast } from 'react-toastify'
 import { useCommonDataStore } from '@/stores/ui/common-data.store'
+
+const IMAGE_INDEX_TO_SIMULATE_CLICK: number = 0
 
 type ImageProps = {
   img: TPrintedImage
   imgsContainerRef: React.RefObject<HTMLDivElement | null>
   onClickImage: (printedImg: TPrintedImage) => void
+  imgIndex?: number
 }
 
-const ImageSlot = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
+const ImageSlot = ({ img, imgsContainerRef, onClickImage, imgIndex }: ImageProps) => {
   const { url, id } = img
 
   const handleClickImage = () => {
@@ -44,7 +46,7 @@ const ImageSlot = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
   return (
     <div
       onClick={handleClickImage}
-      className="NAME-printed-image-box cursor-pointer relative w-fit h-fit rounded-xl overflow-hidden border-2 border-border hover:border-primary transition-colors group"
+      className={`${imgIndex === IMAGE_INDEX_TO_SIMULATE_CLICK ? 'NAME-simulated-click-target--pick-printed-image' : ''} NAME-printed-image-box cursor-pointer relative w-fit h-fit rounded-xl overflow-hidden border-2 border-border hover:border-primary transition-colors group`}
       data-img-box-id={id}
     >
       <img
@@ -167,7 +169,7 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
             <h2 className="5xl:text-[1em] text-lg font-bold">Chọn ảnh bạn đã chụp</h2>
             <button
               onClick={() => setShowPrintedImagesModal(false)}
-              className="5xl:h-12 5xl:w-12 w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors cursor-pointer mobile-touch"
+              className="NAME-close-printed-images-modal-btn--replace-printed-image 5xl:h-12 5xl:w-12 w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-colors cursor-pointer mobile-touch"
               aria-label="Close"
             >
               <svg
@@ -189,10 +191,11 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
           {/* Image Grid */}
           <div className="flex-1 overflow-y-auto p-3">
             <div className="grid-cols-1 smd:grid-cols-2 grid gap-2" ref={imgsContainerRef}>
-              {printedImages.map((img) => (
+              {printedImages.map((img, index) => (
                 <ImageSlot
                   key={img.id}
                   img={img}
+                  imgIndex={index}
                   imgsContainerRef={imgsContainerRef}
                   onClickImage={handlePickPrintedImage}
                 />

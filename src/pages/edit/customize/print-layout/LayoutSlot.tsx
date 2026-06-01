@@ -2,6 +2,8 @@ import { cn } from '@/configs/ui/tailwind-utils'
 import { TLayoutSlotConfig, TLayoutType, TPrintLayout } from '@/utils/types/print-layout'
 import { PlacedImage } from './PlacedImage'
 
+const SLOT_INDEX_TO_SIMULATE_CLICK: number = 0
+
 type TAddImageIconProps = {
   slotsCount: number
 } & Partial<{
@@ -64,6 +66,7 @@ type TemplateFrameProps = {
   ) => void
   scrollable: boolean
   onImageLoad?: () => void
+  slotIndex: number
 }>
 
 export const LayoutSlot = ({
@@ -74,6 +77,7 @@ export const LayoutSlot = ({
   scrollable = true,
   onImageLoad,
   layoutType,
+  slotIndex,
 }: TemplateFrameProps) => {
   return (
     <div
@@ -81,7 +85,7 @@ export const LayoutSlot = ({
         ...layoutSlot.style,
       }}
       className={cn(
-        'NAME-layout-slot place-self-center cursor-pointer mobile-touch relative flex justify-center items-center overflow-hidden border border-gray-600 border-dashed',
+        `${slotIndex === SLOT_INDEX_TO_SIMULATE_CLICK ? 'NAME-simulated-click-target--add-printed-image NAME-simulated-click-target--replace-printed-image' : ''} NAME-layout-slot place-self-center cursor-pointer mobile-touch relative flex justify-center items-center overflow-hidden border border-gray-600 border-dashed`,
         scrollable ? '' : 'touch-none'
       )}
       onClick={onClickFrame ? (e) => onClickFrame(e, layoutSlot.id, layoutId) : undefined}

@@ -42,7 +42,7 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
   }
 
   return (
-    <div className="5xl:text-[1.4em] order-4 smd:mt-0 mt-2 flex flex-col gap-1 w-full bg-gray-100 rounded-lg shadow-sm p-2 border-border">
+    <div className="NAME-additional-product-info 5xl:text-[1.4em] order-4 smd:mt-0 mt-2 flex flex-col gap-1 w-full bg-gray-100 rounded-lg shadow-sm p-2 border-border">
       <div className="w-full">
         <div
           className={`${

@@ -190,7 +190,7 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
       <div className="flex py-1 overflow-x-auto gap-2 w-full gallery-scroll">
         <div
           onClick={handlePickNoLayout}
-          className={`NAME-fix-aspect 5xl:min-w-24 5xl:min-h-24 5xl:max-w-24 5xl:max-h-24 min-h-16 min-w-16 max-w-16 max-h-16 flex items-center justify-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition ${
+          className={`NAME-simulated-click-target--no-layout--select-layouts NAME-fix-aspect 5xl:min-w-24 5xl:min-h-24 5xl:max-w-24 5xl:max-h-24 min-h-16 min-w-16 max-w-16 max-h-16 flex items-center justify-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition ${
             layoutMode === 'no-layout' ? 'border-main-cl' : ''
           }`}
         >
@@ -212,7 +212,7 @@ export const LayoutsPicker_Fun = ({ printedImages }: TLayoutsPickerProps) => {
             onClick={() => handlePickLayout(layout)}
             className={`${
               layoutMode !== 'no-layout' && pickedLayout?.id === layout.id ? 'border-main-cl' : ''
-            } NAME-fix-aspect 5xl:min-w-24 5xl:min-h-24 5xl:max-w-24 5xl:max-h-24 min-h-16 min-w-16 max-w-16 max-h-16 flex justify-center items-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
+            } NAME-simulated-click-target--${layout.layoutType}--select-layouts NAME-fix-aspect 5xl:min-w-24 5xl:min-h-24 5xl:max-w-24 5xl:max-h-24 min-h-16 min-w-16 max-w-16 max-h-16 flex justify-center items-center border border-gray-300 rounded bg-white mobile-touch cursor-pointer transition`}
             data-layout-id={layout.id}
             data-layout-type={layout.layoutType}
           >

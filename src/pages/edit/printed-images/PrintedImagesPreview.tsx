@@ -12,6 +12,8 @@ import { calculateInitialImageElementPosition } from '../elements/helpers'
 import { PrintedImagesModal } from '../customize/print-layout/PrintedImagesModal'
 import { useLayoutStore } from '@/stores/ui/print-layout.store'
 
+const PRINTED_IMAGE_INDEX_TO_SIMULATE_CLICK: number = 0
+
 type ImageProps = {
   img: TPrintedImage
   imgsContainerRef: React.RefObject<HTMLDivElement | null>
@@ -43,7 +45,7 @@ const Image = ({ img, imgsContainerRef, onClickImage }: ImageProps) => {
   return (
     <div
       onClick={handleClickImage}
-      className="NAME-printed-image-box cursor-pointer relative w-fit h-fit rounded-xl overflow-hidden border-2 border-border hover:border-primary transition-colors group"
+      className="NAME-simulated-click-target--select-previewed-img-no-layouts NAME-printed-image-box cursor-pointer relative w-fit h-fit rounded-xl overflow-hidden border-2 border-border hover:border-primary transition-colors group"
       data-img-box-id={id}
     >
       <img
@@ -105,7 +107,7 @@ const PrintedImagePreviewModal = ({ printedImage, onClose }: PrintedImageProps) 
   }
 
   return (
-    <div className="NAME-printed-images-modal fixed inset-0 z-999 flex items-center justify-center">
+    <div className="NAME-select-previewed-img-no-layouts NAME-printed-images-modal fixed inset-0 z-999 flex items-center justify-center">
       <div onClick={onClose} className="bg-black/70 absolute inset-0 z-10"></div>
       <div className="relative z-20 bg-white w-fit max-w-[90vw] rounded-lg max-h-[95vh] flex flex-col transition duration-300 ease-in-out">
         {/* Header */}
@@ -227,7 +229,7 @@ const PrintedImagesForTemplate = ({ printedImages }: PrintedImageForTemplateProp
               <img
                 className={`${
                   index === 0 ? 'aspect-video' : 'aspect-square'
-                } 5xl:h-20 h-12 min-w-12 object-contain mobile-touch`}
+                } ${index === PRINTED_IMAGE_INDEX_TO_SIMULATE_CLICK ? 'NAME-simulated-click-target--picked-img--select-no-layouts' : ''} 5xl:h-20 h-12 min-w-12 object-contain mobile-touch`}
                 src={printedImage.url}
                 alt="Ảnh chụp photobooth"
               />

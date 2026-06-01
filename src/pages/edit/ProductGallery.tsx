@@ -20,6 +20,8 @@ import { AppNavigator } from '@/utils/navigator'
 import { userTracker } from '@/utils/firebase'
 import { EAppFeature, ETrackingUserEvents } from '@/utils/enums'
 
+const PROUDCT_INDEX_TO_SIMULATE_CLICK: number = 1
+
 const createInitialLayout = (): TPrintLayout => {
   return {
     ...hardCodedLayoutDataFun('full')[0],
@@ -146,7 +148,7 @@ const Product = ({
       data-is-picked={isPicked}
       className={`${productIndex === productsCount && !isMobileScreen ? 'mb-8' : ''} ${
         isPicked ? 'outline-2 outline-main-cl' : 'outline-0'
-      } NAME-gallery-product spmd:w-full spmd:h-auto smd:rounded-lg group h-full rounded-lg aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative`}
+      } ${productIndex === PROUDCT_INDEX_TO_SIMULATE_CLICK ? 'NAME-simulated-click-target--product-selection' : ''} NAME-gallery-product spmd:w-full spmd:h-auto smd:rounded-lg group h-full rounded-lg aspect-square cursor-pointer mobile-touch outline-0 hover:outline-2 hover:outline-main-cl relative`}
       onClick={() => {
         if (initialLayout)
           onPickProduct(product, initialLayout, firstPrintAreaInProduct, product.variants[0])
@@ -546,7 +548,7 @@ export const ProductGallery = ({ products }: TProductGalleryProps) => {
             ref={(node) => {
               scrollableBox.current = node
             }}
-            className="NAME-scrollable-box spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col 5xl:gap-y-12 smd:gap-y-8 flex items-center gap-x-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
+            className="NAME-scrollable-box NAME-simulated-swipe-target--product-selection spmd:px-1.5 smd:py-2 smd:pb-2 smd:pt-4 smd:flex-col 5xl:gap-y-12 smd:gap-y-8 flex items-center gap-x-2 w-full h-full overflow-x-auto gallery-scroll px-3 pt-1.5 pb-8"
           >
             {hasProducts &&
               products.map((product, index) => {
