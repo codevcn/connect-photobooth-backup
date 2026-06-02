@@ -49,6 +49,7 @@ interface TourSegment {
   }
   actions?: TTourAction[]
   no_driver?: boolean
+  skipGuidePosition?: 'top-left' | 'top' | 'top-right' | 'bottom-left' | 'bottom' | 'bottom-right'
 }
 
 const TOUR_SEGMENTS: TourSegment[] = [
@@ -61,6 +62,7 @@ const TOUR_SEGMENTS: TourSegment[] = [
       description:
         'Lướt và chọn sản phẩm bạn muốn thiết kế. Chúng mình có rất nhiều mẫu mã sản phẩm đa dạng ở đây!',
     },
+    skipGuidePosition: 'bottom',
     actions: [
       {
         type: 'swipe',
@@ -237,6 +239,7 @@ const TOUR_SEGMENTS: TourSegment[] = [
       description:
         'Bạn có thể chọn chất liệu mong muốn cho sản phẩm tại khu vực này, chẳng hạn như màu sắc, hay là kích thước tại đây!',
     },
+    skipGuidePosition: 'bottom',
     actions: [
       {
         type: 'scroll',
@@ -300,6 +303,21 @@ const TOUR_SEGMENTS: TourSegment[] = [
       description:
         'Bạn nhấn "xem trước mockup" để biết sản phẩm sẽ trông như thế nào khi nhận về tay nhé!',
     },
+    skipGuidePosition: 'bottom',
+    actions: [
+      {
+        type: 'custom',
+        delay: 0,
+        executor: () => {
+          const mockupPreviewBtn = document.querySelector(
+            '.NAME-mockup-preview-action-btn'
+          ) as HTMLElement
+          if (mockupPreviewBtn) {
+            mockupPreviewBtn.scrollIntoView({ block: 'center' })
+          }
+        },
+      },
+    ],
   },
   {
     name: 'ready-to-checkout',
@@ -310,6 +328,7 @@ const TOUR_SEGMENTS: TourSegment[] = [
       description:
         'Khi đã chỉnh sửa ưng ý, Bạn nhấn "thêm vào giỏ hàng" để đặt mua sản phẩm bạn nhé!',
     },
+    skipGuidePosition: 'bottom',
   },
   {
     name: 'go-checkout',
@@ -319,6 +338,7 @@ const TOUR_SEGMENTS: TourSegment[] = [
       title: '14. Tiến Hành Thanh Toán',
       description: 'Cuối cùng, bạn nhấn "xem giỏ hàng" để bắt đầu thanh toán nha!',
     },
+    skipGuidePosition: 'bottom',
   },
   {
     name: 'finish-tour',
@@ -347,7 +367,8 @@ export const useAudioTourGuide = () => {
       style.id = styleId
       style.innerHTML = `
         body.hide-driver-guide .driver-overlay,
-        body.hide-driver-guide .driver-popover {
+        body.hide-driver-guide .driver-popover,
+        body.hide-driver-guide #driver-overlay-hint-text {
           display: none !important;
           opacity: 0 !important;
           pointer-events: none !important;
@@ -414,9 +435,22 @@ export const useAudioTourGuide = () => {
   }
 
   const startTour = () => {
-    if (audioRef.current && !audioRef.current.paused) return
+    if (!audioRef.current) return
+    if (!audioRef.current.paused && audioRef.current.currentTime > 0) return
 
-    audioRef.current = new Audio(AUDIO_FILE_PATH)
+    audioRef.current.currentTime = 0
+
+    // Thêm hint text
+    const overlayTextId = 'driver-overlay-hint-text'
+    if (!document.getElementById(overlayTextId)) {
+      const hint = document.createElement('div')
+      hint.id = overlayTextId
+      // Khởi tạo className mặc định (sẽ bị ghi đè ngay lập tức ở onHighlightStarted)
+      hint.className =
+        'fixed bottom-1 left-1/2 -translate-x-1/2 text-white text-sm z-[1000000000] whitespace-nowrap pointer-events-none text-center px-2 bg-black/40 rounded-full backdrop-blur-md animate-pulse'
+      hint.innerText = 'Nhấn vào khu vực tối màu để thoát hướng dẫn'
+      document.body.appendChild(hint)
+    }
 
     const driverSteps: DriveStep[] = TOUR_SEGMENTS.map((segment) => ({
       element: segment.element,
@@ -427,17 +461,56 @@ export const useAudioTourGuide = () => {
         } else {
           document.body.classList.remove('hide-driver-guide')
         }
+
+        const hintEl = document.getElementById(overlayTextId)
+        if (hintEl) {
+          const baseClasses =
+            'fixed text-white text-sm z-[1000000000] whitespace-nowrap pointer-events-none text-center px-2 bg-black/40 rounded-full backdrop-blur-md animate-pulse'
+          let positionClasses = 'top-2 left-1/2 -translate-x-1/2' // default
+          switch (segment.skipGuidePosition) {
+            case 'top-left':
+              positionClasses = 'top-2 left-2'
+              break
+            case 'top':
+              positionClasses = 'top-2 left-1/2 -translate-x-1/2'
+              break
+            case 'top-right':
+              positionClasses = 'top-2 right-2'
+              break
+            case 'bottom-left':
+              positionClasses = 'bottom-2 left-2'
+              break
+            case 'bottom-right':
+              positionClasses = 'bottom-2 right-2'
+              break
+            case 'bottom':
+              positionClasses = 'bottom-2 left-1/2 -translate-x-1/2'
+              break
+            default:
+              positionClasses = 'top-2 left-1/2 -translate-x-1/2'
+              break
+          }
+          hintEl.className = `${baseClasses} ${positionClasses}`
+        }
       },
     }))
 
+    let handleTimeUpdate: () => void
+    let handleEnded: () => void
+
     const cancelTour = () => {
       document.body.classList.remove('hide-driver-guide')
+      const hint = document.getElementById('driver-overlay-hint-text')
+      if (hint) hint.remove()
+
       if (audioRef.current) {
         audioRef.current.pause()
+        audioRef.current.removeEventListener('timeupdate', handleTimeUpdate)
+        audioRef.current.removeEventListener('ended', handleEnded)
       }
       cancelSimulation()
       clearActionTimeouts()
-      driverRef.current.destroy()
+      if (driverRef.current) driverRef.current.destroy()
       localStorage.setItem('has_seen_tour', 'true')
     }
 
@@ -481,7 +554,7 @@ export const useAudioTourGuide = () => {
       },
     })
 
-    const handleTimeUpdate = () => {
+    handleTimeUpdate = () => {
       if (!audioRef.current || !driverRef.current) return
 
       const currentTime = audioRef.current.currentTime
@@ -494,10 +567,12 @@ export const useAudioTourGuide = () => {
       }
     }
 
-    audioRef.current.addEventListener('timeupdate', handleTimeUpdate)
-    audioRef.current.addEventListener('ended', () => {
+    handleEnded = () => {
       cancelTour()
-    })
+    }
+
+    audioRef.current.addEventListener('timeupdate', handleTimeUpdate)
+    audioRef.current.addEventListener('ended', handleEnded)
 
     audioRef.current
       .play()
@@ -511,10 +586,19 @@ export const useAudioTourGuide = () => {
   }
 
   useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio(AUDIO_FILE_PATH)
+      audioRef.current.preload = 'auto'
+    }
+
     return () => {
+      const hint = document.getElementById('driver-overlay-hint-text')
+      if (hint) hint.remove()
+
       if (audioRef.current) {
         audioRef.current.pause()
         audioRef.current.src = ''
+        audioRef.current = null
       }
       if (driverRef.current) {
         driverRef.current.destroy()

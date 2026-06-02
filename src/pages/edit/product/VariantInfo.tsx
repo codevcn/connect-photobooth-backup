@@ -370,8 +370,6 @@ export const VariantInfo = ({
   const colorsCount = Object.keys(mergedAttributes.uniqueColors).length
 
   const detailImagesToShow = pickedProduct.detailImages
-  console.log('>>> picked product:', pickedProduct)
-  console.log('>>> parent ref class:', parentRefClass)
 
   return (
     <div className={`smd:order-4 order-1 mt-1 w-full`}>
