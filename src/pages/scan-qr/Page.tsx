@@ -1,12 +1,5 @@
 import QRScanner from './QRScanner'
-import { TPrintedImage, TUserInputImage } from '@/utils/types/global'
-import { useNavigate } from 'react-router-dom'
-import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
-import { generateUniqueId } from '@/utils/helpers'
-import { toast } from 'react-toastify'
-import { AppNavigator } from '@/utils/navigator'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { useState } from 'react'
 import { TutorialForMobile } from './Tutorial-ForMobile'
 
 // --- Cấu hình Animation & Style ---
@@ -46,33 +39,8 @@ const FloatingStyles = () => (
 )
 
 const ScanQRPage = () => {
-  const setPrintedImages = usePrintedImageStore((s) => s.setPrintedImages)
-  const navigate = useNavigate()
-
-  const handleData = async (imageDataList: TUserInputImage[]) => {
-    setPrintedImages([])
-    const imagesToAdd: TPrintedImage[] = []
-    for (const imageData of imageDataList) {
-      const img = new Image()
-      img.onload = () => {
-        imagesToAdd.push({
-          url: imageData.url,
-          height: img.naturalHeight,
-          width: img.naturalWidth,
-          id: generateUniqueId(),
-          isOriginalImage: imageData.isOriginalImage,
-        })
-        if (imagesToAdd.length === imageDataList.length) {
-          imagesToAdd.sort((a, b) => b.width * b.height - a.width * a.height) // ảnh có kích thước lớn nhất phải ở đầu tiên trong danh sách
-          setPrintedImages(imagesToAdd)
-          AppNavigator.navTo(navigate, '/edit')
-        }
-      }
-      img.onerror = () => {
-        toast.error('Đã có lỗi xảy ra khi tải hình ảnh. Có 1 số ảnh không được xử lý.')
-      }
-      img.src = imageData.url
-    }
+  const handleData = (qrText: string) => {
+    window.location.href = `https://funstudio.com.vn?url=${qrText}&is_direct=go_encycom`
   }
 
   return (

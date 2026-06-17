@@ -14,7 +14,7 @@ import { EInternalEvents, eventEmitter } from '@/utils/events'
 import { useCommonDataStore } from '@/stores/ui/common-data.store'
 
 type QRScannerProps = {
-  onScanSuccess: (result: TUserInputImage[]) => Promise<void>
+  onScanSuccess: (resultStr: string) => void
 }
 
 export default function QRScanner({ onScanSuccess }: QRScannerProps) {
@@ -37,47 +37,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
         if (!isScanning) {
           setIsScanning(true)
           qrScanner.stop()
-          qrGetter
-            .handleImageData(result.data, (percentage, images, error) => {
-              setProgress(percentage)
-              if (error) {
-                console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
-                appLogger.logError(
-                  error,
-                  'Error extracting QR code data',
-                  EAppPage.SCAN_QR,
-                  EAppFeature.QR_EXTRACT_DATA
-                )
-                setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
-                toast.error('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại')
-                setTimeout(() => {
-                  AppNavigator.navTo(navigate, '/')
-                }, 3000)
-                return
-              }
-              if (images) {
-                console.log('>>> [qr] images extracted:', images)
-                onScanSuccess(
-                  images.map((img) => ({
-                    ...img,
-                    url: img.isOriginalImage
-                      ? img.url
-                      : useCommonDataStore.getState().createLocalBlobURL(img.blob),
-                  }))
-                )
-              }
-            })
-            .catch((err) => {
-              console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
-              appLogger.logError(
-                err,
-                'Error processing QR code data',
-                EAppPage.SCAN_QR,
-                EAppFeature.QR_EXTRACT_DATA
-              )
-              setError('Không thể xử lý mã QR. Vui lòng thử lại.')
-              toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
-            })
+          onScanSuccess(result.data)
         }
       },
       {
@@ -173,34 +133,8 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
       return
     }
     setTimeout(() => {
-      qrGetter.setDetectFromFileHandler(detectFromFile as any)
       setIsScanning(true)
-      qrGetter
-        .handleImageData('https://qr.seobuk.kr/s/~TINAyw', (percentage, images, error) => {
-          setProgress(percentage)
-          if (error) {
-            console.error('>>> [qr] Lỗi lấy dữ liệu mã QR:', error)
-            setError('Không thể lấy dữ liệu từ mã QR. Vui lòng thử lại.')
-            toast.error(error.message)
-            return
-          }
-          if (images) {
-            console.log('>>> [qr] images extracted:', images)
-            onScanSuccess(
-              images.map((img) => ({
-                ...img,
-                url: img.isOriginalImage
-                  ? img.url
-                  : useCommonDataStore.getState().createLocalBlobURL(img.blob),
-              }))
-            )
-          }
-        })
-        .catch((err) => {
-          console.error('>>> [qr] Lỗi xử lý dữ liệu mã QR:', err)
-          setError('Không thể xử lý mã QR. Vui lòng thử lại.')
-          toast.error('Không thể xử lý mã QR. Vui lòng thử lại.')
-        })
+      onScanSuccess('https://qr.seobuk.kr/s/~TINAyw')
     }, 200)
   }
 

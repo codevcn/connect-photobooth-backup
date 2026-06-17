@@ -17,7 +17,7 @@ export const SimulatedPointer = () => {
       }}
     >
       <img 
-        src="/images/pointer.svg" 
+        src="/images/tour-guide/pointer.svg" 
         alt="pointer" 
         className="w-12 h-12"
         style={{

@@ -490,6 +490,33 @@ export const AdditionalInformation = ({ productDescription }: TAdditionalInforma
         </p>
       </div>
 
+      <div className="mt-4 flex justify-center w-full">
+        <button
+          onClick={() => {
+            localStorage.removeItem('has_seen_tour')
+            window.location.reload()
+          }}
+          className="group flex items-center gap-2 px-5 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-600 hover:text-zinc-900 text-sm font-medium rounded-full active:scale-[0.98] transition-all duration-200 shadow-sm border border-zinc-200/60"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="group-hover:-rotate-90 transition-transform duration-300"
+          >
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          Xem lại hướng dẫn thao tác
+        </button>
+      </div>
+
       {(queryFilter.funId || queryFilter.dev) && (
         <>
           <div className="5xl:hidden smd:order-4 d border border-red-300 bg-red-50 block text-center text-sm text-gray-600 order-5 smd:p-3 p-2 rounded-lg space-y-2 mt-2">

@@ -21,6 +21,8 @@ window.cancelIdleCallback =
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import EditPageFUN from '@/pages/edit/Layout-Fun'
 import NotFound from '@/pages/NotFound'
+import ScanQRPage from '@/pages/scan-qr/Page'
+import UploadPage from '@/pages/upload/Page'
 import { LocalStorageHelper } from './utils/localstorage'
 import { ToastContainer } from 'react-toastify'
 import { AppRootProvider } from './providers/RootProvider'
@@ -53,19 +55,15 @@ function AppRoutes() {
     }
   }, [])
 
-  // Routes cho Fun Studio
-  if (queryFilter.funId) {
-    return (
-      <Routes>
-        <Route path="/" element={<EditPageFUN />} />
-        <Route path="/payment" element={<PaymentPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    )
-  }
-
-  // Không có query string hợp lệ
-  return <NotFound />
+  return (
+    <Routes>
+      <Route path="/" element={queryFilter.funId ? <EditPageFUN /> : <UploadPage />} />
+      <Route path="/edit" element={<EditPageFUN />} />
+      <Route path="/payment" element={<PaymentPage />} />
+      <Route path="/scan-qr" element={<ScanQRPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  )
 }
 
 function App() {

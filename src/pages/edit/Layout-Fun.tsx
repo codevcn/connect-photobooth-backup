@@ -80,12 +80,17 @@ const LayoutFUN = () => {
   }
 
   const fetchDataToEdit = async () => {
-    const data = await Promise.all([
-      fetchProducts(),
-      fetchPrintedImagesFromFunStudio(fetchIdByPartner || ''),
-    ])
-    setProducts(data[0])
-    usePrintedImageStore.getState().setPrintedImages(data[1])
+    if (fetchIdByPartner) {
+      const data = await Promise.all([
+        fetchProducts(),
+        fetchPrintedImagesFromFunStudio(fetchIdByPartner),
+      ])
+      setProducts(data[0])
+      usePrintedImageStore.getState().setPrintedImages(data[1])
+    } else {
+      const data = await fetchProducts()
+      setProducts(data)
+    }
     setFetched(true)
   }
 
