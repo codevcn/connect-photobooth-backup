@@ -28,7 +28,7 @@ export const CTAButtonStar = ({ top, left, right, bottom, index, classNames }: T
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <path
           stroke="#fff"
-          fill="#e60076"
+          fill="#f54900"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="1"

@@ -327,7 +327,6 @@ export default function EditPage({ products, printedImages }: TEditPageProps) {
       }}
       className="NAME-edit-page-root spmd:grid-cols-[1fr_6fr] xl:gap-4 smd:grid-rows-[1fr_6fr] grid-cols-1 font-sans grid h-screen z-10 relative"
     >
-      <TourGuideBtn />
       <TourWelcomePopup />
       <SimulatedPointer />
       <AddingToCartLoadingModal />

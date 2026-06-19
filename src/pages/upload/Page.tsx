@@ -129,7 +129,7 @@ const UploadPage = () => {
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-white flex flex-col items-center justify-center p-6 overflow-hidden">
+    <div className="relative min-h-screen w-full bg-white flex flex-col items-center justify-center py-4 px-3 overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-0 left-0 w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
@@ -137,32 +137,28 @@ const UploadPage = () => {
         <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
       </div>
 
-      <div className="z-10 text-center mb-6 max-w-2xl px-4 animate-fade-in-down">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-800 leading-relaxed">
-          Lưu giữ kỷ niệm chụp ảnh photobooth cùng bạn bè và người thương{' '}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-red-500 inline-block align-text-bottom animate-pulse mb-1"
-          >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
-        </h2>
-      </div>
-
-      <div className="z-10 w-full max-w-lg bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl p-8 flex flex-col items-center">
-        <div className="text-center mb-8">
+      <div className="z-10 w-full max-w-lg bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl px-4 py-8 flex flex-col items-center">
+        <div className="text-center mb-4">
           <h1 className="text-2xl md:text-4xl font-extrabold text-main-cl mb-2">
             TẢI LÊN ẢNH CỦA BẠN
           </h1>
-          <p className="text-gray-600 font-medium">Tạo thiết kế lưu giữ kỷ niệm với ảnh của bạn</p>
+          <h2 className="text-lg font-bold text-gray-800 leading-relaxed">
+            <span>Lưu giữ kỷ niệm chụp ảnh photobooth cùng bạn bè và người thương </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-red-500 inline-block align-text-bottom mb-1"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </h2>
         </div>
 
         <div
@@ -205,12 +201,35 @@ const UploadPage = () => {
           />
         </div>
 
-        <div className="mt-8 w-full">
+        <div className="mt-8 w-full flex flex-col gap-3">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-full bg-main-cl text-white font-bold py-4 rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 mobile-touch"
+            className="w-full bg-main-cl text-white font-bold py-3 rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 mobile-touch"
           >
             <span>Tải ảnh lên ngay</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/scan-qr')}
+            className="overflow-hidden w-full bg-white border-2 border-main-cl text-main-cl font-bold rounded-xl text-md shadow-sm hover:shadow-md transform hover:-translate-y-1 transition-all duration-200 active:scale-95 flex items-stretch justify-center gap-2 mobile-touch"
+          >
+            <span className="flex justify-center items-center bg-main-cl min-h-full w-[20%] p-1.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="35"
+                height="35"
+                fill="white"
+                className="bi bi-qr-code"
+                viewBox="0 0 16 16"
+              >
+                <path d="M2 2h2v2H2z" />
+                <path d="M6 0v6H0V0zM5 1H1v4h4zM4 12H2v2h2z" />
+                <path d="M6 10v6H0v-6zm-5 1v4h4v-4zm11-9h2v2h-2z" />
+                <path d="M10 0v6h6V0zm5 1v4h-4V1zM8 1V0h1v2H8v2H7V1zm0 5V4h1v2zM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8zm0 0v1H2V8H1v1H0V7h3v1zm10 1h-1V7h1zm-1 0h-1v2h2v-1h-1zm-4 0h2v1h-1v1h-1zm2 3v-1h-1v1h-1v1H9v1h3v-2zm0 0h3v1h-2v1h-1zm-4-1v1h1v-2H7v1z" />
+                <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z" />
+              </svg>
+            </span>
+            <span className="flex items-center justify-center w-[80%] p-1.5">Bạn có mã QR Photobooth? Quét ngay</span>
           </button>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import QRScanner from './QRScanner'
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { TutorialForMobile } from './Tutorial-ForMobile'
 
 // --- Cấu hình Animation & Style ---
 const FloatingStyles = () => (
@@ -40,7 +39,7 @@ const FloatingStyles = () => (
 
 const ScanQRPage = () => {
   const handleData = (qrText: string) => {
-    window.location.href = `https://funstudio.com.vn?url=${qrText}&is_direct=go_encycom`
+    window.location.href = `${qrText}&is_direct=go_encycom`
   }
 
   return (
@@ -53,8 +52,8 @@ const ScanQRPage = () => {
         {/* Nền họa tiết nhẹ */}
         <div className="absolute top-0 left-0 w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         {/* Blobs màu tạo chiều sâu */}
-        <div className="absolute -top-20 -left-20 w-80 h-80 bg-rose-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute -top-20 -left-20 w-80 h-80 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
 
         {/* --- 8 ICON SẢN PHẨM TRÔI NỔI --- */}
 
@@ -292,21 +291,60 @@ const ScanQRPage = () => {
       {/* HEADER (TOP CENTER) */}
       <section
         id="scan-qr-area"
-        className="5xl:py-6 pt-6 flex flex-col h-full items-center relative w-full text-center z-50"
+        className="5xl:py-6 pt-8 pb-8 flex flex-col h-full items-center relative w-full text-center z-40 px-4 overflow-y-auto no-scrollbar"
       >
-        <div className="5xl:justify-center 5xl:w-[38vw] 5xl:px-0 5xl:gap-4 gap-4 px-4 flex flex-col h-full items-center w-full">
-          <h1
-            onClick={() => {
-              eventEmitter.emit(EInternalEvents.DO_TEST_PASS_SCAN_QR)
-            }}
-            className="smd:text-3xl block text-xl md:text-5xl font-extrabold text-main-cl uppercase tracking-wide"
-          >
-            QUÉT MÃ QR PHOTOBOOTH
-          </h1>
-          <div className="5xl:text-[16px] w-full font-bold px-1 py-1 rounded-md bg-white/80 text-sm">
-            Đưa mã QR photobooth của bạn vào camera, căn chỉnh để quét QR thật rõ nét nhé!
+        <div className="5xl:justify-center 5xl:w-[38vw] 5xl:px-0 5xl:gap-4 gap-4 flex flex-col h-full items-center w-full max-w-lg">
+          <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl p-5 smd:p-8 border border-white/40 flex flex-col items-center w-full animate-fade-in-down">
+            <h1
+              onClick={() => {
+                eventEmitter.emit(EInternalEvents.DO_TEST_PASS_SCAN_QR)
+              }}
+              className="smd:text-3xl block text-2xl md:text-5xl font-extrabold text-main-cl uppercase tracking-wide mb-2"
+            >
+              QUÉT MÃ QR
+            </h1>
+            <div className="5xl:text-[16px] w-full font-bold px-1 py-1 text-gray-700 text-sm mb-4">
+              Đưa mã QR photobooth của bạn vào camera, căn chỉnh để quét QR thật rõ nét nhé!
+            </div>
+            <QRScanner onScanSuccess={handleData} />
+
+            {/* DECORATION & TIP BELOW SCANNER */}
+            <div className="mt-8 flex flex-col items-center justify-center gap-2 text-main-cl/80 animate-float-slow">
+              <div className="bg-main-cl/10 p-3 rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="36"
+                  height="36"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                  <circle cx="12" cy="13" r="3" />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-gray-500">
+                <span>Quét mã QR để đến với studio thiết kế của chúng mình </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-red-500 inline-block align-text-bottom mb-1"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </p>
+            </div>
           </div>
-          <QRScanner onScanSuccess={handleData} />
         </div>
       </section>
 
@@ -391,8 +429,6 @@ const ScanQRPage = () => {
           </div>
         </div>
       </div>
-
-      <TutorialForMobile />
     </div>
   )
 }

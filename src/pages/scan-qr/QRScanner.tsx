@@ -21,7 +21,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const scannerRef = useRef<QrScanner | null>(null)
   const [isScanning, setIsScanning] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(50)
   const [error, setError] = useState<string>('')
   const { detectFromFile, isReady } = useFastBoxes()
   const navigate = useNavigate()
@@ -151,7 +151,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
   // }, [isReady])
 
   return (
-    <div className="smd:px-0 smd:w-fit 5xl:px-4 px-0 h-[calc(100vh-250px)] w-full pointer-events-none">
+    <div className="smd:px-0 smd:w-fit 5xl:px-4 px-0 w-full pointer-events-none">
       <div className="NAME-video-wrapper smd:w-fit smd:h-full w-full relative aspect-square bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
         {!cameraIsActive && (
           <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-white font-bold text-2xl">
@@ -177,7 +177,7 @@ export default function QRScanner({ onScanSuccess }: QRScannerProps) {
                 <div className="w-4/5">
                   <div className="bg-white rounded-full h-4 overflow-hidden mb-4 shadow-lg">
                     <div
-                      className="bg-pink-400 h-full transition-all duration-100"
+                      className="bg-orange-400 h-full transition-all duration-100"
                       style={{ width: `${progress}%` }}
                     />
                   </div>

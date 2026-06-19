@@ -55,7 +55,7 @@ export const useSimulatedBehavior = () => {
     }: TSimulateSwipeOptions) => {
       cancelSimulation()
 
-      let element: HTMLElement | null | undefined = document.body.querySelector(selector)
+      let element: Element | null | undefined = document.body.querySelector(selector)
       if (!element) {
         console.warn(`>>> [Simulation] Element ${selector} not found.`)
         return
@@ -168,7 +168,7 @@ export const useSimulatedBehavior = () => {
     ({ selector, hidePointer }: TSimulateClickOptions) => {
       cancelSimulation()
 
-      let element: HTMLElement | null | undefined = document.querySelector(selector)
+      let element: Element | null | undefined = document.querySelector(selector)
       if (!element) {
         console.warn(`>>> [Simulation] Element ${selector} not found.`)
         return
@@ -204,7 +204,7 @@ export const useSimulatedBehavior = () => {
       const t3 = setTimeout(() => {
         setPointerState({ scale: 1 })
         const clickTimer = setTimeout(() => {
-          element?.click()
+          ;(element as HTMLElement)?.click()
         }, 200)
         activeTimeouts.current.push(clickTimer)
       }, 500)
