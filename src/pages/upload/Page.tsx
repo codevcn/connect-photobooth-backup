@@ -8,7 +8,7 @@ import { SectionLoading } from '@/components/custom/Loading'
 import { generateUniqueId } from '@/utils/helpers'
 import { TPrintedImage } from '@/utils/types/global'
 
-const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
+const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
 
 const validateImageMagicBytes = (file: File): Promise<boolean> => {
   return new Promise((resolve, reject) => {
@@ -21,8 +21,8 @@ const validateImageMagicBytes = (file: File): Promise<boolean> => {
         header += arr[i].toString(16).padStart(2, '0').toUpperCase()
       }
 
-      // Check for JPEG (FF D8 FF ...) or PNG (89 50 4E 47)
-      if (header.startsWith('FFD8') || header === '89504E47') {
+      // Check for JPEG (FF D8 FF ...) or PNG (89 50 4E 47) or WebP (52 49 46 46)
+      if (header.startsWith('FFD8') || header === '89504E47' || header === '52494646') {
         resolve(true)
       } else {
         resolve(false)
@@ -60,7 +60,7 @@ const UploadPage = () => {
     // Check extension
     const ext = file.name.split('.').pop()?.toLowerCase() || ''
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      toast.error('Chỉ hỗ trợ file định dạng JPG, JPEG, PNG')
+      toast.error('Chỉ hỗ trợ file định dạng JPG, JPEG, PNG, WebP')
       return
     }
 
@@ -137,7 +137,7 @@ const UploadPage = () => {
         <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-amber-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
       </div>
 
-      <div className="z-10 w-full max-w-lg bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl px-4 py-8 flex flex-col items-center">
+      <div className="z-10 w-full max-w-lg bg-white/80 backdrop-blur-md rounded-xl shadow-2xl px-4 py-8 flex flex-col items-center">
         <div className="text-center mb-4">
           <h1 className="text-2xl md:text-4xl font-extrabold text-main-cl mb-2">
             TẢI LÊN ẢNH CỦA BẠN
@@ -189,14 +189,15 @@ const UploadPage = () => {
               <line x1="12" x2="12" y1="3" y2="15" />
             </svg>
           </div>
-          <p className="text-lg font-bold text-gray-700 mb-1">Kéo thả ảnh vào đây</p>
-          <p className="text-sm text-gray-500">hoặc bấm để chọn file (JPG, PNG)</p>
+          <p className="text-sm font-bold text-gray-700 mb-1 px-2 text-center">
+            Bấm để chọn file ảnh của bạn (JPG, PNG, WEBP)
+          </p>
 
           <input
             type="file"
             ref={fileInputRef}
             className="hidden"
-            accept=".jpg,.jpeg,.png"
+            accept=".jpg,.jpeg,.png,.webp"
             onChange={onFileChange}
           />
         </div>
@@ -229,7 +230,9 @@ const UploadPage = () => {
                 <path d="M7 12h1v3h4v1H7zm9 2v2h-3v-1h2v-1z" />
               </svg>
             </span>
-            <span className="flex items-center justify-center w-[80%] p-1.5">Bạn có mã QR Photobooth? Quét ngay</span>
+            <span className="flex items-center justify-center w-[80%] p-1.5">
+              Bạn có mã QR Photobooth? Quét ngay
+            </span>
           </button>
         </div>
       </div>

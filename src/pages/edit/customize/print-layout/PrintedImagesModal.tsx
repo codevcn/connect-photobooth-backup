@@ -1,5 +1,5 @@
 import { EInternalEvents, eventEmitter } from '@/utils/events'
-import { getNaturalSizeOfImage } from '@/utils/helpers'
+import { generateUniqueId, getNaturalSizeOfImage } from '@/utils/helpers'
 import { TPrintedImage } from '@/utils/types/global'
 import { useEffect, useRef, useState } from 'react'
 import { useProductUIDataStore } from '@/stores/ui/product-ui-data.store'
@@ -8,6 +8,9 @@ import { createPortal } from 'react-dom'
 import { CropImageElementModal } from '../../elements/CropImageElementModal'
 import { useQueryFilter } from '@/hooks/extensions'
 import { useCommonDataStore } from '@/stores/ui/common-data.store'
+import { usePrintedImageStore } from '@/stores/printed-image/printed-image.store'
+import { postPreSendMockupImage } from '@/services/api/product.api'
+import { toast } from 'react-toastify'
 
 const IMAGE_INDEX_TO_SIMULATE_CLICK: number = 0
 
@@ -83,7 +86,98 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
     printdImage: undefined,
     showModal: false,
   })
+  const [isUploadingExtraImage, setIsUploadingExtraImage] = useState(false)
   const queryFilter = useQueryFilter()
+  const { setPrintedImages } = usePrintedImageStore()
+
+  const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp']
+
+  const validateImageMagicBytes = (file: File): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = (e) => {
+        if (!e.target || !e.target.result) return resolve(false)
+        const arr = new Uint8Array(e.target.result as ArrayBuffer).subarray(0, 4)
+        let header = ''
+        for (let i = 0; i < arr.length; i++) {
+          header += arr[i].toString(16).padStart(2, '0').toUpperCase()
+        }
+        // JPEG: FF D8, PNG: 89504E47, WEBP: 52494646
+        if (header.startsWith('FFD8') || header === '89504E47' || header.startsWith('52494646')) {
+          resolve(true)
+        } else {
+          resolve(false)
+        }
+      }
+      reader.onerror = () => reject(false)
+      reader.readAsArrayBuffer(file.slice(0, 4))
+    })
+  }
+
+  const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file)
+      const img = new Image()
+      img.onload = () => {
+        resolve({ width: img.naturalWidth, height: img.naturalHeight })
+        URL.revokeObjectURL(url)
+      }
+      img.onerror = () => {
+        reject(new Error('Failed to load image'))
+        URL.revokeObjectURL(url)
+      }
+      img.src = url
+    })
+  }
+
+  const handleExtraImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    // Reset input để có thể chọn cùng file lần sau
+    e.target.value = ''
+
+    const ext = file.name.split('.').pop()?.toLowerCase() || ''
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      toast.error('Chỉ hỗ trợ file định dạng JPG, JPEG, PNG, WEBP')
+      return
+    }
+
+    const isValidSignature = await validateImageMagicBytes(file)
+    if (!isValidSignature) {
+      toast.error('File không đúng định dạng hình ảnh hợp lệ')
+      return
+    }
+
+    setIsUploadingExtraImage(true)
+    try {
+      const dimensions = await getImageDimensions(file)
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await postPreSendMockupImage(formData)
+
+      if (res.success && res.data) {
+        const imageUrl = res.data.data.url
+        const newImage: TPrintedImage = {
+          url: imageUrl,
+          width: dimensions.width,
+          height: dimensions.height,
+          id: generateUniqueId(),
+          isOriginalImage: false,
+        }
+        // Append vào danh sách hiện có, không thay thế
+        const currentImages = usePrintedImageStore.getState().printedImages
+        setPrintedImages([newImage, ...currentImages])
+        toast.success('Đã thêm ảnh thành công!')
+      } else {
+        toast.error(res.error || 'Tải ảnh lên thất bại')
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Đã có lỗi xảy ra trong quá trình xử lý ảnh')
+    } finally {
+      setIsUploadingExtraImage(false)
+    }
+  }
 
   const handleAddPrintedImageToLayout = (printedImg: TPrintedImage) => {
     const pickedPrintSurface = useProductUIDataStore.getState().pickedSurface
@@ -189,7 +283,57 @@ export const PrintedImagesModal = ({ printedImages }: PrintedImagesProps) => {
           </div>
 
           {/* Image Grid */}
-          <div className="flex-1 overflow-y-auto p-3">
+          <div className="flex-1 overflow-y-auto p-3 pt-0">
+            <label
+              htmlFor="extra-printed-image-adder-input"
+              className="NAME-extra-printed-image-adder-btn my-3 overflow-hidden flex justify-stretch items-center border-2 border-solid border-main-cl rounded-lg"
+            >
+              <input
+                id="extra-printed-image-adder-input"
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                className="hidden"
+                onChange={handleExtraImageFileChange}
+                disabled={isUploadingExtraImage}
+              />
+              <div className="bg-main-cl h-full w-[20%] py-3 flex items-center justify-center text-main-cl shadow-sm">
+                {isUploadingExtraImage ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="animate-spin"
+                  >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" x2="12" y1="3" y2="15" />
+                  </svg>
+                )}
+              </div>
+              <div className="block h-fit text-md text-gray-700 font-bold w-[80%] text-center">
+                {isUploadingExtraImage ? 'Đang tải ảnh...' : 'Tải lên ảnh riêng của bạn'}
+              </div>
+            </label>
             <div className="grid-cols-1 smd:grid-cols-2 grid gap-2" ref={imgsContainerRef}>
               {printedImages.map((img, index) => (
                 <ImageSlot
